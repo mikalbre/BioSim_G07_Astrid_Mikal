@@ -1,5 +1,7 @@
-# BioSim_G07_Astrid_Mikal
+Astrid og Mikal's BioSim Project
 
-Mikal
+## Authors
 
-Astrid
+- Astrid Sedal <astrised@nmbu.no>
+- Mikal Breiteig <mibreite@nmbu.no>
+
