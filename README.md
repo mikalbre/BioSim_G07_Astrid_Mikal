@@ -1,6 +1,6 @@
-#Astrid og Mikal's BioSim Project
+##Astrid og Mikal's BioSim Project
 
-## Authors
+### Authors
 
 - Astrid Sedal <astrised@nmbu.no>
 - Mikal Breiteig <mibreite@nmbu.no>
