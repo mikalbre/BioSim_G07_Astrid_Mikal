@@ -2,10 +2,10 @@
 
 """This file contains the Animal base class and child classes for herbivores and carnivores"""
 
-class Animals():
+class Animals:
     """
-    Animal superclass, i.e. all animals in the simulation must be subclasses of this parent class.
-    Represents a single animal.
+    Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
+    It represents a single animal.
 
         Sets the class parameters and check if input is in the right format.
 
@@ -57,11 +57,9 @@ class Animals():
     omega = 0.4
     F = 10.0
 
-    default_parameters = {'w_birth': None, 'sigma_birth': None, 'beta': None,
-                       'eta': None, 'a_half': None, 'phi_age': None, 'w_half': None,
-                       'phi_weight': None, 'mu': None, 'gamma': None,
-                       'zeta': None, 'xi': None, 'omega': None, 'F': None,
-                       'DeltaPhiMax': None}
+    default_parameters = {'w_birth': None, 'sigma_birth': None, 'beta': None, 'eta': None, 'a_half': None,
+                          'phi_age': None, 'w_half': None, 'phi_weight': None, 'mu': None, 'gamma': None, 'zeta': None,
+                          'xi': None, 'omega': None, 'F': None, 'DeltaPhiMax': None}
 
     @classmethod
     def set_parameters(cls, new_parameters):
@@ -72,35 +70,61 @@ class Animals():
         pass
 
     def birth(self):
-        """"""
+        """
+        Whether an animal will give birth.
+        If animal gives birth, weight decreases and return offspring.
+        :return:
+        """
         pass
 
     def age(self):
-        """"""
+        """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
         pass
 
     def weight(self):
-        """"""
+        """ """
         pass
 
     def decrease_weight(self):
-        """"""
+        """
+        Weight of animal decreases passively each year.
+        
+        :return:
+        """
         pass
 
     def fitness(self):
-        """"""
+        """
+        Calculate fitness if weight or age to animal is changed.
+
+        :return:
+        """
         pass
 
     def feed(self):
-        """"""
+        """
+        Animal eats food in cell.
+        Weight of animal gets update.
+        Returns new amount of fodder left in cell
+
+        :return:
+        """
         pass
 
     def can_migrate(self):
-        """"""
+        """
+        If animal has not moved to new cell, it calculates whether it will move or not.
+
+        :return:
+        """
         pass
+    def death(self):
+        """
+        Whether an animal dies is calculated by probability.
+        Fitness = 0, animal will die.
 
-
-
+        :return:
+        """
 
 
 
