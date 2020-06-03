@@ -1,4 +1,4 @@
-##Astrid og Mikal's BioSim Project
+## Astrid og Mikal's BioSim Project
 
 ### Authors
 
