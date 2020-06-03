@@ -1,2 +1,2 @@
-# The truth about carni
-herbivores
+# Facts about carni
+Herbivores
