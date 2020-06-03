@@ -5,4 +5,7 @@
 - Astrid Sedal <astrised@nmbu.no>
 - Mikal Breiteig <mibreite@nmbu.no>
 
+<<<<<<< HEAD
 Testing 
+=======
+>>>>>>> master
