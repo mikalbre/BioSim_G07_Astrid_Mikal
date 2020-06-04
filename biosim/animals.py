@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
 """This file contains the Animal base class and child classes for herbivores and carnivores"""
+
+from math import exp
+
+def fitness_calculation(phi_age, age, a_half, phi_weight, weight, w_half):
+    """
+    Calculate fitness of the animal.
+    Fitness depends on weight and age of the animal.
+    If weight is zero, the fitness is zero, otherwise it is calculated by the following formula:
+    ..math::
+
+    :param phi_age:
+    :param age:
+    :param a_half:
+    :param phi_weight:
+    :param weight:
+    :param w_half:
+    :return:
+    """
+    pass
 
 class Animals:
     """
@@ -27,18 +49,49 @@ class Animals:
                     raise ValueError("DeltaPhiMax must be larger than zero")
                 if iterator == "eta" and not 0 <= params[iterator] <= 1:
                     raise ValueError("Eta must be greater than zero and smaller than one")
-
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
 
     def __init__(self, age, weight):
-        """"""
+        """
+
+        :param age: int
+        :param weight: float
+        """
         if age is None:
-            raise ValueError("The animal can not have negative weight")
+            raise ValueError("The animal can not have age less then zero")
+        else:
+            self.age = age
 
         if weight is None:
-            self.weight =
+            raise ValueError("The animal can not have negative weight")
+        else:
+            self.weight = weight
+
+        self.alive = True
+        self.has_migrated = False
+
+        self.fitness = 0
+        self.fitness_calculation() # Lag denne funksjonen
+
+
+    def fitness_calculation(self):
+        """
+
+        :return:
+        """
+        if self.weight == 0:
+            self.phi = 0
+        else:
+            self.phi = (1/(1+exp(self.phi*(phi_a - a_half))))
+
+
+    def age(self):
+        """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
+        self.age += 1
+        self.fitness_calculation
+
 
     def birth(self):
         """
@@ -48,9 +101,6 @@ class Animals:
         """
         pass
 
-    def age(self):
-        """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
-        pass
 
     def weight(self):
         """ """
@@ -97,9 +147,9 @@ class Animals:
 
         :return:
         """
+        pass
 
-
-
+"""
 class herbivores(Animals):
     params = {'w_birth': 8.0,
                           'sigma_birth': 1.5,
@@ -120,9 +170,9 @@ class herbivores(Animals):
 
 
 
-class carnivores(Animals):
+class Carnivores(Animals):
     pass
-
+"""
 
 
    """
@@ -167,7 +217,7 @@ class carnivores(Animals):
 
         :return:
     """
-
+"""
 w_birth = 8.0
 sigma_birth = 1.5
 beta = 0.9
@@ -182,3 +232,5 @@ zeta = 3.5
 xi = 1.2
 omega = 0.4
 F = 10.0
+"""
+
