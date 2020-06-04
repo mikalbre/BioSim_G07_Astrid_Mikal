@@ -20,3 +20,6 @@ def test_init():
 
     assert herb.age == 5
     assert herb.weight == 40
+
+def test_Herbivore_issubclass():
+

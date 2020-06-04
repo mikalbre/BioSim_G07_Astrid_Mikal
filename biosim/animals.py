@@ -59,6 +59,9 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
+        self.reprod_weight = 
+
+
     def fitness_calculation(self):
         """
         Calculate fitness of animal.
@@ -79,7 +82,43 @@ class Animals:
         self.age += 1
         self.fitness_calculation()
 
+    def procreation(self):
+        """
+        Calculates the probability of animal having an offspring.
+        Must be more than one animal in the cell to potensially create an offspring.
+        :return:
+        """
+        offspring_weight = self.params["zeta"] * \
+                                  (self.params["w_birth"] + self.params["sigma_birth"])
+        if self.weight < prob_birth_to_offspring:  # if mother weight less than offspring
+            return
+        else:
+            prob_offspring = self.params["gamma"]*self.phi*(n_animals_in_cell - 1)
+
+        if random.random() <= pr
+
+
 class Herbivore(Animals):
+    """
+
+    """
+    params = {
+        'w_birth': 8.0,
+        'sigma_birth': 1.5,
+        'beta': 0.9,
+        'eta': 0.05,
+        'a_half': 40,
+        'phi_age': 0.2,
+        'w_half': 10,
+        'phi_weight': 0.1,
+        'mu': 0.25,
+        'lambda_animal': 1,
+        'gamma': 0.2,
+        'zeta': 3.5,
+        'xi': 1.2,
+        'omega': 0.4,
+        'F': 10,
+    }
     def __init__(self, age, weight):
         super().__init__(age, weight)
 
