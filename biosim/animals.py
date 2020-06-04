@@ -79,3 +79,7 @@ class Animals:
         self.age += 1
         self.fitness_calculation()
 
+class Herbivore(Animals):
+    def __init__(self, age, weight):
+        super().__init__(age, weight)
+

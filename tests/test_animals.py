@@ -10,11 +10,13 @@ def set_parameters(request):
     yield
     animals.set_parameters(animals.params)
 
-
+def test_age():
+    #herbivore
+    pass
 
 def test_init():
     
-    herb = Herbivores(5, 40)
+    herb = Herbivore(5, 40)
 
     assert herb.age == 5
     assert herb.weight == 40
