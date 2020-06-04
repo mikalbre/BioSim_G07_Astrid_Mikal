@@ -44,7 +44,7 @@ class Animals:
         :param weight: float
         """
         if age is None:
-            raise ValueError("The animal can not have age less then zero")
+            raise ValueError("The animal can not have negative age")
         else:
             self.age = age
 
@@ -53,9 +53,11 @@ class Animals:
         else:
             self.weight = weight
 
+        #sjekk dette
         self.alive = True
         self.has_migrated = False
         self.compute_fitness = True
+        self.offspring = False  # Får denne inn i method procreation, offsprint = false??
 
         self.phi = 0
         self.fitness_calculation()
@@ -66,8 +68,8 @@ class Animals:
         Fitness depends on weight and age of animal.
         :return:
         """
-        positive_q = (1/(1+exp(self.phi*(self.age - self.params["a_half"]))))
-        negative_q = (1/(1+exp(-self.phi*(self.weight - self.params["w_half"]))))
+        positive_q = (1/(1 + exp(self.phi*(self.age - self.params["a_half"]))))
+        negative_q = (1/(1 + exp(-self.phi*(self.weight - self.params["w_half"]))))
 
         if self.weight == 0:
             self.phi = 0
@@ -76,7 +78,11 @@ class Animals:
         return self.phi
 
     def annual_age_increase(self):
-        """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
+        """
+        Adds an increment of 1 to age, i.e. age increases by 1 each year.
+        Recalculates the animal fitness because it depends on age.
+        :return:
+        """
         self.age += 1
         self.fitness_calculation()
 
@@ -92,9 +98,13 @@ class Animals:
     def procreation(self, num_same_species_in_cell):
         """
         Calculates the probability of animal having an offspring.
+        If only one animal of same species in a cell, the probability of
+        offspring will be zero.
         Must be more than one animal in the cell to potensially create an offspring in the method.
         The offspring is of the same class as the parent animal. At birth the age of offspring
         is zero and its weight is calculated using gaussian distribution.
+
+        How to implement maximum one child per animal?????
 
         At birth of offspring the parent animal looses weight relative to constant xi and the
         birthweight of offspring. Recalculates the parent animal's fitness after birth.
@@ -102,7 +112,7 @@ class Animals:
         """
 
         if self.weight < self.params["zeta"] * \
-                (self.params["w_birth"] + self.params["sigma_birth"]):  # if mother weight less than offspring
+                (self.params["w_birth"] + self.params["sigma_birth"]):
             return
         else:
             prob_offspring_birth = self.params["gamma"] *\
@@ -134,7 +144,14 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
-        return self.params["omega"] * (1 - self.phi)
+        if self.phi == 0:
+            self.alive == False
+
+        else:
+            prob_death = self.params["omega"] * (1 - self.phi)
+            self.alive = random.random() >= prob_death
+
+    def eat
 
 
 
