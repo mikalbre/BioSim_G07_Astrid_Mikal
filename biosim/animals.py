@@ -75,18 +75,29 @@ class Animals:
             self.phi = positive_q*negative_q
         return self.phi
 
-    def age_increase(self):
+    def annual_age_increase(self):
         """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
         self.age += 1
         self.fitness_calculation()
 
-    def procreation(self, number_of_animals_in_cell):
+    def annual_weight_decrease(self):
+        """
+        Each year the weight of the animal decreases by the constants omega and eta.
+        Recalculates the fitness of the animal because it's depeding on the animal's weight.
+        :return:
+        """
+        self.weight -= self.params["omega"] * self.params["eta"]
+        self.fitness_calculation()
+
+    def procreation(self, num_same_species_in_cell):
         """
         Calculates the probability of animal having an offspring.
         Must be more than one animal in the cell to potensially create an offspring in the method.
         The offspring is of the same class as the parent animal. At birth the age of offspring
         is zero and its weight is calculated using gaussian distribution.
-        At birth of offspring the parent animal looses weight relative to constant xi and the birthweight of offspring.
+
+        At birth of offspring the parent animal looses weight relative to constant xi and the
+        birthweight of offspring. Recalculates the parent animal's fitness after birth.
         :return:
         """
 
@@ -94,58 +105,39 @@ class Animals:
                 (self.params["w_birth"] + self.params["sigma_birth"]):  # if mother weight less than offspring
             return
         else:
-            prob_offspring_birth = self.params["gamma"] * self.phi * (number_of_animals_in_cell - 1) # number of animals in cell??
+            prob_offspring_birth = self.params["gamma"] *\
+                                   self.phi * (num_same_species_in_cell - 1)
 
         if random.random() <= prob_offspring_birth:
-            birth_weight  = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+            birth_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
             self.weight -= self.params["xi"] * birth_weight
 
             if isinstance(self, Herbivore):
                 self.fitness_calculation()
                 return Herbivore(0, birth_weight)
+
             elif isinstance(self, Carnivore):
                 self.fitness_calculation()
                 return Carnivore(0, birth_weight)
 
-
-    def get_real_propensity(self, cell):
+    @property  # Riktig?
+    def prob_migrate(self):
         """
-        The method calulates realtive abundance of animals potensial destination.
+        Calculates the probability for the animal to migrate
+        :return:
         """
-        fodder = 0
-        if type(self) == Herbivore:
-            fodder = cell.f
-        elif type(self) == Carnivore:
-        fodder = cell.total_w_herbivores
+        return self.params["mu"] * self.phi
 
-
-    def get_propensity(self, cell):
-    """
-    Calculate propensity of animals potensial destination.
-
-    """
-    rel_abundance = self.get_real_abundance()
-
-
-
-
-
-    def movable(self):
+    @property  # Riktig?
+    def prob_dying(self):
         """
-        Check if animal will move from current cell to new destination cell
-        :return: Boolean value, True for move and False for stay in cell
+        Calculate the probability of the animal dying
+        :return:
         """
-        prob_move = self.params["mu"] * self.phi
-        if random.random() <= prob_move:
-            return True
-        else:
-            return False
+        return self.params["omega"] * (1 - self.phi)
 
-    def migrate(self, current_cell, neighbouring_cells):
-        """
-        If animal move, the method decides which cell to move to.
-        :return: Boolean value, True for move and False for stay in cell
-        """
+
+
 
 class Herbivore(Animals):
     """
