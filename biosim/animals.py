@@ -71,26 +71,45 @@ class Animals:
 
         self.alive = True
         self.has_migrated = False
+        self.compute_fitness = True
 
         self.fitness = 0
-        self.fitness_calculation() # Lag denne funksjonen
+        self.fitness_calculation()
 
 
     def fitness_calculation(self):
         """
+        Calculate fitness of animal.
+        Fitness depends on weight and age of animal.
+        :return:
+        """
+        positive_q = (1/(1+exp(self.params["phi"]*(self.age() - self.params["a_half"]))))
+        negative_q = (1/(1+exp(-self.params["phi"]*(self.weight - self.params["w_half"]))))
+
+        if self.weight == 0:
+            self.params["phi"] = 0
+        else:
+            self.params["phi"] = positive_q*negative_q
+        return self.params["phi"]
+
+    def fitness(self):
+        """
+        Calculate fitness if weight or age to animal is changed.
 
         :return:
         """
-        if self.weight == 0:
-            self.phi = 0
-        else:
-            self.phi = (1/(1+exp(self.phi*(phi_a - a_half))))
+        if self.compute_fitness == True:
+            if self.weight <= 0:
+                return 0
+
+        self.compute_fitness = False
+        self.fitness = fitness_calculation()
 
 
     def age(self):
         """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
         self.age += 1
-        self.fitness_calculation
+        self.fitness_calculation()
 
 
     def birth(self):
@@ -115,13 +134,6 @@ class Animals:
         """
         pass
 
-    def fitness(self):
-        """
-        Calculate fitness if weight or age to animal is changed.
-
-        :return:
-        """
-        pass
 
     def feed(self):
         """
