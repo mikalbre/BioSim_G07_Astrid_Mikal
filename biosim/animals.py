@@ -7,23 +7,6 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 from math import exp
 
-def fitness_calculation(phi_age, age, a_half, phi_weight, weight, w_half):
-    """
-    Calculate fitness of the animal.
-    Fitness depends on weight and age of the animal.
-    If weight is zero, the fitness is zero, otherwise it is calculated by the following formula:
-    ..math::
-
-    :param phi_age:
-    :param age:
-    :param a_half:
-    :param phi_weight:
-    :param weight:
-    :param w_half:
-    :return:
-    """
-    pass
-
 class Animals:
     """
     Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
@@ -161,88 +144,4 @@ class Animals:
         """
         pass
 
-"""
-class herbivores(Animals):
-    params = {'w_birth': 8.0,
-                          'sigma_birth': 1.5,
-                          'beta': 0.9,
-                          'eta': 0.05,
-                          'a_half': 40,
-                          'phi_age': 0.6,
-                          'w_half': 10,
-                          'phi_weight': 0.1,
-                          'mu': 0.25,
-                          'gamma': 0.2,
-                          'zeta': 3.5,
-                          'xi': 1.2,
-                          'omega': 0.4,
-                          'F': 10,
-                          'DeltaPhiMax': None} # slette DeltaPhiMax?
-
-
-
-
-class Carnivores(Animals):
-    pass
-"""
-
-
-   """
-        Sets the class parameters and check if input is in the right format.
-
-        :param w_birth: float
-            average birth weight
-        :param sigma_birth: float
-            std of birth weight
-        :param beta: float
-            beta multiplied by fodder increases animal weight
-        :param eta: float
-            eta multiplied by weight, decreases animal weight each year
-        :param a_half: float
-            Age component of fitness calculation, scalar
-        :param phi_age: float
-            Age component of fitness calculation, scalar
-        :param w_half: float
-            Weight component of fitness calculation, scalar
-        :param phi_weight: float
-            Weight component of fitness calculation, scalar
-        :param mu: float
-            scalar for moving, animal moves with probability mu is multiplied with fitness
-            Constant for the probability of migrating
-        :param gamma: float
-            scalar for birth, probability for birth
-            Probability of birth constant
-        :param zeta: float
-            scalar if birth will happen
-            Probability constant for birth relative to weight
-        :param xi: float
-            Scalar for decrease in mother weight, decreases motherweight by zeta*birthweight
-        :param omega: float
-            scalar for death, probability is omega*(1-fitness)
-            Death probability factor, scalar
-        :param F: float
-            Animals appetite, amount of food required for an animal in a year
-            Maximum food capacity
-        :param DeltaPhiMax: float
-            Used by carnivore to calculate if they can kill a herbivore.
-            Maximum difference in fitness between carnivore and herbivore.
-
-        :return:
-    """
-"""
-w_birth = 8.0
-sigma_birth = 1.5
-beta = 0.9
-eta = 0.05
-a_half = 40
-phi_age = 0.6
-w_half = 10
-phi_weight = 0.1
-mu = 0.25
-gamma = 0.2
-zeta = 3.5
-xi = 1.2
-omega = 0.4
-F = 10.0
-"""
 
