@@ -68,8 +68,8 @@ class Animals:
         Fitness depends on weight and age of animal.
         :return:
         """
-        positive_q = (1/(1 + exp(self.phi*(self.age - self.params["a_half"]))))
-        negative_q = (1/(1 + exp(-self.phi*(self.weight - self.params["w_half"]))))
+        positive_q = (1/(1 + exp(self.params["phi_age"]*(self.age - self.params["a_half"]))))
+        negative_q = (1/(1 + exp(-self.params["phi_weight"]*(self.weight - self.params["w_half"]))))
 
         if self.weight == 0:
             self.phi = 0
