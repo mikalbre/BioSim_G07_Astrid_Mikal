@@ -60,9 +60,6 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
-        self.reprod_weight = 
-
-
     def fitness_calculation(self):
         """
         Calculate fitness of animal.
@@ -116,14 +113,22 @@ class Animals:
         The method calulates realtive abundance of animals potensial destination.
         """
         fodder = 0
-        if type(self) == Herbivores:
-            fodder calulates
+        if type(self) == Herbivore:
+            fodder = cell.f
+        elif type(self) == Carnivore:
+        fodder = cell.total_w_herbivores
+
+
     def get_propensity(self, cell):
     """
     Calculate propensity of animals potensial destination.
 
     """
     rel_abundance = self.get_real_abundance()
+
+
+
+
 
     def movable(self):
         """
