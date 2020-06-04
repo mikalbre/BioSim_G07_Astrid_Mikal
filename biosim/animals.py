@@ -24,7 +24,7 @@ class Animals:
         :param params:
         :return:
         """
-        animal_set_parameters = params.update()
+        animal_set_parameters = cls.params.update()
 
         for iterator in animal_set_parameters:
             if iterator in cls.params:
@@ -83,7 +83,7 @@ class Animals:
         self.age += 1
         self.fitness_calculation()
 
-    def procreation(self):
+    def procreation(self, number_of_animals_in_cell):
         """
         Calculates the probability of animal having an offspring.
         Must be more than one animal in the cell to potensially create an offspring in the method.
@@ -97,7 +97,7 @@ class Animals:
                 (self.params["w_birth"] + self.params["sigma_birth"]):  # if mother weight less than offspring
             return
         else:
-            prob_offspring_birth = self.params["gamma"] * self.phi * (n_animals_in_cell - 1) # number of animals in cell??
+            prob_offspring_birth = self.params["gamma"] * self.phi * (number_of_animals_in_cell - 1) # number of animals in cell??
 
         if random.random() <= prob_offspring_birth:
             birth_weight  = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
@@ -106,11 +106,41 @@ class Animals:
             if isinstance(self, Herbivore):
                 self.fitness_calculation()
                 return Herbivore(0, birth_weight)
-            if isinstance(self, Carnivore):
+            elif isinstance(self, Carnivore):
                 self.fitness_calculation()
                 return Carnivore(0, birth_weight)
 
 
+    def get_real_propensity(self, cell):
+        """
+        The method calulates realtive abundance of animals potensial destination.
+        """
+        fodder = 0
+        if type(self) == Herbivores:
+            fodder calulates
+    def get_propensity(self, cell):
+    """
+    Calculate propensity of animals potensial destination.
+
+    """
+    rel_abundance = self.get_real_abundance()
+
+    def movable(self):
+        """
+        Check if animal will move from current cell to new destination cell
+        :return: Boolean value, True for move and False for stay in cell
+        """
+        prob_move = self.params["mu"] * self.phi
+        if random.random() <= prob_move:
+            return True
+        else:
+            return False
+
+    def migrate(self, current_cell, neighbouring_cells):
+        """
+        If animal move, the method decides which cell to move to.
+        :return: Boolean value, True for move and False for stay in cell
+        """
 
 class Herbivore(Animals):
     """
@@ -154,3 +184,10 @@ class Carnivore(Animals):
         'F': 50.0,
         'DeltaPhiMax': 0
     }
+
+
+
+
+
+
+
