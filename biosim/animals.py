@@ -37,7 +37,7 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
-    def __init__(self, age, weight):
+    def __init__(self, age=None, weight=None):
         """
 
         :param age: int
@@ -60,7 +60,6 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
-        self.reprod_weight = 
 
 
     def fitness_calculation(self):
@@ -111,19 +110,19 @@ class Animals:
                 return Carnivore(0, birth_weight)
 
 
-    def get_real_propensity(self, cell):
-        """
-        The method calulates realtive abundance of animals potensial destination.
-        """
-        fodder = 0
-        if type(self) == Herbivores:
-            fodder calulates
-    def get_propensity(self, cell):
-    """
-    Calculate propensity of animals potensial destination.
-
-    """
-    rel_abundance = self.get_real_abundance()
+    # def get_real_propensity(self, cell):
+    #     """
+    #     The method calulates realtive abundance of animals potensial destination.
+    #     """
+    #     fodder = 0
+    #     if type(self) == Herbivores:
+    #         fodder calulates
+    # def get_propensity(self, cell):
+    # """
+    # Calculate propensity of animals potensial destination.
+    #
+    # """
+    # rel_abundance = self.get_real_abundance()
 
     def movable(self):
         """
