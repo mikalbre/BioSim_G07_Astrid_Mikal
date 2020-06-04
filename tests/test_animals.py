@@ -1,18 +1,21 @@
 """Tests the animals.py file in the biosim folder."""
 
-from biosim import animals
+from biosim.animals import Animals
 import pytest
 
 
 @pytest.fixture
-def set_parameters(request):
-    animals.set_parameters(request.params)
+def test_set_parameters(request):
+    Animals.set_parameters(request.param)
     yield
-    animals.set_parameters(animals.params)
+    Animals.set_parameters(Animals.params)
 
 def test_age():
-    #herbivore
-    pass
+    a = Animals()
+    for n in range(10):
+        a.age_increase()
+        assert a.age_increase() == n + 1
+
 
 def test_init():
     
@@ -21,5 +24,4 @@ def test_init():
     assert herb.age == 5
     assert herb.weight == 40
 
-def test_Herbivore_issubclass():
-
+#def test_Herbivore_issubclass():

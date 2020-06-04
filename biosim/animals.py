@@ -37,7 +37,7 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
-    def __init__(self, age, weight):
+    def __init__(self, age=None, weight=None):
         """
 
         :param age: int
