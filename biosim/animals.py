@@ -8,15 +8,31 @@ class Animals:
     It represents a single animal, and does not specify the type of animal.
     It contains methods, variables and properties that are common for both carnivore and herbivore.
     """
-    params = None
+    params = None  # instead of setting all parameters equal to None
 
     @classmethod
-    def set_parameters(cls,params):
+    def set_parameters(cls, params):
+        """
+        Takes a dictionary of parameters as input.
+        :param params:
+        :return:
+        """
         animal_set_parameters = params.update()
 
+        for iterator in animal_set_parameters:
+            if iterator in cls.params:
+                if params[iterator] < 0:
+                    raise ValueError(f"{iterator} cannot be negative.")
+                if iterator == "DeltaPhiMax" and params[iterator] <= 0:
+                    raise ValueError("DeltaPhiMax must be larger than zero")
+                if iterator == "eta" and not 0 <= params[iterator] <= 1:
+                    raise ValueError("Eta must be greater than zero and smaller than one")
+
+            else:
+                raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
 
-    def __init__(self):
+    def __init__(self, age, weight):
         """"""
         pass
 
@@ -81,7 +97,7 @@ class Animals:
 
 
 class herbivores(Animals):
-    default_parameters = {'w_birth': 8.0,
+    params = {'w_birth': 8.0,
                           'sigma_birth': 1.5,
                           'beta': 0.9,
                           'eta': 0.05,
@@ -95,7 +111,7 @@ class herbivores(Animals):
                           'xi': 1.2,
                           'omega': 0.4,
                           'F': 10,
-                          'DeltaPhiMax': None}
+                          'DeltaPhiMax': None} # slette DeltaPhiMax?
 
 
 
