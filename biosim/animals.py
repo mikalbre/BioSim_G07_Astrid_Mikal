@@ -6,6 +6,7 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 """This file contains the Animal base class and child classes for herbivores and carnivores"""
 
 from math import exp
+import random
 
 
 class Animals:
@@ -77,7 +78,7 @@ class Animals:
             self.phi = positive_q*negative_q
         return self.phi
 
-    def age(self):
+    def age_increase(self):
         """ Adds an increment of 1 to age, i.e. age increases by 1 each year."""
         self.age += 1
         self.fitness_calculation()
@@ -85,17 +86,30 @@ class Animals:
     def procreation(self):
         """
         Calculates the probability of animal having an offspring.
-        Must be more than one animal in the cell to potensially create an offspring.
+        Must be more than one animal in the cell to potensially create an offspring in the method.
+        The offspring is of the same class as the parent animal. At birth the age of offspring
+        is zero and its weight is calculated using gaussian distribution.
+        At birth of offspring the parent animal looses weight relative to constant xi and the birthweight of offspring.
         :return:
         """
-        offspring_weight = self.params["zeta"] * \
-                                  (self.params["w_birth"] + self.params["sigma_birth"])
-        if self.weight < prob_birth_to_offspring:  # if mother weight less than offspring
+
+        if self.weight < self.params["zeta"] * \
+                (self.params["w_birth"] + self.params["sigma_birth"]):  # if mother weight less than offspring
             return
         else:
-            prob_offspring = self.params["gamma"]*self.phi*(n_animals_in_cell - 1)
+            prob_offspring_birth = self.params["gamma"] * self.phi * (n_animals_in_cell - 1) # number of animals in cell??
 
-        if random.random() <= pr
+        if random.random() <= prob_offspring_birth:
+            birth_weight  = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+            self.weight -= self.params["xi"] * birth_weight
+
+            if isinstance(self, Herbivore):
+                self.fitness_calculation()
+                return Herbivore(0, birth_weight)
+            if isinstance(self, Carnivore):
+                self.fitness_calculation()
+                return Carnivore(0, birth_weight)
+
 
 
 class Herbivore(Animals):
@@ -107,18 +121,36 @@ class Herbivore(Animals):
         'sigma_birth': 1.5,
         'beta': 0.9,
         'eta': 0.05,
-        'a_half': 40,
+        'a_half': 40.0,
         'phi_age': 0.2,
-        'w_half': 10,
+        'w_half': 10.0,
         'phi_weight': 0.1,
         'mu': 0.25,
-        'lambda_animal': 1,
         'gamma': 0.2,
         'zeta': 3.5,
         'xi': 1.2,
         'omega': 0.4,
-        'F': 10,
+        'F': 10.0,
     }
     def __init__(self, age, weight):
         super().__init__(age, weight)
 
+class Carnivore(Animals):
+
+    params = {
+        'w_birth': 6.0,
+        'sigma_birth': 1.0,
+        'beta': 0.75,
+        'eta': 0.125,
+        'a_half': 40.0,
+        'phi_age': 0.3,
+        'w_half': 4.0,
+        'phi_weight': 0.4,
+        'mu': 0.4,
+        'gamma': 0.8,
+        'zeta': 3.5,
+        'xi': 1.1,
+        'omega': 0.8,
+        'F': 50.0,
+        'DeltaPhiMax': 0
+    }
