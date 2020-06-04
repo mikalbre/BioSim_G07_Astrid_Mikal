@@ -5,8 +5,10 @@
 class Animals:
     """
     Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
-    It represents a single animal.
-
+    It represents a single animal, and does not specify the type of animal.
+    It contains methods, variables and properties that are common for both carnivore and herbivore.
+    """
+    """
         Sets the class parameters and check if input is in the right format.
 
         :param w_birth: float
@@ -18,27 +20,33 @@ class Animals:
         :param eta: float
             eta multiplied by weight, decreases animal weight each year
         :param a_half: float
-            half age of Animals
+            Age component of fitness calculation, scalar
         :param phi_age: float
-            scalar of age of fitness
+            Age component of fitness calculation, scalar
         :param w_half: float
-            half weight of Animals
+            Weight component of fitness calculation, scalar
         :param phi_weight: float
-            scalar of weight of Animals
+            Weight component of fitness calculation, scalar
         :param mu: float
             scalar for moving, animal moves with probability mu is multiplied with fitness
+            Constant for the probability of migrating
         :param gamma: float
             scalar for birth, probability for birth
+            Probability of birth constant
         :param zeta: float
             scalar if birth will happen
+            Probability constant for birth relative to weight
         :param xi: float
             Scalar for decrease in mother weight, decreases motherweight by zeta*birthweight
         :param omega: float
             scalar for death, probability is omega*(1-fitness)
+            Death probability factor, scalar
         :param F: float
             Animals appetite, amount of food required for an animal in a year
+            Maximum food capacity
         :param DeltaPhiMax: float
             Used by carnivore to calculate if they can kill a herbivore.
+            Maximum difference in fitness between carnivore and herbivore.
 
         :return:
     """
@@ -88,7 +96,8 @@ class Animals:
     def decrease_weight(self):
         """
         Weight of animal decreases passively each year.
-        
+        Annual weight loss
+
         :return:
         """
         pass
