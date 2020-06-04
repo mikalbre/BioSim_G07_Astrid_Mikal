@@ -5,7 +5,7 @@ import pytest
 
 
 @pytest.fixture
-def test_set_parameters(request):
+def set_parameters(request):
     Animals.set_parameters(request.param)
     yield
     Animals.set_parameters(Animals.params)
@@ -15,6 +15,12 @@ def test_age():
     for n in range(10):
         a.age_increase()
         assert a.age_increase() == n + 1
+
+def test_fitness_calulation():
+    a = Animals()
+
+
+
 
 
 def test_init():
