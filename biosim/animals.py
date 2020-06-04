@@ -34,7 +34,11 @@ class Animals:
 
     def __init__(self, age, weight):
         """"""
-        pass
+        if age is None:
+            raise ValueError("The animal can not have negative weight")
+
+        if weight is None:
+            self.weight =
 
     def birth(self):
         """
