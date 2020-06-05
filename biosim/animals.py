@@ -41,7 +41,9 @@ class Animals:
         """
 
         :param age: int
+            The age of the animal
         :param weight: float
+            The weight of the animal
         """
         if age is None:
             raise ValueError("The animal must have an age.")
@@ -51,7 +53,6 @@ class Animals:
         if not isinstance(self.age, int):
             self.age = int(self.age)
 
-# sjekke om age, weight er heltall
         if weight is None:
             raise ValueError("The animal must have a weight.")
         else:
@@ -60,11 +61,28 @@ class Animals:
         #sjekk dette
         self.alive = True
         self.has_migrated = False
-        self.compute_fitness = True
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
 
         self.phi = 0
         self.fitness_calculation()
+
+    @staticmethod
+    def sigmoid(x, x_half, phi_, p):
+        """
+        Used to calculate the fitness of the animal
+        Parameters
+        ----------
+        x
+        x_half
+        phi_
+        p
+
+        Returns
+        -------
+
+        """
+        sigmoid = (1/(1 + exp(p * phi_* (x - x_half))))
+        return sigmoid
 
     def fitness_calculation(self):
         """
@@ -72,13 +90,13 @@ class Animals:
         Fitness depends on weight and age of animal.
         :return:
         """
-        positive_q = (1/(1 + exp(self.params["phi_age"]*(self.age - self.params["a_half"]))))
-        negative_q = (1/(1 + exp(-self.params["phi_weight"]*(self.weight - self.params["w_half"]))))
+        positive_q = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
+        negative_q = self.sigmoid(self.weight, self.params["w_half"], self.params["phi_weight"], -1)
 
         if self.weight <= 0:
             self.phi = 0
         else:
-            self.phi = positive_q*negative_q
+            self.phi = positive_q * negative_q
         return self.phi
 
     def feeding(self, available_food):
@@ -111,10 +129,15 @@ class Animals:
             self.fitness_calculation()
             return 0
 # isinstance
-#
     @staticmethod
-    def prob_offspring_birth():
+    def prob_offspring_birth(gamma, _phi, num_species):
+        prob_offspring = gamma * _phi * (num_species - 1)
+        return prob_offspring
 
+    @staticmethod
+    def prob_of_birth(zeta, w_birth, sigma_birth):
+        prob_birth = zeta * (w_birth + sigma_birth)
+        return prob_birth
 
     def procreation(self, num_same_species_in_cell):
         """
@@ -134,15 +157,14 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
-        # static method
-        if self.weight < self.params["zeta"] * \
-                (self.params["w_birth"] + self.params["sigma_birth"]):
+        if self.weight < self.prob_of_birth(self.params["zeta"],
+                                            self.params["w_birth"], self.params["sigma_birth"]):
             return
         else:
-            prob_offspring_birth = self.params["gamma"] *\
-                                   self.phi * (num_same_species_in_cell - 1)
+            prob_birth_offspring = self.prob_offspring_birth(self.params["gamma"],
+                                                             self.phi, num_same_species_in_cell)
 
-        if random.random() <= prob_offspring_birth:
+        if random.random() <= prob_birth_offspring:
             birth_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
             self.weight -= self.params["xi"] * birth_weight
 
@@ -180,7 +202,6 @@ class Animals:
         self.weight -= self.params["omega"] * self.params["eta"]
         self.fitness_calculation()
 
-    @property  # Riktig?
     def prob_dying(self):
         """
         Calculate the probability of the animal dying
