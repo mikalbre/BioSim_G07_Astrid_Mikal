@@ -48,6 +48,10 @@ class Animals:
         else:
             self.age = age
 
+        if self.age is not int:
+            return int(self.age)
+
+# sjekke om age, weight er heltall
         if weight is None:
             raise ValueError("The animal must have a weight.")
         else:
@@ -106,6 +110,11 @@ class Animals:
             self.weight = self.params["beta"] * available_food
             self.fitness_calculation()
             return 0
+# isinstance
+#
+    @staticmethod
+    def prob_offspring_birth():
+
 
     def procreation(self, num_same_species_in_cell):
         """
@@ -125,6 +134,7 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
+        # static method
         if self.weight < self.params["zeta"] * \
                 (self.params["w_birth"] + self.params["sigma_birth"]):
             return
