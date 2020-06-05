@@ -67,6 +67,7 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
+
     @staticmethod
     def random_number():
         """
@@ -120,7 +121,7 @@ class Animals:
         positive_q = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
         negative_q = self.sigmoid(self.weight, self.params["w_half"], self.params["phi_weight"], -1)
 
-        if self.weight <= 0:
+        if self.weight == 0:
             self.phi = 0
         else:
             self.phi = positive_q * negative_q

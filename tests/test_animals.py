@@ -22,6 +22,13 @@ def test_init():
 
     isinstance(herb.age, int)
 
+def test_gauss(mocker):
+    mocker.patch('random.gauss', return_val=5)
+    h = Herbivore(3, None)
+    assert h.weight == 5
+
+
+
 
 def test_annual_age_increase():
     herbivore = Herbivore(3, 12)
@@ -57,6 +64,11 @@ def test_annual_weight_decrease():
     herb.annual_weight_decrease()
 
     assert herb.weight < 40
+
+def test_prob_of_birth():
+    herb = Herbivore(3, 2)
+    prob_of_birth = herb.prob_of_birth(0.2, 8, 1.5)
+    assert approx(prob_of_birth) == 1.9
 
 
 def test_procreation():
