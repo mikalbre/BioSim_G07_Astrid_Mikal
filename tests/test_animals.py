@@ -16,6 +16,8 @@ def test_init():
     assert herb.age == 5
     assert herb.weight == 40
 
+    isinstance(herb.age, int)
+
 
 def test_annual_age_increase():
     herbivore = Herbivore(3, 12)
@@ -35,6 +37,9 @@ def test_fitness_calulation():
     herb = Herbivore(0, 5)
     assert approx(herb.phi) == 0.377414
 
+    herb = Herbivore(6, -3)
+    assert herb.phi == 0
+
 
 def test_annual_weight_decrease():
     herb = Herbivore(5, 40)
@@ -46,3 +51,10 @@ def test_annual_weight_decrease():
 def test_procreation():
     herb = Herbivore(4, 30)
     pass
+
+def test_prob_dying():
+    herb = Herbivore(0, 0)
+    assert herb.prob_dying == False
+    pass
+
+

@@ -37,7 +37,7 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
-    def __init__(self, age=None, weight=None):
+    def __init__(self, age=0, weight=None):
         """
 
         :param age: int
@@ -45,7 +45,7 @@ class Animals:
         :param weight: float
             The weight of the animal
         """
-        if age is None:
+        if age < 0:
             raise ValueError("The animal must have an age.")
         else:
             self.age = age
@@ -56,15 +56,16 @@ class Animals:
         if weight is None:
             raise ValueError("The animal must have a weight.")
         else:
-            self.weight = weight
+            self.weight = self.gauss(self.params["gamma"] * self.params
 
         #sjekk dette
         self.alive = True
         self.has_migrated = False
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
-
+        #
         self.phi = 0
         self.fitness_calculation()
+        self.xx =
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):
@@ -118,6 +119,7 @@ class Animals:
         """
         if available_food < 0:
             raise ValueError("Available food in cell must be zero or a positive number.")
+
 
         elif self.params["F"] <= available_food:
             self.weight += self.params["beta"] * self.params["F"]
@@ -176,13 +178,14 @@ class Animals:
             #     self.fitness_calculation()
             #     return Carnivore(0, birth_weight)
 
-    @property  # Riktig?
+
     def prob_migrate(self):
         """
         Calculates the probability for the animal to migrate
         :return:
         """
         return self.params["mu"] * self.phi
+
 
     def annual_age_increase(self):
         """
@@ -209,6 +212,7 @@ class Animals:
         """
         if self.phi == 0:  # Phi or Weight is zero?
             self.alive = False
+
 
         else:
             prob_death = self.params["omega"] * (1 - self.phi)
