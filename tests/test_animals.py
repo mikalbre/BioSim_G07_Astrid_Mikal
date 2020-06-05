@@ -3,14 +3,16 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
-import pytest_mock
-from unittest import mock
+# import pytest_mock
+# from unittest import mock
+
 
 @pytest.fixture
 def set_parameters(request):
     Animals.set_parameters(request.param)
     yield
     Animals.set_parameters(Animals.params)
+
 
 def test_init():
     herb = Herbivore(5, 3)
@@ -43,6 +45,13 @@ def test_fitness_calulation():
     assert herb.phi == 0
 
 
+def test_feeding():
+    herb = Herbivore(5, 3)
+    assert herb.feeding(50) == 40
+    assert herb.feeding(11) == 1
+    assert herb.feeding(10) == 0
+
+
 def test_annual_weight_decrease():
     herb = Herbivore(5, 40)
     herb.annual_weight_decrease()
@@ -51,18 +60,25 @@ def test_annual_weight_decrease():
 
 
 def test_procreation():
-    herb = Herbivore(4, 30)
     pass
 
-def test_prob_dying():
-    herb = Herbivore(0, 0)
-    assert herb.prob_dying == False
-    pass
+
+def test_potential_death():
+    herb = Herbivore(3, 0)
+    assert herb.alive
+    herb.potential_death()
+    assert not herb.alive
+
+    immortal_herb = Herbivore(2, 100)
+    immortal_herb.potential_death()
+    assert immortal_herb.alive
+
 
 def test_prob_of_birth():
     h = Herbivore(0, 2)
     ppp = h.prob_of_birth(0.2, 8, 1.5)
     assert approx(ppp) == 1.9
+
 
 def test_gauss_dist():
     a = Animals()

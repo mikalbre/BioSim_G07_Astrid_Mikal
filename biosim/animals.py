@@ -7,6 +7,7 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 from math import exp
 import random
+import numpy as np
 
 
 class Animals:
@@ -67,7 +68,29 @@ class Animals:
         self.fitness_calculation()
 
     @staticmethod
+    def random_number():
+        """
+        Method for all the random.random() functions
+        Returns
+        -------
+
+        """
+        random_num = random.random()
+        return random_num
+
+    @staticmethod
     def gauss_dist(weight_birth, sigma_birth):
+        """
+        Draws birth weight of animals from Gaussian distribution.
+        Parameters
+        ----------
+        weight_birth
+        sigma_birth
+
+        Returns
+        -------
+
+        """
         gauss_dist = random.gauss(weight_birth, sigma_birth)
         return gauss_dist
 
@@ -123,28 +146,68 @@ class Animals:
         if available_food < 0:
             raise ValueError("Available food in cell must be zero or a positive number.")
 
-        elif self.params["F"] <= available_food:
+        elif self.params["F"] < available_food:
             self.weight += self.params["beta"] * self.params["F"]
             self.fitness_calculation()
-            return available_food - self.params["F"]
+            available_food -= self.params["F"]
+            return available_food
 
-        else:
+        elif self.params["F"] >= available_food:
             self.weight = self.params["beta"] * available_food
             self.fitness_calculation()
             return 0
+
 # isinstance
 
-    @staticmethod
-    def prob_offspring_birth(gamma, _phi, num_species):
-        prob_offspring = gamma * _phi * (num_species - 1)
-        return prob_offspring
+    def weight_loss_mother(self, xi):
+        """
+        Calculates how much weight the mother loses due to procreation.
+        Parameters
+        ----------
+        xi
+
+        Returns
+        -------
+
+        """
+        weight_loss_mother = xi * self.gauss_dist
+        return weight_loss_mother
 
     @staticmethod
-    def prob_of_birth(zeta, w_birth, sigma_birth):
-        prob_birth = zeta * (w_birth + sigma_birth)
-        return prob_birth
+    def prob_birth_offspring(gamma, phi, num_same_species):
+        """
+        Calculates probability for getting an offspring.
+        Required to have more than one animal of the same species for offspring to be possible.
+        Parameters
+        ----------
+        gamma
+        phi
+        num_same_species
 
-    def procreation(self, num_same_species_in_cell):
+        Returns
+        -------
+
+        """
+        prob_birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+        return prob_birth_offspring
+
+    def prob_of_procreation(self, num_same_species):
+        """
+        Checks if procreation will is possible or not.
+        If procreation is possible, we direct to the procreation method.
+        Parameters
+        ----------
+        num_same_species
+
+        Returns
+        -------
+
+        """
+        if self.prob_birth_offspring(self.params["gamma"], self.phi, num_same_species):
+            if self.weight > self.weight_loss_mother(self.params["xi"]):
+                return self.procreation(num_same_species)
+
+    def procreation(self, num_same_species):
         """
         Calculates the probability of animal having an offspring.
         If only one animal of same species in a cell, the probability of
@@ -158,20 +221,16 @@ class Animals:
         At birth of offspring the parent animal looses weight relative to constant xi and the
         birthweight of offspring. Recalculates the parent animal's fitness after birth.
 
-        :param num_same_species_in_cell: int
+        :param num_same_species: int
             The amount of animals of the same species in a single cell.
         :return:
         """
-        if self.weight < self.prob_of_birth(self.params["zeta"],
-                                            self.params["w_birth"], self.params["sigma_birth"]):
-            return
-        else:
-            prob_birth_offspring = self.prob_offspring_birth(self.params["gamma"],
-                                                             self.phi, num_same_species_in_cell)
 
-        if random.random() <= prob_birth_offspring:
+        if self.random_number() <= self.prob_birth_offspring(self.params["gamma"], self.phi,
+                                                             num_same_species):
             birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
-            self.weight -= self.params["xi"] * birth_weight
+            self.weight -= self.weight_loss_mother(self.params["xi"])
+            self.fitness_calculation()
 
             if isinstance(self, Herbivore):
                 self.fitness_calculation()
@@ -206,18 +265,38 @@ class Animals:
         self.weight -= self.params["omega"] * self.params["eta"]
         self.fitness_calculation()
 
-    def prob_dying(self):
+    @staticmethod
+    def prob_of_dying(omega, phi):
+        """
+        Calculates the probability for the animal to die
+        Parameters
+        ----------
+        omega
+        phi
+
+        Returns
+        -------
+
+        """
+        prob_of_dying = omega * (1 - phi)
+        return prob_of_dying
+
+    def potential_death(self):
         """
         Calculate the probability of the animal dying
         :return:
         """
-        if self.phi == 0:  # Phi or Weight is zero?
+        if self.weight == 0:  # Phi or Weight is zero?
             self.alive = False
 
-        else:
-            prob_death = self.params["omega"] * (1 - self.phi)
-            self.alive = random.random() >= prob_death
+        elif self.phi == 1:
+            self.alive = True
 
+        else:
+            prob_death = self.prob_of_dying(self.params["omega"], self.phi)
+            self.alive = self.random_number() >= prob_death
+
+        return self.alive
 
 class Herbivore(Animals):
     """
@@ -242,6 +321,8 @@ class Herbivore(Animals):
 
     def __init__(self, age, weight):
         super().__init__(age, weight)
+
+
 
 # class Carnivore(Animals):
 #
