@@ -44,12 +44,12 @@ class Animals:
         :param weight: float
         """
         if age is None:
-            raise ValueError("The animal can not have negative age")
+            raise ValueError("The animal must have an age.")
         else:
             self.age = age
 
         if weight is None:
-            raise ValueError("The animal can not have negative weight")
+            raise ValueError("The animal must have a weight.")
         else:
             self.weight = weight
 
@@ -81,18 +81,28 @@ class Animals:
         """
         Calculates amount of fodder the animal eats in current cell, and returns the
         amount of fodder remaining.
+        If available food in cell is negative the method returns an error message.
+        If F is less or equal to available fodder in cell, the weight increases by constant beta
+        multiplied with the amount eated.
+        If F is more than available fodder in cell, the weight increases by constant beta times the
+        available fodder in cell.
+
+        Due to the increase in weight, the fitness must be recalculated.
 
         :param available_food: float
         available fodder in cell
         :return: float
         remaining fodder in cell
         """
-        if self.params["F"] <= available_food:
+        if available_food < 0:
+            raise ValueError("Available food in cell must be zero or a positive number.")
+
+        elif self.params["F"] <= available_food:
             self.weight += self.params["beta"] * self.params["F"]
             self.fitness_calculation()
             return available_food - self.params["F"]
 
-        if self.params["F"] > available_food:
+        else:
             self.weight = self.params["beta"] * available_food
             self.fitness_calculation()
             return 0
@@ -164,10 +174,9 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
-        if self.phi == 0:
+        if self.phi == 0:  # Phi or Weight is zero?
             self.alive = False
-
-        elif self
+            return self.alive
 
         else:
             prob_death = self.params["omega"] * (1 - self.phi)
