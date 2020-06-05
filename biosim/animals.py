@@ -90,9 +90,9 @@ class Animals:
         Due to the increase in weight, the fitness must be recalculated.
 
         :param available_food: float
-        available fodder in cell
+            available fodder in cell
         :return: float
-        remaining fodder in cell
+            remaining fodder in cell
         """
         if available_food < 0:
             raise ValueError("Available food in cell must be zero or a positive number.")
@@ -120,9 +120,11 @@ class Animals:
 
         At birth of offspring the parent animal looses weight relative to constant xi and the
         birthweight of offspring. Recalculates the parent animal's fitness after birth.
+
+        :param num_same_species_in_cell: int
+            The amount of animals of the same species in a single cell.
         :return:
         """
-
         if self.weight < self.params["zeta"] * \
                 (self.params["w_birth"] + self.params["sigma_birth"]):
             return
@@ -162,7 +164,7 @@ class Animals:
     def annual_weight_decrease(self):
         """
         Each year the weight of the animal decreases by the constants omega and eta.
-        Recalculates the fitness of the animal because it's depeding on the animal's weight.
+        Recalculates the fitness of the animal because it's depending on the animal's weight.
         :return:
         """
         self.weight -= self.params["omega"] * self.params["eta"]
@@ -176,13 +178,10 @@ class Animals:
         """
         if self.phi == 0:  # Phi or Weight is zero?
             self.alive = False
-            return self.alive
 
         else:
             prob_death = self.params["omega"] * (1 - self.phi)
             self.alive = random.random() >= prob_death
-
-
 
 
 
