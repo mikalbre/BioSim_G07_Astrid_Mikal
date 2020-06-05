@@ -25,7 +25,7 @@ class Cell:
             pass
 
     def procreation(self):
-        pass
+        if 
 
     def offspring(self):
         pass
