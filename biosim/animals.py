@@ -121,44 +121,20 @@ class Animals:
         positive_q = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
         negative_q = self.sigmoid(self.weight, self.params["w_half"], self.params["phi_weight"], -1)
 
-        if self.weight == 0:
+        if self.weight <= 0:
             self.phi = 0
         else:
             self.phi = positive_q * negative_q
         return self.phi
 
-    def feeding(self, available_food):
+    def eat(self):
         """
-        Calculates amount of fodder the animal eats in current cell, and returns the
-        amount of fodder remaining.
-        If available food in cell is negative the method returns an error message.
-        If F is less or equal to available fodder in cell, the weight increases by constant beta
-        multiplied with the amount eated.
-        If F is more than available fodder in cell, the weight increases by constant beta times the
-        available fodder in cell.
+        Eating for both animals
+        Returns
+        -------
 
-        Due to the increase in weight, the fitness must be recalculated.
-
-        :param available_food: float
-            available fodder in cell
-        :return: float
-            remaining fodder in cell
         """
-        if available_food < 0:
-            raise ValueError("Available food in cell must be zero or a positive number.")
-
-        elif self.params["F"] < available_food:
-            self.weight += self.params["beta"] * self.params["F"]
-            self.fitness_calculation()
-            available_food -= self.params["F"]
-            return available_food
-
-        elif self.params["F"] >= available_food:
-            self.weight = self.params["beta"] * available_food
-            self.fitness_calculation()
-            return 0
-
-# isinstance
+        pass
 
     def weight_loss_mother(self, xi):
         """
@@ -204,9 +180,9 @@ class Animals:
         -------
 
         """
-        if self.prob_birth_offspring(self.params["gamma"], self.phi, num_same_species):
-            if self.weight > self.weight_loss_mother(self.params["xi"]):
-                return self.procreation(num_same_species)
+        if self.prob_birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
+                self.weight > self.weight_loss_mother(self.params["xi"]):
+            return self.procreation(num_same_species)
 
     def procreation(self, num_same_species):
         """
@@ -226,7 +202,6 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
-
         if self.random_number() <= self.prob_birth_offspring(self.params["gamma"], self.phi,
                                                              num_same_species):
             birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
@@ -320,8 +295,39 @@ class Herbivore(Animals):
         'F': 10.0,
     }
 
-    def __init__(self, age, weight):
+    def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
+
+    def feeding(self, available_food):
+        """
+        Calculates amount of fodder the animal eats in current cell, and returns the
+        amount of fodder remaining.
+        If available food in cell is negative the method returns an error message.
+        If F is less or equal to available fodder in cell, the weight increases by constant beta
+        multiplied with the amount eated.
+        If F is more than available fodder in cell, the weight increases by constant beta times the
+        available fodder in cell.
+
+        Due to the increase in weight, the fitness must be recalculated.
+
+        :param available_food: float
+            available fodder in cell
+        :return: float
+            remaining fodder in cell
+        """
+        if available_food < 0:
+            raise ValueError("Available food in cell must be zero or a positive number.")
+
+        elif self.params["F"] < available_food:
+            self.weight += self.params["beta"] * self.params["F"]
+            self.fitness_calculation()
+            available_food -= self.params["F"]
+            return available_food
+
+        elif self.params["F"] >= available_food:
+            self.weight = self.params["beta"] * available_food
+            self.fitness_calculation()
+            return 0
 
 
 
