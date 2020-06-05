@@ -3,6 +3,8 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
+import pytest_mock
+from unittest import mock
 
 @pytest.fixture
 def set_parameters(request):
@@ -11,10 +13,10 @@ def set_parameters(request):
     Animals.set_parameters(Animals.params)
 
 def test_init():
-    herb = Herbivore(5, 40)
+    herb = Herbivore(5, 3)
 
     assert herb.age == 5
-    assert herb.weight == 40
+    assert herb.weight >= 0
 
     isinstance(herb.age, int)
 

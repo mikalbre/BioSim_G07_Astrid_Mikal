@@ -54,11 +54,11 @@ class Animals:
             self.age = int(self.age)
 
         if weight is None:
-            raise ValueError("The animal must have a weight.")
-        else:
-            self.weight = gauss_dist()
+            self.weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+        elif weight is not None:
+            self.weight = weight
 
-        #sjekk dette
+        # sjekk dette
         self.alive = True
         self.has_migrated = False
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
@@ -67,8 +67,8 @@ class Animals:
         self.fitness_calculation()
 
     @staticmethod
-    def gauss_dist(sigma, mu):
-        gauss_dist = random.gauss(mu, sigma)
+    def gauss_dist(weight_birth, sigma_birth):
+        gauss_dist = random.gauss(weight_birth, sigma_birth)
         return gauss_dist
 
     @staticmethod
@@ -84,9 +84,8 @@ class Animals:
 
         Returns
         -------
-
         """
-        sigmoid = (1/(1 + exp(p * phi_* (x - x_half))))
+        sigmoid = (1/(1 + exp(p * phi_ * (x - x_half))))
         return sigmoid
 
     def fitness_calculation(self):
@@ -124,7 +123,6 @@ class Animals:
         if available_food < 0:
             raise ValueError("Available food in cell must be zero or a positive number.")
 
-
         elif self.params["F"] <= available_food:
             self.weight += self.params["beta"] * self.params["F"]
             self.fitness_calculation()
@@ -135,6 +133,7 @@ class Animals:
             self.fitness_calculation()
             return 0
 # isinstance
+
     @staticmethod
     def prob_offspring_birth(gamma, _phi, num_species):
         prob_offspring = gamma * _phi * (num_species - 1)
@@ -171,7 +170,7 @@ class Animals:
                                                              self.phi, num_same_species_in_cell)
 
         if random.random() <= prob_birth_offspring:
-            birth_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+            birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
             self.weight -= self.params["xi"] * birth_weight
 
             if isinstance(self, Herbivore):
@@ -182,14 +181,12 @@ class Animals:
             #     self.fitness_calculation()
             #     return Carnivore(0, birth_weight)
 
-
     def prob_migrate(self):
         """
         Calculates the probability for the animal to migrate
         :return:
         """
         return self.params["mu"] * self.phi
-
 
     def annual_age_increase(self):
         """
@@ -217,11 +214,9 @@ class Animals:
         if self.phi == 0:  # Phi or Weight is zero?
             self.alive = False
 
-
         else:
             prob_death = self.params["omega"] * (1 - self.phi)
             self.alive = random.random() >= prob_death
-
 
 
 class Herbivore(Animals):
@@ -244,6 +239,7 @@ class Herbivore(Animals):
         'omega': 0.4,
         'F': 10.0,
     }
+
     def __init__(self, age, weight):
         super().__init__(age, weight)
 
@@ -267,9 +263,3 @@ class Herbivore(Animals):
 #         'DeltaPhiMax': 0
 #     }
 #
-
-
-
-
-
-
