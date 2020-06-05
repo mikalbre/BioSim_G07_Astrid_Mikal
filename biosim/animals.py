@@ -71,29 +71,31 @@ class Animals:
         positive_q = (1/(1 + exp(self.params["phi_age"]*(self.age - self.params["a_half"]))))
         negative_q = (1/(1 + exp(-self.params["phi_weight"]*(self.weight - self.params["w_half"]))))
 
-        if self.weight == 0:
+        if self.weight <= 0:
             self.phi = 0
         else:
             self.phi = positive_q*negative_q
         return self.phi
 
-    def annual_age_increase(self):
+    def feeding(self, available_food):
         """
-        Adds an increment of 1 to age, i.e. age increases by 1 each year.
-        Recalculates the animal fitness because it depends on age.
-        :return:
-        """
-        self.age += 1
-        self.fitness_calculation()
+        Calculates amount of fodder the animal eats in current cell, and returns the
+        amount of fodder remaining.
 
-    def annual_weight_decrease(self):
+        :param available_food: float
+        available fodder in cell
+        :return: float
+        remaining fodder in cell
         """
-        Each year the weight of the animal decreases by the constants omega and eta.
-        Recalculates the fitness of the animal because it's depeding on the animal's weight.
-        :return:
-        """
-        self.weight -= self.params["omega"] * self.params["eta"]
-        self.fitness_calculation()
+        if self.params["F"] <= available_food:
+            self.weight += self.params["beta"] * self.params["F"]
+            self.fitness_calculation()
+            return available_food - self.params["F"]
+
+        if self.params["F"] > available_food:
+            self.weight = self.params["beta"] * available_food
+            self.fitness_calculation()
+            return 0
 
     def procreation(self, num_same_species_in_cell):
         """
@@ -138,6 +140,24 @@ class Animals:
         """
         return self.params["mu"] * self.phi
 
+    def annual_age_increase(self):
+        """
+        Adds an increment of 1 to age, i.e. age increases by 1 each year.
+        Recalculates the animal fitness because it depends on age.
+        :return:
+        """
+        self.age += 1
+        self.fitness_calculation()
+
+    def annual_weight_decrease(self):
+        """
+        Each year the weight of the animal decreases by the constants omega and eta.
+        Recalculates the fitness of the animal because it's depeding on the animal's weight.
+        :return:
+        """
+        self.weight -= self.params["omega"] * self.params["eta"]
+        self.fitness_calculation()
+
     @property  # Riktig?
     def prob_dying(self):
         """
@@ -145,13 +165,14 @@ class Animals:
         :return:
         """
         if self.phi == 0:
-            self.alive == False
+            self.alive = False
+
+        elif self
 
         else:
             prob_death = self.params["omega"] * (1 - self.phi)
             self.alive = random.random() >= prob_death
 
-#    def eat
 
 
 
