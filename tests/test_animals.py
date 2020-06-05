@@ -2,14 +2,13 @@
 
 from biosim.animals import Animals, Herbivore
 import pytest
-
+from pytest import approx
 
 @pytest.fixture
 def set_parameters(request):
     Animals.set_parameters(request.param)
     yield
     Animals.set_parameters(Animals.params)
-
 
 def test_init():
     herb = Herbivore(5, 40)
@@ -33,6 +32,9 @@ def test_fitness_calulation():
     herb = Herbivore(2, 13)
     assert not herb.phi == 0
 
+    herb = Herbivore(0, 5)
+    assert approx(herb.phi) == 0.377414
+
 
 def test_annual_weight_decrease():
     herb = Herbivore(5, 40)
@@ -43,9 +45,4 @@ def test_annual_weight_decrease():
 
 def test_procreation():
     herb = Herbivore(4, 30)
-    
-
-
-
-
-
+    pass
