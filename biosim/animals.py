@@ -48,8 +48,8 @@ class Animals:
         else:
             self.age = age
 
-        if self.age is not int:
-            return int(self.age)
+        if not isinstance(self.age, int):
+            self.age = int(self.age)
 
 # sjekke om age, weight er heltall
         if weight is None:
