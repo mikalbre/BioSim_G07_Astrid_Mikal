@@ -56,16 +56,20 @@ class Animals:
         if weight is None:
             raise ValueError("The animal must have a weight.")
         else:
-            self.weight = self.gauss(self.params["gamma"] * self.params
+            self.weight = gauss_dist()
 
         #sjekk dette
         self.alive = True
         self.has_migrated = False
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
-        #
+
         self.phi = 0
         self.fitness_calculation()
-        self.xx =
+
+    @staticmethod
+    def gauss_dist(sigma, mu):
+        gauss_dist = random.gauss(mu, sigma)
+        return gauss_dist
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):

@@ -57,4 +57,12 @@ def test_prob_dying():
     assert herb.prob_dying == False
     pass
 
+def test_prob_of_birth():
+    h = Herbivore(0, 2)
+    ppp = h.prob_of_birth(0.2, 8, 1.5)
+    assert approx(ppp) == 1.9
 
+def test_gauss_dist():
+    a = Animals()
+    g = a.gauss_dist(1.5, 0.25)
+    assert g
