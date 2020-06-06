@@ -104,3 +104,12 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
+
+
+class Water(SingleCell):
+    """
+    The landscape type Water is a sub-class of the superclass Cell.
+    Water are passive cell because the animals can not enter.
+    """
+    def __init__(self):
+        super().__init__()
