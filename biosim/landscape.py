@@ -49,3 +49,24 @@ class SingleCell:
         """
         self.available_fodder += 0
 
+class Highland(SingleCell):
+    """
+    The landscape type Highland is a sub-class of the superclass Cell.
+    Highland has fodder.
+    Fodder in Highland is less than fodder in Lowland.
+    Carnivores can prey on herbivores in Highland.
+    """
+    params = {"f_max": 300}
+
+    def __init__(self):
+        super().__init__()
+        self.available_fodder = self.params["f_max"]
+
+    def fodder_regrow(self):
+        """
+        When called, the method restores the amount of available fodder to f_max
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
