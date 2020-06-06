@@ -113,3 +113,10 @@ class Water(SingleCell):
     """
     def __init__(self):
         super().__init__()
+
+class PassedBounds:
+    """
+    Makes sure no animal can go beyond the map created.
+    Can not add animals to this cell, and no animal can access it.
+    """
+    pass
