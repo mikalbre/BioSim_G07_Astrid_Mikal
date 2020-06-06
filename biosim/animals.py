@@ -38,6 +38,7 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
+
     def __init__(self, age=0, weight=None):
         """
 
@@ -56,6 +57,8 @@ class Animals:
 
         if weight is None:
             self.weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+            if self.weight < 0:
+                self.weight = 0  # Dies at end of year
         elif weight is not None:
             self.weight = weight
 
@@ -273,6 +276,19 @@ class Animals:
             self.alive = self.random_number() >= prob_death
 
         return self.alive
+
+    def eat(self, amount):
+        """
+        Fjerne?
+        Parameters
+        ----------
+        amount
+
+        Returns
+        -------
+
+        """
+        pass
 
 class Herbivore(Animals):
     """
