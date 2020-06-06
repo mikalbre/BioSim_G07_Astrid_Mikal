@@ -1,3 +1,7 @@
+from .animals import Animals, Herbivore
+import numpy as np
+from numpy import random
+
 class SingleCell:
     """
     A superclass for the properties of a single cell on an island.
@@ -38,6 +42,7 @@ class SingleCell:
         self.available_fodder = 0
         self.present_herbivores = []
         self.fodder_left = 0
+        self.herb = Animals()
 
     def fodder_regrow(self):
         """
@@ -48,6 +53,47 @@ class SingleCell:
 
         """
         self.available_fodder += 0
+
+    def randomise_list(self):
+        random_list = self.present_herbivores.copy()
+        np.random.shuffle(random_list)
+        return random_list
+
+    def animals_eat(self):  # herbivore feeding
+        randomized_order = self.randomise_list()
+        for herb in randomized_order:
+            if self.available_fodder >= herb.get_F():
+                self.available_fodder -= herb.eat()
+
+    def procreation(self):
+        """
+        Checks if there are at least one other animal of the same species in this cell
+        and having proper weight for both
+        then they will make a new offspring.
+        Returns
+        -------
+        """
+        for herb in self.present_herbivores:
+            newborn_weight = herb.initial_weight()
+            if herb.prob_birth_offspring(len(self.present_herbivores), newborn_weight):
+                self.create_new_animal(newborn_weight)
+
+    def create_new_animal(self, newborn_weight):
+        new_animal = Animals(weight=newborn_weight)
+        self.present_herbivores.append(new_animal)
+
+    def animal_death(self):
+        pass
+
+    def migrate(self):
+        pass
+
+    def get_fodder(self):
+        return self.available_fodder
+
+    def get_num_animals(self):
+        return len(self.present_herbivores)
+
 
 
 class Highland(SingleCell):

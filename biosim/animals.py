@@ -66,6 +66,7 @@ class Animals:
         self.alive = True
         self.has_migrated = False
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
+        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
@@ -129,15 +130,6 @@ class Animals:
         else:
             self.phi = positive_q * negative_q
         return self.phi
-
-    def eat(self):
-        """
-        Eating for both animals
-        Returns
-        -------
-
-        """
-        pass
 
     def weight_loss_mother(self, xi):
         """
@@ -226,23 +218,35 @@ class Animals:
         """
         return self.params["mu"] * self.phi
 
-    def annual_age_increase(self):
+    # def annual_age_increase(self):
+    #     """
+    #     Adds an increment of 1 to age, i.e. age increases by 1 each year.
+    #     Recalculates the animal fitness because it depends on age.
+    #     :return:
+    #     """
+    #     self.age += 1
+    #     self.fitness_calculation()
+
+    def growing_older(self):
         """
-        Adds an increment of 1 to age, i.e. age increases by 1 each year.
-        Recalculates the animal fitness because it depends on age.
-        :return:
+        When animals grows older the age increases by one and the weight decreases with a
+        constant that is based on its weight.
+        Returns
+        -------
+
         """
         self.age += 1
+        self.weight -= self.params["eta"] * self.weight
         self.fitness_calculation()
 
-    def annual_weight_decrease(self):
-        """
-        Each year the weight of the animal decreases by the constants omega and eta.
-        Recalculates the fitness of the animal because it's depending on the animal's weight.
-        :return:
-        """
-        self.weight -= self.params["omega"] * self.params["eta"]
-        self.fitness_calculation()
+    # def annual_weight_decrease(self):
+    #     """
+    #     Each year the weight of the animal decreases by the constants omega and eta.
+    #     Recalculates the fitness of the animal because it's depending on the animal's weight.
+    #     :return:
+    #     """
+    #     self.weight -= self.params["eta"] * self.weight
+    #     self.fitness_calculation()
 
     @staticmethod
     def prob_of_dying(omega, phi):
@@ -277,9 +281,14 @@ class Animals:
 
         return self.alive
 
-    def eat(self, amount):
+    def eat(self):
         """
         Fjerne?
+
+        self.eaten += self.params['F']
+        self.weight += self.params['F']
+        self.fitness_calculation()
+        return self.params['F']
         Parameters
         ----------
         amount
@@ -290,29 +299,14 @@ class Animals:
         """
         pass
 
-class Herbivore(Animals):
-    """
+    def get_age(self):
+        return self.age
 
-    """
-    params = {
-        'w_birth': 8.0,
-        'sigma_birth': 1.5,
-        'beta': 0.9,
-        'eta': 0.05,
-        'a_half': 40.0,
-        'phi_age': 0.2,
-        'w_half': 10.0,
-        'phi_weight': 0.1,
-        'mu': 0.25,
-        'gamma': 0.2,
-        'zeta': 3.5,
-        'xi': 1.2,
-        'omega': 0.4,
-        'F': 10.0,
-    }
+    def get_weight(self):
+        return self.weight
 
-    def __init__(self, age=0, weight=None):
-        super().__init__(age, weight)
+    def get_fitness(self):
+        return self.phi
 
     def feeding(self, available_food):
         """
@@ -344,6 +338,35 @@ class Herbivore(Animals):
             self.weight = self.params["beta"] * available_food
             self.fitness_calculation()
             return 0
+
+
+
+
+
+class Herbivore(Animals):
+    """
+
+    """
+    params = {
+        'w_birth': 8.0,
+        'sigma_birth': 1.5,
+        'beta': 0.9,
+        'eta': 0.05,
+        'a_half': 40.0,
+        'phi_age': 0.2,
+        'w_half': 10.0,
+        'phi_weight': 0.1,
+        'mu': 0.25,
+        'gamma': 0.2,
+        'zeta': 3.5,
+        'xi': 1.2,
+        'omega': 0.4,
+        'F': 10.0,
+    }
+
+    def __init__(self, age=0, weight=None):
+        super().__init__(age, weight)
+
 
 
 
