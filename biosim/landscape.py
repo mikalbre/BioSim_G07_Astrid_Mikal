@@ -93,3 +93,14 @@ class Lowland(SingleCell):
 
         """
         self.available_fodder = self.params["f_max"]
+
+
+class Desert(SingleCell):
+    """
+    The landscape type Desert is a sub-class of the superclass Cell.
+    There is no fodder in Desert, so nothing to eat for herbivores.
+    Carnivores can prey on herbivores in the Desert.
+    """
+
+    def __init__(self):
+        super().__init__()
