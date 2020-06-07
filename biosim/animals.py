@@ -150,7 +150,8 @@ class Animals:
         -------
 
         """
-        weight_loss_mother = xi * self.gauss_dist
+        self.mother_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+        weight_loss_mother = xi * self.mother_weight
         return weight_loss_mother
 
     @staticmethod
