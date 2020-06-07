@@ -221,6 +221,7 @@ class TestAnimal:
     def test_potential_death(self):
         herb = Herbivore(3, 0)
         assert herb.alive
+
         herb.potential_death()
         assert not herb.alive
 
