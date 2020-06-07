@@ -38,7 +38,6 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
-
     def __init__(self, age=0, weight=None):
         """
 
@@ -70,7 +69,6 @@ class Animals:
 
         self.phi = 0
         self.fitness_calculation()
-
 
     @staticmethod
     def random_number():
@@ -146,7 +144,7 @@ class Animals:
         return weight_loss_mother
 
     @staticmethod
-    def prob_birth_offspring(gamma, phi, num_same_species):
+    def birth_offspring(gamma, phi, num_same_species):
         """
         Calculates probability for getting an offspring.
         Required to have more than one animal of the same species for offspring to be possible.
@@ -160,8 +158,8 @@ class Animals:
         -------
 
         """
-        prob_birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
-        return prob_birth_offspring
+        birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+        return birth_offspring
 
     def prob_of_procreation(self, num_same_species):
         """
@@ -175,7 +173,7 @@ class Animals:
         -------
 
         """
-        if self.prob_birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
+        if self.birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
                 self.weight > self.weight_loss_mother(self.params["xi"]):
             return self.procreation(num_same_species)
 
@@ -197,11 +195,10 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
-        if self.random_number() <= self.prob_birth_offspring(self.params["gamma"], self.phi,
-                                                             num_same_species):
+        if self.random_number() <= self.birth_offspring(self.params["gamma"],
+                                                        self.phi, num_same_species):
             birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
             self.weight -= self.weight_loss_mother(self.params["xi"])
-            self.fitness_calculation()
 
             if isinstance(self, Herbivore):
                 self.fitness_calculation()
@@ -249,7 +246,7 @@ class Animals:
     #     self.fitness_calculation()
 
     @staticmethod
-    def prob_of_dying(omega, phi):
+    def dying(omega, phi):
         """
         Calculates the probability for the animal to die
         Parameters
@@ -276,28 +273,10 @@ class Animals:
             self.alive = True
 
         else:
-            prob_death = self.prob_of_dying(self.params["omega"], self.phi)
+            prob_death = self.dying(self.params["omega"], self.phi)
             self.alive = self.random_number() >= prob_death
 
         return self.alive
-
-    def eat(self):
-        """
-        Fjerne?
-
-        self.eaten += self.params['F']
-        self.weight += self.params['F']
-        self.fitness_calculation()
-        return self.params['F']
-        Parameters
-        ----------
-        amount
-
-        Returns
-        -------
-
-        """
-        pass
 
     def get_age(self):
         return self.age
@@ -340,9 +319,6 @@ class Animals:
             return 0
 
 
-
-
-
 class Herbivore(Animals):
     """
 
@@ -366,8 +342,6 @@ class Herbivore(Animals):
 
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
-
-
 
 
 # class Carnivore(Animals):
