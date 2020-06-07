@@ -1,6 +1,6 @@
-from .animals import Animals, Herbivore
-import numpy as np
+from .animals import Animals
 from numpy import random
+from random import shuffle
 
 
 class SingleCell:
@@ -75,7 +75,7 @@ class SingleCell:
         self.available_fodder += 0
 
     def randomise_herb(self):
-        return random.shuffle(self.present_herbivores)
+        return shuffle(self.present_herbivores)
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
@@ -96,8 +96,8 @@ class SingleCell:
         -------
         """
         herb_newborn = []
-
-        if self.num_herb() >= 2:
+        number_of_herbivores_in_cell = self.num_herb()
+        if number_of_herbivores_in_cell >= 2:
             for herbivores in self.present_herbivores:
                 new_herb_offspring = herbivores.birth_check()
                 if new_herb_offspring:

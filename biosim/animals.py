@@ -301,7 +301,7 @@ class Animals:
             remaining fodder in cell
         """
         if available_food < 0:
-            raise ValueError("Available food in cell must be zero or a positive number.")
+            eaten = 0
 
         elif self.params["F"] < available_food:
             eaten = self.params["F"]

@@ -6,10 +6,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
+    <option name="format" value="NUMPY" />
     <option name="myDocStringFormat" value="NumPy" />
   </component>
   <component name="ReSTService">
-    <option name="workdir" value="C:\Users\mikal\Dropbox\BioSim_G07_Astrid_Mikal\docs" />
     <option name="DOC_DIR" value="C:\Users\mikal\Dropbox\BioSim_G07_Astrid_Mikal\docs" />
   </component>
   <component name="TestRunnerService">

@@ -5,7 +5,6 @@ import pytest
 from pytest import approx
 
 
-
 @pytest.fixture
 def set_parameters(request):
     Animals.set_parameters(request.param)
@@ -15,7 +14,6 @@ def set_parameters(request):
 
 def test_init():
     herb = Herbivore(5, 3)
-
     assert herb.age == 5
     assert herb.weight >= 0
 
@@ -27,6 +25,7 @@ def test_gauss(mocker):
 
     herb = Herbivore(3, None)
     assert herb.gauss_dist(8, 1.5) == 5
+
 
 def test_weight_loss_mother(mocker):
     mocker.patch('random.gauss', return_value=5)
@@ -47,12 +46,14 @@ def test_procreation():
     pass
 
 
-def test_annual_age_increase():
+def test_growing_older():
     herbivore = Herbivore(3, 12)
     assert herbivore.age == 3
+    assert herbivore.weight == 12
 
-    herbivore.annual_age_increase()
+    herbivore.growing_older()
     assert herbivore.age == 4
+    assert herbivore.weight == 11.4
 
 
 def test_fitness_calculation():
@@ -71,16 +72,16 @@ def test_fitness_calculation():
 
 def test_feeding():
     herb = Herbivore(5, 3)
-    assert herb.feeding(50) == 40
-    assert herb.feeding(11) == 1
-    assert herb.feeding(10) == 0
+    assert herb.feeding(50) == 10
+    assert herb.feeding(10) == 10
+    assert herb.feeding(5) == 5
+    assert herb.feeding(0) == 0
+    assert herb.feeding(-5) == 0
 
-
-def test_annual_weight_decrease():
-    herb = Herbivore(5, 40)
-    herb.annual_weight_decrease()
-
-    assert herb.weight < 40
+    weight_before = herb.weight
+    herb.feeding(10)
+    weight_after = herb.weight
+    assert weight_before < weight_after
 
 def test_prob_of_dying():
     herb = Herbivore(5, 40)
