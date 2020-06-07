@@ -3,8 +3,8 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
-# import pytest_mock
-# from unittest import mock
+
+
 
 
 @pytest.fixture
@@ -22,10 +22,28 @@ def test_init():
 
     isinstance(herb.age, int)
 
+
 def test_gauss(mocker):
-    mocker.patch('random.gauss', return_val=5)
-    h = Herbivore(3, None)
-    assert h.weight == 5
+    mocker.patch('random.gauss', return_value=5)
+
+    herb = Herbivore(3, None)
+    assert herb.gauss_dist(8, 1.5) == 5
+
+def test_weight_loss_mother(mocker):
+    mocker.patch('random.gauss', return_value=5)
+
+    herb = Herbivore(2, 6)
+    assert herb.weight_loss_mother(1.2) == 6
+
+def test_prob_birth_offspring():
+    pass
+
+def test_prob_of_procreation():
+    pass
+
+def test_procreation():
+
+
 
 def test_annual_age_increase():
     herbivore = Herbivore(3, 12)
@@ -69,10 +87,10 @@ def test_prob_of_dying():
 
 
 
-def test_prob_of_procreation():
-    herb = Herbivore(3, 2)
-    prob_of_procreation = herb.prob_of_procreation(0.2, 8, 1.5)
-    assert approx(prob_of_procreation) == 1.9
+# def test_prob_of_procreation():
+#     herb = Herbivore(3, 2)
+#     prob_of_procreation = herb.prob_of_procreation(0.2, 8, 1.5)
+#     assert approx(prob_of_procreation) == 1.9
 
 
 def test_procreation():
@@ -98,3 +116,7 @@ def test_gauss_dist():
 
 def test_herbi_sim():
     pass
+
+
+
+
