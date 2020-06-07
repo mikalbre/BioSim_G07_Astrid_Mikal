@@ -3,7 +3,6 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
-import unittest.mock as mock
 
 
 
@@ -24,9 +23,29 @@ def test_init():
 
 
 def test_gauss(mocker):
-    mocker.patch('random.gauss', return_val=5)
-    h = Herbivore(3, None)
-    assert h.weight == 5
+    mocker.patch('random.gauss', return_value=5)
+
+    herb = Herbivore(3, None)
+    assert herb.gauss_dist(8, 1.5) == 5
+
+def test_weight_loss_mother(mocker):
+    mocker.patch('random.gauss', return_value=5)
+
+    herb = Herbivore(2, 6)
+    assert herb.weight_loss_mother(1.2) == 6
+
+
+def test_prob_birth_offspring():
+    pass
+
+
+def test_prob_of_procreation():
+    pass
+
+
+def test_procreation():
+    pass
+
 
 def test_annual_age_increase():
     herbivore = Herbivore(3, 12)
@@ -36,18 +55,18 @@ def test_annual_age_increase():
     assert herbivore.age == 4
 
 
-def test_fitness_calulation():
+def test_fitness_calculation():
     herb = Herbivore(6, 0)
     assert herb.phi == 0
 
-    herb = Herbivore(5, 19)
+    herb = Herbivore(2, 13)
     assert not herb.phi == 0
-
-    herb = Herbivore(6, -3)
-    assert herb.phi == 0
 
     herb = Herbivore(0, 5)
     assert approx(herb.phi) == 0.377414
+
+    herb = Herbivore(6, -3)
+    assert herb.phi == 0
 
 
 def test_feeding():
@@ -60,13 +79,8 @@ def test_feeding():
 def test_annual_weight_decrease():
     herb = Herbivore(5, 40)
     herb.annual_weight_decrease()
+
     assert herb.weight < 40
-
-    herb = Herbivore(0, 1)
-    herb.annual_weight_decrease()
-    assert not herb.weight == 12
-    assert herb.weight == 0.98
-
 
 def test_prob_of_dying():
     herb = Herbivore(5, 40)
@@ -74,14 +88,12 @@ def test_prob_of_dying():
     prob_die = Herbivore.prob_of_dying(0.4, fitness)
 
 
-def test_prob_of_procreation():
-    herb = Herbivore(3, 2)
-    prob_of_procreation = herb.prob_of_procreation(0.2, 8, 1.5)
-    assert approx(prob_of_procreation) == 1.9
 
+# def test_prob_of_procreation():
+#     herb = Herbivore(3, 2)
+#     prob_of_procreation = herb.prob_of_procreation(0.2, 8, 1.5)
+#     assert approx(prob_of_procreation) == 1.9
 
-def test_procreation():
-    pass
 
 
 def test_potential_death():
@@ -95,20 +107,9 @@ def test_potential_death():
     assert immortal_herb.alive
 
 
-
-def test_gauss_dist():
-    a = Animals()
-    g = a.gauss_dist(1.5, 0.25)
-    assert g
-
 def test_herbi_sim():
     pass
 
-
-
-    herb = Herbivore(2, 13)
-    fitness = herb.fitness_calculation()
-    fitness_dec = herb.fitness_calculation()
 
 
 class TestAnimal:
@@ -160,9 +161,9 @@ class TestAnimal:
         isinstance(herb.age, int)
 
     def test_gauss(mocker):
-        mocker.patch('random.gauss', return_val=5)
-        h = Herbivore(3, None)
-        assert h.weight == 5
+        mocker.patch('random.gauss', return_value=5)
+        herb = Herbivore(3, None)
+        assert herb.gauss_dist(8, 1.5) == 5
 
     def test_annual_age_increase(self):
         herbivore = Herbivore(3, 12)
@@ -220,6 +221,7 @@ class TestAnimal:
     def test_potential_death(self):
         herb = Herbivore(3, 0)
         assert herb.alive
+
         herb.potential_death()
         assert not herb.alive
 
