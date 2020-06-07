@@ -75,11 +75,11 @@ class SingleCell:
         self.available_fodder += 0
 
     def randomise_herb(self):
-        random.shuffle(self.present_herbivores)
+        return random.shuffle(self.present_herbivores)
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
-        self.feed_herb(self.available_fodder)
+        self.feed_herb()
 
     def feed_herb(self):
         for herb in self.randomise_herb():
