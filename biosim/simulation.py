@@ -1,2 +1,42 @@
-from .animals import Animals, Herbivore
-from .landscape import SingleCell, Highland, Lowland, Desert, Water
+from animals import Herbivore
+import numpy as np
+
+
+"""
+    Set population
+    initial year = 0
+    increase year
+    set_animal_parameters
+    set_landscape_parameters
+    simulate
+    num_animals_per_species
+    num_animals_on_island
+"""
+herb_list = []
+
+num_animals = 5
+# Appends herbivores to list
+for iterator in range(num_animals):
+    herb = Herbivore()
+    herb_list.append(herb)
+    print(herb_list)
+
+# Print the age, weight, fitness for each herbivore in the list
+for herb in herb_list:
+    print("Age: ", herb.get_age(),
+          "weight: ", herb.get_weight(),
+          "fitness: ", herb.fitness_calculation())
+
+# simulates 10 years
+for iterator in range(10):  # years
+    for herb in herb_list:  # herbivore
+        herb.growing_older()  # adds year and
+        herb.feeding(11)
+        print("Age: ", herb.get_age(),
+              "weight: ", herb.get_weight(),
+              "fitness: ", herb.get_fitness())
+
+
+from landscape import Lowland
+c = Lowland()
+c.herb = herb_list

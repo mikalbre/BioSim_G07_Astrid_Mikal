@@ -3,7 +3,6 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
-import unittest.mock as mock
 
 
 
@@ -60,14 +59,14 @@ def test_fitness_calculation():
     herb = Herbivore(6, 0)
     assert herb.phi == 0
 
-    herb = Herbivore(5, 19)
+    herb = Herbivore(2, 13)
     assert not herb.phi == 0
-
-    herb = Herbivore(6, -3)
-    assert herb.phi == 0
 
     herb = Herbivore(0, 5)
     assert approx(herb.phi) == 0.377414
+
+    herb = Herbivore(6, -3)
+    assert herb.phi == 0
 
 
 def test_feeding():
@@ -80,13 +79,8 @@ def test_feeding():
 def test_annual_weight_decrease():
     herb = Herbivore(5, 40)
     herb.annual_weight_decrease()
+
     assert herb.weight < 40
-
-    herb = Herbivore(0, 1)
-    herb.annual_weight_decrease()
-    assert not herb.weight == 12
-    assert herb.weight == 0.98
-
 
 def test_prob_of_dying():
     herb = Herbivore(5, 40)

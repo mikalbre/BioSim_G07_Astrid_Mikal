@@ -38,7 +38,6 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
 
-
     def __init__(self, age=0, weight=None):
         """
 
@@ -66,10 +65,10 @@ class Animals:
         self.alive = True
         self.has_migrated = False
         self.offspring = False  # Får denne inn i method procreation, offsprint = false??
+        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
-
 
     @staticmethod
     def random_number():
@@ -83,7 +82,7 @@ class Animals:
         return random_num
 
     @staticmethod
-    def gauss_dist(weight_birth, sigma_birth):
+    def gauss_dist(w_birth, sigma_birth):
         """
         Draws birth weight of animals from Gaussian distribution.
         Parameters
@@ -95,8 +94,11 @@ class Animals:
         -------
 
         """
-        gauss_dist = random.gauss(weight_birth, sigma_birth)
+        gauss_dist = random.gauss(w_birth, sigma_birth)
         return gauss_dist
+
+    def get_initial_weight_offspring(self):
+        return self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):
@@ -130,15 +132,6 @@ class Animals:
             self.phi = positive_q * negative_q
         return self.phi
 
-    def eat(self):
-        """
-        Eating for both animals
-        Returns
-        -------
-
-        """
-        pass
-
     def weight_loss_mother(self, xi):
         """
         Calculates how much weight the mother loses due to procreation.
@@ -155,7 +148,7 @@ class Animals:
         return weight_loss_mother
 
     @staticmethod
-    def prob_birth_offspring(gamma, phi, num_same_species):
+    def birth_offspring(gamma, phi, num_same_species):
         """
         Calculates probability for getting an offspring.
         Required to have more than one animal of the same species for offspring to be possible.
@@ -169,10 +162,10 @@ class Animals:
         -------
 
         """
-        prob_birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
-        return prob_birth_offspring
+        birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+        return birth_offspring
 
-    def prob_of_procreation(self, num_same_species):
+    def birth_check(self, num_same_species):
         """
         Checks if procreation will is possible or not.
         If procreation is possible, we direct to the procreation method.
@@ -184,7 +177,7 @@ class Animals:
         -------
 
         """
-        if self.prob_birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
+        if self.birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
                 self.weight > self.weight_loss_mother(self.params["xi"]):
             return self.procreation(num_same_species)
 
@@ -206,11 +199,10 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
-        if self.random_number() <= self.prob_birth_offspring(self.params["gamma"], self.phi,
-                                                             num_same_species):
+        if self.random_number() <= self.birth_offspring(self.params["gamma"],
+                                                        self.phi, num_same_species):
             birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
             self.weight -= self.weight_loss_mother(self.params["xi"])
-            self.fitness_calculation()
 
             if isinstance(self, Herbivore):
                 self.fitness_calculation()
@@ -227,26 +219,38 @@ class Animals:
         """
         return self.params["mu"] * self.phi
 
-    def annual_age_increase(self):
+    # def annual_age_increase(self):
+    #     """
+    #     Adds an increment of 1 to age, i.e. age increases by 1 each year.
+    #     Recalculates the animal fitness because it depends on age.
+    #     :return:
+    #     """
+    #     self.age += 1
+    #     self.fitness_calculation()
+
+    def growing_older(self):
         """
-        Adds an increment of 1 to age, i.e. age increases by 1 each year.
-        Recalculates the animal fitness because it depends on age.
-        :return:
+        When animals grows older the age increases by one and the weight decreases with a
+        constant that is based on its weight.
+        Returns
+        -------
+
         """
         self.age += 1
+        self.weight -= self.params["eta"] * self.weight
         self.fitness_calculation()
 
-    def annual_weight_decrease(self):
-        """
-        Each year the weight of the animal decreases by the constants omega and eta.
-        Recalculates the fitness of the animal because it's depending on the animal's weight.
-        :return:
-        """
-        self.weight -= self.params["omega"] * self.params["eta"]
-        self.fitness_calculation()
+    # def annual_weight_decrease(self):
+    #     """
+    #     Each year the weight of the animal decreases by the constants omega and eta.
+    #     Recalculates the fitness of the animal because it's depending on the animal's weight.
+    #     :return:
+    #     """
+    #     self.weight -= self.params["eta"] * self.weight
+    #     self.fitness_calculation()
 
     @staticmethod
-    def prob_of_dying(omega, phi):
+    def dying(omega, phi):
         """
         Calculates the probability for the animal to die
         Parameters
@@ -266,30 +270,50 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
-        if self.weight == 0:  # Phi or Weight is zero?
-            self.alive = False
+        prob_death = self.dying(self.params["omega"], self.phi)
+        dies = random.random() < prob_death  # Sjekk om riktig
+        return bool(dies) or self.phi <= 0
 
-        elif self.phi == 1:
-            self.alive = True
+    def get_age(self):
+        return self.age
 
-        else:
-            prob_death = self.prob_of_dying(self.params["omega"], self.phi)
-            self.alive = self.random_number() >= prob_death
+    def get_weight(self):
+        return self.weight
 
-        return self.alive
+    def get_fitness(self):
+        return self.phi
 
-    def eat(self, amount):
+    def feeding(self, available_food):
         """
-        Fjerne?
-        Parameters
-        ----------
-        amount
+        Calculates amount of fodder the animal eats in current cell, and returns the
+        amount of fodder remaining.
+        If available food in cell is negative the method returns an error message.
+        If F is less or equal to available fodder in cell, the weight increases by constant beta
+        multiplied with the amount eated.
+        If F is more than available fodder in cell, the weight increases by constant beta times the
+        available fodder in cell.
 
-        Returns
-        -------
+        Due to the increase in weight, the fitness must be recalculated.
 
+        :param available_food: float
+            available fodder in cell
+        :return: float
+            remaining fodder in cell
         """
-        pass
+        if available_food < 0:
+            raise ValueError("Available food in cell must be zero or a positive number.")
+
+        elif self.params["F"] < available_food:
+            eaten = self.params["F"]
+
+        elif self.params["F"] >= available_food:
+            eaten = available_food
+
+        weight_added = self.params["beta"] * eaten
+        self.weight += weight_added
+        self.fitness_calculation()
+        return eaten
+
 
 class Herbivore(Animals):
     """
@@ -314,38 +338,6 @@ class Herbivore(Animals):
 
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
-
-    def feeding(self, available_food):
-        """
-        Calculates amount of fodder the animal eats in current cell, and returns the
-        amount of fodder remaining.
-        If available food in cell is negative the method returns an error message.
-        If F is less or equal to available fodder in cell, the weight increases by constant beta
-        multiplied with the amount eated.
-        If F is more than available fodder in cell, the weight increases by constant beta times the
-        available fodder in cell.
-
-        Due to the increase in weight, the fitness must be recalculated.
-
-        :param available_food: float
-            available fodder in cell
-        :return: float
-            remaining fodder in cell
-        """
-        if available_food < 0:
-            raise ValueError("Available food in cell must be zero or a positive number.")
-
-        elif self.params["F"] < available_food:
-            self.weight += self.params["beta"] * self.params["F"]
-            self.fitness_calculation()
-            available_food -= self.params["F"]
-            return available_food
-
-        elif self.params["F"] >= available_food:
-            self.weight = self.params["beta"] * available_food
-            self.fitness_calculation()
-            return 0
-
 
 
 # class Carnivore(Animals):
