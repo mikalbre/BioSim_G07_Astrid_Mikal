@@ -43,8 +43,11 @@ def test_prob_of_procreation():
     pass
 
 
-def test_procreation():
-    pass
+def test_birth_offspring():
+    herb = Herbivore(3, 5)
+    ret = herb.birth_offspring(0.2, 10, 1)
+    assert ret == 0
+    # Returning 1, should return 0
 
 
 def test_annual_age_increase():

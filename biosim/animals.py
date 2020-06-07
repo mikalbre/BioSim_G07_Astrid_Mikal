@@ -158,7 +158,7 @@ class Animals:
         -------
 
         """
-        birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+        birth_offspring = np.min(1, int(gamma) * phi * (num_same_species - 1))
         return birth_offspring
 
     def prob_of_procreation(self, num_same_species):
