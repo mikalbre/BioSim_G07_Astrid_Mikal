@@ -2,6 +2,7 @@ from .animals import Animals, Herbivore
 import numpy as np
 from numpy import random
 
+
 class SingleCell:
     """
     A superclass for the properties of a single cell on an island.
@@ -12,7 +13,7 @@ class SingleCell:
     alpha: Regrowth of fodder constant. Alpha is how much a cell is able to regrow each year.
 
     """
-    params = {'f_max': 0}
+    params = None
 
     @classmethod
     def cell_parameters(cls, parameters):
@@ -24,12 +25,15 @@ class SingleCell:
         Parameters
         ----------
         parameters
-            Dictionary containing f_max and alpha
+            Dictionary containing f_max
 
         Returns
         -------
 
         """
+        if not isinstance(parameters, dict):
+            raise TypeError("Parameter must be type dict")
+
         for iterators in parameters:
             if iterators in cls.params:
                 if iterators == 'f_max' and parameters[iterators] < 0:
@@ -38,63 +42,76 @@ class SingleCell:
             else:
                 raise ValueError("This specific parameter not defined for this cell")
 
+        cls.params.update(parameters)
+
     def __init__(self):
         self.available_fodder = 0
         self.present_herbivores = []
-        self.fodder_left = 0
         self.herb = Animals()
+
+    def animals_allocate(self, animals):
+        """
+        Adds given animals of a given species to a given cell on the island.
+        Parameters
+        ----------
+        animals: list
+            List of instances of a given species.
+        """
+        pass
+
+    def num_herb(self):
+        return len(self.present_herbivores)
 
     def fodder_regrow(self):
         """
         The method updates the amount of available food.
         Zero is the given default value of regrowth.
+
+        evt Pass
         Returns
         -------
 
         """
         self.available_fodder += 0
 
-    def randomise_list(self):
-        random_list = self.present_herbivores.copy()
-        np.random.shuffle(random_list)
-        return random_list
+    def randomise_herb(self):
+        random.shuffle(self.present_herbivores)
 
-    def animals_eat(self):  # herbivore feeding
-        randomized_order = self.randomise_list()
-        for herb in randomized_order:
-            if self.available_fodder >= herb.get_F():
-                self.available_fodder -= herb.eat()
+    def eat(self):  # herbivore feeding
+        self.fodder_regrow()
+        self.feed_herb(self.available_fodder)
+
+    def feed_herb(self):
+        for herb in self.randomise_herb():
+            if self.available_fodder > 0:
+                eaten = herb.feeding(self.available_fodder)
+                self.available_fodder -= eaten
 
     def procreation(self):
         """
-        Checks if there are at least one other animal of the same species in this cell
+        Checks if there are at least two other animal of the same species in this cell
         and having proper weight for both
         then they will make a new offspring.
         Returns
         -------
         """
-        for herb in self.present_herbivores:
-            newborn_weight = herb.initial_weight()
-            if herb.prob_birth_offspring(len(self.present_herbivores), newborn_weight):
-                self.create_new_animal(newborn_weight)
-        """
-        birth_herb_list = []
-        number_adult_herbi = self.num_herbivores
-        if num_adult_herbi > 1:
-            for herbivore in self.herbivores:
-                offspring = herbivores.birth(number_adult_herbivores)
-                 if not offspring:
-                    continue
-                 self.herbivores.append(offspring)
-                 birth_list_herb.append(offspring)
-        """
+        herb_newborn = []
+
+        if self.num_herb() >= 2:
+            for herbivores in self.present_herbivores:
+                new_herb_offspring = herbivores.birth_check()
+                if new_herb_offspring:
+                    herb_newborn.append(new_herb_offspring)
+            self.present_herbivores.extend(herb_newborn)
 
     def create_new_animal(self, newborn_weight):
-        new_animal = Animals(weight=newborn_weight)
-        self.present_herbivores.append(new_animal)
+        pass
 
     def animal_death(self):
-        pass
+        dead_herbi = []
+        for herbivore in self.present_herbivores:
+            if herbivore.potential_death():
+                dead_herbi.remove(self.present_herbivores)
 
     def migrate(self):
         pass
@@ -127,7 +144,7 @@ class Highland(SingleCell):
         -------
 
         """
-        self.available_fodder = self.params["f_max"]
+        pass
 
 
 class Lowland(SingleCell):

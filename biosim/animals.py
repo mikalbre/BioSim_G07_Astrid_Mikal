@@ -82,7 +82,7 @@ class Animals:
         return random_num
 
     @staticmethod
-    def gauss_dist(weight_birth, sigma_birth):
+    def gauss_dist(w_birth, sigma_birth):
         """
         Draws birth weight of animals from Gaussian distribution.
         Parameters
@@ -94,8 +94,11 @@ class Animals:
         -------
 
         """
-        gauss_dist = random.gauss(weight_birth, sigma_birth)
+        gauss_dist = random.gauss(w_birth, sigma_birth)
         return gauss_dist
+
+    def get_initial_weight_offspring(self):
+        return self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):
@@ -161,7 +164,7 @@ class Animals:
         birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
         return birth_offspring
 
-    def prob_of_procreation(self, num_same_species):
+    def birth_check(self, num_same_species):
         """
         Checks if procreation will is possible or not.
         If procreation is possible, we direct to the procreation method.
@@ -266,17 +269,9 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
-        if self.weight == 0:  # Phi or Weight is zero?
-            self.alive = False
-
-        elif self.phi == 1:
-            self.alive = True
-
-        else:
-            prob_death = self.dying(self.params["omega"], self.phi)
-            self.alive = self.random_number() >= prob_death
-
-        return self.alive
+        prob_death = self.dying(self.params["omega"], self.phi)
+        dies = random.random() < prob_death  # Sjekk om riktig
+        return bool(dies) or self.phi <= 0
 
     def get_age(self):
         return self.age
@@ -308,15 +303,15 @@ class Animals:
             raise ValueError("Available food in cell must be zero or a positive number.")
 
         elif self.params["F"] < available_food:
-            self.weight += self.params["beta"] * self.params["F"]
-            self.fitness_calculation()
-            available_food -= self.params["F"]
-            return available_food
+            eaten = self.params["F"]
 
         elif self.params["F"] >= available_food:
-            self.weight = self.params["beta"] * available_food
-            self.fitness_calculation()
-            return 0
+            eaten = available_food
+
+        weight_added = self.params["beta"] * eaten
+        self.weight += weight_added
+        self.fitness_calculation()
+        return eaten
 
 
 class Herbivore(Animals):
