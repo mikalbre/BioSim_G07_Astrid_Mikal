@@ -1,4 +1,5 @@
 from animals import Herbivore
+import numpy as np
 
 
 """
@@ -14,31 +15,28 @@ from animals import Herbivore
 herb_list = []
 
 num_animals = 5
-for iterator in range(2):
+# Appends herbivores to list
+for iterator in range(num_animals):
     herb = Herbivore()
     herb_list.append(herb)
     print(herb_list)
 
+# Print the age, weight, fitness for each herbivore in the list
 for herb in herb_list:
     print("Age: ", herb.get_age(),
           "weight: ", herb.get_weight(),
           "fitness: ", herb.fitness_calculation())
 
-for iterator in range(10):
-    for herb in herb_list:
-        herb.growing_older()
+# simulates 10 years
+for iterator in range(10):  # years
+    for herb in herb_list:  # herbivore
+        herb.growing_older()  # adds year and
         herb.feeding(11)
         print("Age: ", herb.get_age(),
               "weight: ", herb.get_weight(),
               "fitness: ", herb.get_fitness())
 
-    def randomise_list(self):
-        random_list = self.present_herbivores.copy()
-        np.random.shuffle(random_list)
-        return random_list
 
-    def animals_eat(self):  # herbivore feeding
-        randomized_order = self.randomise_list()
-        for herb in randomized_order:
-            if self.available_fodder >= herb.get_F():
-                self.available_fodder -= herb.eat()
+from landscape import Lowland
+c = Lowland()
+c.herb = herb_list

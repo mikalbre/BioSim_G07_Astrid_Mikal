@@ -77,6 +77,17 @@ class SingleCell:
             newborn_weight = herb.initial_weight()
             if herb.prob_birth_offspring(len(self.present_herbivores), newborn_weight):
                 self.create_new_animal(newborn_weight)
+        """
+        birth_herb_list = []
+        number_adult_herbi = self.num_herbivores
+        if num_adult_herbi > 1:
+            for herbivore in self.herbivores:
+                offspring = herbivores.birth(number_adult_herbivores)
+                 if not offspring:
+                    continue
+                 self.herbivores.append(offspring)
+                 birth_list_herb.append(offspring)
+        """
 
     def create_new_animal(self, newborn_weight):
         new_animal = Animals(weight=newborn_weight)
