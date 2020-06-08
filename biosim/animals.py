@@ -59,7 +59,7 @@ class Animals:
             self.weight = weight
 
         # sjekk dette
-        self.alive = True
+        self.alive = True  # Fjerne?
         self.has_migrated = False
         self.eaten = 0
 
@@ -104,32 +104,6 @@ class Animals:
             self.phi = q_age * q_weight
         return self.phi
 
-    def feeding(self, available_food):
-        """
-        Calculates amount of fodder the animal eats in current cell, and returns the
-        amount of fodder remaining.
-        If available food in cell is negative the method returns an error message.
-        If F is less or equal to available fodder in cell, the weight increases by constant beta
-        multiplied with the amount eated.
-        If F is more than available fodder in cell, the weight increases by constant beta times the
-        available fodder in cell.
-
-        Due to the increase in weight, the fitness must be recalculated.
-
-        :param available_food: float
-            available fodder in cell
-        :return: float
-            remaining fodder in cell
-        """
-
-        if available_food < 0:
-            self.eaten = 0
-        else:
-            self.eaten = np.minimum(self.params["F"], available_food)
-
-        self.weight += self.params["beta"] * self.eaten
-        self.fitness_calculation()
-        return self.eaten
 
     def procreation(self, num_same_species):
         """
@@ -160,15 +134,13 @@ class Animals:
         if (random.random()
                 <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
             self.weight -= self.params["xi"] * offspring_weight
+
             if isinstance(self, Herbivore):
                 return Herbivore(0, offspring_weight)
+            elif isinstance(self, Carnivore):
+                return Carnivore(0, offspring_weight)
 
             self.fitness_calculation()
-
-        # if isinstance(self, Herbivore):
-        #     return Herbivore(0, offspring_weight)
-        #     # elif isinstance(self, Carnivore):
-        #     #     return Carnivore(0, offspring_weight)
 
     def prob_migrate(self):
         """
@@ -237,24 +209,83 @@ class Herbivore(Animals):
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
+    def feeding(self, available_food):
+        """
+        Calculates amount of fodder the animal eats in current cell, and returns the
+        amount of fodder remaining.
+        If available food in cell is negative the method returns an error message.
+        If F is less or equal to available fodder in cell, the weight increases by constant beta
+        multiplied with the amount eated.
+        If F is more than available fodder in cell, the weight increases by constant beta times the
+        available fodder in cell.
 
-# class Carnivore(Animals):
-#
-#     params = {
-#         'w_birth': 6.0,
-#         'sigma_birth': 1.0,
-#         'beta': 0.75,
-#         'eta': 0.125,
-#         'a_half': 40.0,
-#         'phi_age': 0.3,
-#         'w_half': 4.0,
-#         'phi_weight': 0.4,
-#         'mu': 0.4,
-#         'gamma': 0.8,
-#         'zeta': 3.5,
-#         'xi': 1.1,
-#         'omega': 0.8,
-#         'F': 50.0,
-#         'DeltaPhiMax': 0
-#     }
-#
+        Due to the increase in weight, the fitness must be recalculated.
+
+        :param available_food: float
+            available fodder in cell
+        :return: float
+            remaining fodder in cell
+        """
+
+        if available_food < 0:
+            self.eaten = 0
+        else:
+            self.eaten = np.minimum(self.params["F"], available_food)
+
+        self.weight += self.params["beta"] * self.eaten
+        self.fitness_calculation()
+        return self.eaten
+
+
+class Carnivore(Animals):
+
+    params = {
+        'w_birth': 6.0,
+        'sigma_birth': 1.0,
+        'beta': 0.75,
+        'eta': 0.125,
+        'a_half': 40.0,
+        'phi_age': 0.3,
+        'w_half': 4.0,
+        'phi_weight': 0.4,
+        'mu': 0.4,
+        'gamma': 0.8,
+        'zeta': 3.5,
+        'xi': 1.1,
+        'omega': 0.8,
+        'F': 50.0,
+        'DeltaPhiMax': 10.0
+    }
+    def __init__(self, age=0, weight=None):
+        super().__init__(age, weight)
+
+    def hunt_herb(self, herbi_phi_sorted_list):
+
+        for herb in herbi_phi_sorted_list:
+            if self.phi <= herb.phi:
+                kill_prob = 0
+
+            elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
+                kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
+
+            else:
+                kill_prob = 1
+
+            if random.random() <= kill_prob:
+
+                if self.params["F"] >= herb.weight:
+                    self.weight += self.params["beta"] * herb.weight
+                    herb.alive = False
+                    self.fitness_calculation()
+                    return
+
+                else:
+                    self.weight += self.params["beta"] * self.params["F"]
+                    herb.alive = False
+                    self.fitness_calculation()
+                    return
+
+
+
+
+

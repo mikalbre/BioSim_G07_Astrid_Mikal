@@ -120,16 +120,6 @@ class SingleCell:
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
 
-    def get_age(self):
-        return self.age
-
-    def get_weight(self):
-        return self.weight
-
-    def get_age(self):
-        for animals in self.present_herbivores:
-            animals.get_age()
-
 
 class Highland(SingleCell):
     """
@@ -216,31 +206,31 @@ if __name__ == "__main__":
     h_list = [h1, h2, h3, h4, h5, h6, h7, h8]
     c.animals_allocate(h_list)
 
-#     print(f"h1_weight to h1: {h1.get_weight()}")
-#     c.eat()
-#     print(f"h1_weight to h1: {h1.get_weight()}")
-#     print(f"fodder: {c.get_fodder()}")
-#     print(f"num of animal: {c.num_herb()}")
+    # print(f"h1_weight to h1: {h1.get_weight()}")
+    # c.eat()
+    # print(f"h1_weight to h1: {h1.get_weight()}")
+    # print(f"fodder: {c.get_fodder()}")
+    # print(f"num of animal: {c.num_herb_in_cell()}")
+    # c.animal_death()
+    # print(f"num of animal: {c.num_herb_in_cell()}")
+
+
+#     print("______________")
+#     print(c.num_herb_in_cell())
 #     c.animal_death()
-#     print(f"num of animal: {c.num_herb()}")
-# #    print(f"dead_herb: {c.dead_herb()}")
-#
+#     print(c.num_herb_in_cell())
 #
 #     print("______________")
-    print(c.num_herb_in_cell())
-    c.animal_death()
-    print(c.num_herb_in_cell())
-
+#
+#     print(c.num_herb_in_cell())
+#     c.procreation()
+#     print(c.num_herb_in_cell())
+#
+#
     print("______________")
+    import timeit
 
-    print(c.num_herb_in_cell())
-    c.procreation()
-    print(c.num_herb_in_cell())
-
-
-    print("______________")
-
-    for j in range(3):
+    for j in range(10):
         for years in range(200):
             c.eat()
             c.procreation()
@@ -249,5 +239,4 @@ if __name__ == "__main__":
 
         print(c.num_herb_in_cell())
 
-# death
-# procreation
+    print(timeit.timeit(number=1000))
