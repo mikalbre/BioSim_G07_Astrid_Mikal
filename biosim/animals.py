@@ -46,7 +46,10 @@ class Animals:
         :param weight: float
             The weight of the animal
         """
-        self.age = age
+        if age < 0 or age is float:
+            raise ValueError("Age must be integer and positive.")
+        else:
+            self.age = age
 
         if weight is None:
             self.weight = self.get_initial_weight_offspring()
@@ -56,6 +59,7 @@ class Animals:
         # sjekk dette
         self.alive = True
         self.has_migrated = False
+        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
@@ -125,7 +129,6 @@ class Animals:
         self.fitness_calculation()
         return self.eaten
 
-
     def procreation(self, num_same_species):
         """
         Calculates the probability of animal having an offspring.
@@ -148,23 +151,22 @@ class Animals:
         """
 
         offspring_weight = self.get_initial_weight_offspring()
-        if self.weight < self.params["zeta"] * (self.params["w_birth"] + self.params["sigma_birth"]):
+        if (self.weight < self.params["zeta"] *
+                (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
 
-        if random.random() <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+        if (random.random()
+                <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
             self.weight -= self.params["xi"] * offspring_weight
             if isinstance(self, Herbivore):
                 return Herbivore(0, offspring_weight)
 
             self.fitness_calculation()
 
-
         # if isinstance(self, Herbivore):
         #     return Herbivore(0, offspring_weight)
         #     # elif isinstance(self, Carnivore):
         #     #     return Carnivore(0, offspring_weight)
-
-
 
     def prob_migrate(self):
         """

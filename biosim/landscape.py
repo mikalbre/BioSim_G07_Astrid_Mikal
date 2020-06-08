@@ -236,7 +236,6 @@ if __name__ == "__main__":
     print(c.num_herb_in_cell())
     c.procreation()
     print(c.num_herb_in_cell())
-    print(c.procreation())
 
 
     print("______________")
