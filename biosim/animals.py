@@ -36,7 +36,7 @@ class Animals:
                 if iterator == "eta" and not 0 <= params[iterator] <= 1:
                     raise ValueError("Eta must be greater than zero and smaller than one")
             else:
-                raise ValueError("Parameter not defined for this animal")  # DeltaPhiMax for carni
+                raise ValueError("Parameter not defined for this animal")
 
     def __init__(self, age=0, weight=None):
         """
@@ -87,7 +87,7 @@ class Animals:
         Draws birth weight of animals from Gaussian distribution.
         Parameters
         ----------
-        weight_birth
+        w_birth
         sigma_birth
 
         Returns
@@ -132,6 +132,37 @@ class Animals:
             self.phi = positive_q * negative_q
         return self.phi
 
+    def feeding(self, available_food):
+        """
+        Calculates amount of fodder the animal eats in current cell, and returns the
+        amount of fodder remaining.
+        If available food in cell is negative the method returns an error message.
+        If F is less or equal to available fodder in cell, the weight increases by constant beta
+        multiplied with the amount eated.
+        If F is more than available fodder in cell, the weight increases by constant beta times the
+        available fodder in cell.
+
+        Due to the increase in weight, the fitness must be recalculated.
+
+        :param available_food: float
+            available fodder in cell
+        :return: float
+            remaining fodder in cell
+        """
+        if available_food < 0:
+            eaten = 0
+
+        elif self.params["F"] < available_food:
+            eaten = self.params["F"]
+
+        elif self.params["F"] >= available_food:
+            eaten = available_food
+
+        weight_added = self.params["beta"] * eaten
+        self.weight += weight_added
+        self.fitness_calculation()
+        return eaten
+
     def weight_loss_mother(self, xi):
         """
         Calculates how much weight the mother loses due to procreation.
@@ -143,8 +174,8 @@ class Animals:
         -------
 
         """
-        self.mother_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
-        weight_loss_mother = xi * self.mother_weight
+        offspring_birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+        weight_loss_mother = xi * offspring_birth_weight
         return weight_loss_mother
 
     @staticmethod
@@ -282,37 +313,6 @@ class Animals:
 
     def get_fitness(self):
         return self.phi
-
-    def feeding(self, available_food):
-        """
-        Calculates amount of fodder the animal eats in current cell, and returns the
-        amount of fodder remaining.
-        If available food in cell is negative the method returns an error message.
-        If F is less or equal to available fodder in cell, the weight increases by constant beta
-        multiplied with the amount eated.
-        If F is more than available fodder in cell, the weight increases by constant beta times the
-        available fodder in cell.
-
-        Due to the increase in weight, the fitness must be recalculated.
-
-        :param available_food: float
-            available fodder in cell
-        :return: float
-            remaining fodder in cell
-        """
-        if available_food < 0:
-            eaten = 0
-
-        elif self.params["F"] < available_food:
-            eaten = self.params["F"]
-
-        elif self.params["F"] >= available_food:
-            eaten = available_food
-
-        weight_added = self.params["beta"] * eaten
-        self.weight += weight_added
-        self.fitness_calculation()
-        return eaten
 
 
 class Herbivore(Animals):

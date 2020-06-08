@@ -90,7 +90,7 @@ def test_feeding():
 def test_prob_of_dying():
     herb = Herbivore(5, 40)
     fitness = herb.fitness_calculation()
-    prob_die = Herbivore.prob_of_dying(0.4, fitness)
+    prob_die = Herbivore.dying(0.4, fitness)
 
 
 
