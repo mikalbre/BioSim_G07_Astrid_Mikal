@@ -1,6 +1,6 @@
 from animals import Animals, Herbivore
 from numpy import random
-from random import shuffle
+import random
 
 
 class SingleCell:
@@ -47,7 +47,6 @@ class SingleCell:
     def __init__(self):
         self.available_fodder = 0
         self.present_herbivores = []
-        self.herb = Animals()
 
     def animals_allocate(self, animals):
         """
@@ -72,17 +71,18 @@ class SingleCell:
         -------
 
         """
-        self.available_fodder += 0
+        pass
 
-    def randomise_herb(self):
-        return shuffle(self.present_herbivores)
+    def randomise_herb(self): # sett direkte inn
+        return random.shuffle(self.present_herbivores)
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
 
     def feed_herb(self):
-        for herb in self.randomise_herb():
+        random.shuffle(self.present_herbivores)
+        for herb in self.randomise_herb():  # sett in random.shuffle() direkte inn
             if self.available_fodder > 0:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
@@ -99,16 +99,17 @@ class SingleCell:
         number_of_herbivores_in_cell = self.num_herb()
         if number_of_herbivores_in_cell >= 2:
             for herbivores in self.present_herbivores:
-                new_herb_offspring = herbivores.birth_check()
-                if new_herb_offspring:
-                    herb_newborn.append(new_herb_offspring)
-            self.present_herbivores.extend(herb_newborn)
+                new_herb_offspring = herbivores.birth_check()  # Endre til .procreation()
+                if not new_herb_offspring:
+                    continue
+                herb_newborn.append(new_herb_offspring)
+                self.present_herbivores.extend(herb_newborn)
 
     def animal_death(self):
         dead_herbi = []
         for herbivore in self.present_herbivores:
             if herbivore.potential_death():
-                dead_herbi.remove(self.present_herbivores)
+                dead_herbi.remove(self.present_herbivores)  # ikke ta ting ut av løkke
 
     def migrate(self):
         pass
@@ -128,7 +129,7 @@ class Highland(SingleCell):
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
+
 
     def fodder_regrow(self):
         """
@@ -137,7 +138,7 @@ class Highland(SingleCell):
         -------
 
         """
-        pass
+        self.available_fodder = self.params["f_max"]
 
 
 class Lowland(SingleCell):

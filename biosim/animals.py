@@ -27,13 +27,13 @@ class Animals:
         """
         animal_set_parameters = cls.params.update()
 
-        for iterator in animal_set_parameters:
-            if iterator in cls.params:
-                if params[iterator] < 0:
-                    raise ValueError(f"{iterator} cannot be negative.")
-                if iterator == "DeltaPhiMax" and params[iterator] <= 0:
+        for parameter in animal_set_parameters:
+            if parameter in cls.params:
+                if params[parameter] < 0:
+                    raise ValueError(f"{parameter} cannot be negative.")
+                if parameter == "DeltaPhiMax" and params[parameter] <= 0:
                     raise ValueError("DeltaPhiMax must be larger than zero")
-                if iterator == "eta" and not 0 <= params[iterator] <= 1:
+                if parameter == "eta" and not 0 <= params[parameter] <= 1:
                     raise ValueError("Eta must be greater than zero and smaller than one")
             else:
                 raise ValueError("Parameter not defined for this animal")
@@ -46,16 +46,14 @@ class Animals:
         :param weight: float
             The weight of the animal
         """
-        if age < 0:
-            raise ValueError("The animal must have an age.")
+
+        if age < 0 or age is not int:
+            raise ValueError("Age of animal must be positive and integer.")
         else:
             self.age = age
 
-        if not isinstance(self.age, int):
-            self.age = int(self.age)
-
         if weight is None:
-            self.weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+            self.weight = self.get_initial_weight_offspring()
             if self.weight < 0:
                 self.weight = 0  # Dies at end of year
         elif weight is not None:
@@ -64,41 +62,13 @@ class Animals:
         # sjekk dette
         self.alive = True
         self.has_migrated = False
-        self.offspring = False  # Får denne inn i method procreation, offsprint = false??
-        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
 
-    @staticmethod
-    def random_number():
-        """
-        Method for all the random.random() functions
-        Returns
-        -------
-
-        """
-        random_num = random.random()
-        return random_num
-
-    @staticmethod
-    def gauss_dist(w_birth, sigma_birth):
-        """
-        Draws birth weight of animals from Gaussian distribution.
-        Parameters
-        ----------
-        w_birth
-        sigma_birth
-
-        Returns
-        -------
-
-        """
-        gauss_dist = random.gauss(w_birth, sigma_birth)
-        return gauss_dist
-
     def get_initial_weight_offspring(self):
-        return self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
+        offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+        return offspring_weight
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):
@@ -114,6 +84,7 @@ class Animals:
         Returns
         -------
         """
+
         sigmoid = (1/(1 + exp(p * phi_ * (x - x_half))))
         return sigmoid
 
@@ -123,13 +94,14 @@ class Animals:
         Fitness depends on weight and age of animal.
         :return:
         """
-        positive_q = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
-        negative_q = self.sigmoid(self.weight, self.params["w_half"], self.params["phi_weight"], -1)
 
         if self.weight <= 0:
             self.phi = 0
         else:
-            self.phi = positive_q * negative_q
+            q_age = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
+            q_weight = self.sigmoid(self.weight,
+                                    self.params["w_half"], self.params["phi_weight"], -1)
+            self.phi = q_age * q_weight
         return self.phi
 
     def feeding(self, available_food):
@@ -149,68 +121,65 @@ class Animals:
         :return: float
             remaining fodder in cell
         """
+
         if available_food < 0:
             eaten = 0
+        else:
+            eaten = np.minimum(self.params["F"], available_food)
 
-        elif self.params["F"] < available_food:
-            eaten = self.params["F"]
-
-        elif self.params["F"] >= available_food:
-            eaten = available_food
-
-        weight_added = self.params["beta"] * eaten
-        self.weight += weight_added
+        self.weight += self.params["beta"] * eaten
         self.fitness_calculation()
         return eaten
 
-    def weight_loss_mother(self, xi):
-        """
-        Calculates how much weight the mother loses due to procreation.
-        Parameters
-        ----------
-        xi
-
-        Returns
-        -------
-
-        """
-        offspring_birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
-        weight_loss_mother = xi * offspring_birth_weight
-        return weight_loss_mother
-
-    @staticmethod
-    def birth_offspring(gamma, phi, num_same_species):
-        """
-        Calculates probability for getting an offspring.
-        Required to have more than one animal of the same species for offspring to be possible.
-        Parameters
-        ----------
-        gamma
-        phi
-        num_same_species
-
-        Returns
-        -------
-
-        """
-        birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
-        return birth_offspring
-
-    def birth_check(self, num_same_species):
-        """
-        Checks if procreation will is possible or not.
-        If procreation is possible, we direct to the procreation method.
-        Parameters
-        ----------
-        num_same_species
-
-        Returns
-        -------
-
-        """
-        if self.birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
-                self.weight > self.weight_loss_mother(self.params["xi"]):
-            return self.procreation(num_same_species)
+    # def weight_loss_mother(self, xi):
+    #     """
+    #     Calculates how much weight the mother loses due to procreation.
+    #     Parameters
+    #     ----------
+    #     xi
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     offspring_birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"]) #
+    #     weight_loss_mother = xi * offspring_birth_weight
+    #     return weight_loss_mother
+    #
+    # @staticmethod # flytt inn
+    # def birth_offspring(gamma, phi, num_same_species):  # legge inn i procreation
+    #     """
+    #     Calculates probability for getting an offspring.
+    #     Required to have more than one animal of the same species for offspring to be possible.
+    #     Parameters
+    #     ----------
+    #     gamma
+    #     phi
+    #     num_same_species
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+    #     return birth_offspring
+    #
+    # def birth_check(self, num_same_species): # flytt inn
+    #     """
+    #     Checks if procreation will is possible or not.
+    #     If procreation is possible, we direct to the procreation method.
+    #     Parameters
+    #     ----------
+    #     num_same_species
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     #
+    #     if self.birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
+    #             self.weight > self.weight_loss_mother(self.params["xi"]):
+    #         return self.procreation(num_same_species)
 
     def procreation(self, num_same_species):
         """
@@ -230,34 +199,29 @@ class Animals:
             The amount of animals of the same species in a single cell.
         :return:
         """
-        if self.random_number() <= self.birth_offspring(self.params["gamma"],
-                                                        self.phi, num_same_species):
-            birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"])
-            self.weight -= self.weight_loss_mother(self.params["xi"])
+
+        offspring_weight = self.get_initial_weight_offspring()
+        if self.weight < self.params["zeta"] * (self.params["w_birth"] + self.params["sigma_birth"]
+            return
+        else:
+            if random.random <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+                self.weight -= self.params["xi"] * offspring_weight
 
             if isinstance(self, Herbivore):
-                self.fitness_calculation()
-                return Herbivore(0, birth_weight)
+                return Herbivore(0, offspring_weight)
 
             # elif isinstance(self, Carnivore):
-            #     self.fitness_calculation()
-            #     return Carnivore(0, birth_weight)
+            #     return Carnivore(0, offspring_weight)
+
+        self.fitness_calculation()
 
     def prob_migrate(self):
         """
         Calculates the probability for the animal to migrate
         :return:
         """
-        return self.params["mu"] * self.phi
 
-    # def annual_age_increase(self):
-    #     """
-    #     Adds an increment of 1 to age, i.e. age increases by 1 each year.
-    #     Recalculates the animal fitness because it depends on age.
-    #     :return:
-    #     """
-    #     self.age += 1
-    #     self.fitness_calculation()
+        return self.params["mu"] * self.phi
 
     def growing_older(self):
         """
@@ -267,43 +231,19 @@ class Animals:
         -------
 
         """
+
         self.age += 1
         self.weight -= self.params["eta"] * self.weight
         self.fitness_calculation()
-
-    # def annual_weight_decrease(self):
-    #     """
-    #     Each year the weight of the animal decreases by the constants omega and eta.
-    #     Recalculates the fitness of the animal because it's depending on the animal's weight.
-    #     :return:
-    #     """
-    #     self.weight -= self.params["eta"] * self.weight
-    #     self.fitness_calculation()
-
-    @staticmethod
-    def dying(omega, phi):
-        """
-        Calculates the probability for the animal to die
-        Parameters
-        ----------
-        omega
-        phi
-
-        Returns
-        -------
-
-        """
-        prob_of_dying = omega * (1 - phi)
-        return prob_of_dying
 
     def potential_death(self):
         """
         Calculate the probability of the animal dying
         :return:
         """
-        prob_death = self.dying(self.params["omega"], self.phi)
-        dies = random.random() < prob_death  # Sjekk om riktig
-        return bool(dies) or self.phi <= 0
+
+        dying = random.random() < self.params["omega"] * (1 - self.phi)
+        return self.phi <= 0 or dying  # Hva skjer her
 
     def get_age(self):
         return self.age
