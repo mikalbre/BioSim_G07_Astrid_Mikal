@@ -3,7 +3,7 @@
 from biosim.animals import Animals, Herbivore
 import pytest
 from pytest import approx
-
+import numpy as np
 
 @pytest.fixture
 def set_parameters(request):
@@ -20,43 +20,18 @@ def test_init():
     isinstance(herb.age, int)
 
 
-def test_gauss(mocker):
+def test_get_initial_weight(mocker):
     mocker.patch('random.gauss', return_value=5)
 
     herb = Herbivore(3, None)
-    assert herb.gauss_dist(8, 1.5) == 5
+    assert herb.get_initial_weight_offspring() == 5
 
 
-def test_weight_loss_mother(mocker):
-    mocker.patch('random.gauss', return_value=5)
-
-    herb = Herbivore(2, 6)
-    assert herb.weight_loss_mother(1.2) == 6
-
-
-def test_birth_offspring():
-    herb = Herbivore()
-    prob_birth = herb.birth_offspring(0.2, 10, 1)
-    assert prob_birth == 0
-
-
-def test_birth_check():
-    pass
-
-
-def test_procreation():
-    pass
-
-
-def test_growing_older():
-    herbivore = Herbivore(3, 12)
-    assert herbivore.age == 3
-    assert herbivore.weight == 12
-
-    herbivore.growing_older()
-    assert herbivore.age == 4
-    assert herbivore.weight == 11.4
-
+# def test_weight_loss_mother(mocker):
+#     mocker.patch('random.gauss', return_value=5)
+#
+#     herb = Herbivore(2, 6)
+#     assert herb.weight_loss_mother(1.2) == 6
 
 def test_fitness_calculation():
     herb = Herbivore(6, 0)
@@ -71,7 +46,6 @@ def test_fitness_calculation():
     herb = Herbivore(6, -3)
     assert herb.phi == 0
 
-
 def test_feeding():
     herb = Herbivore(5, 3)
     assert herb.feeding(50) == 10
@@ -84,6 +58,37 @@ def test_feeding():
     herb.feeding(10)
     weight_after = herb.weight
     assert weight_before < weight_after
+
+def test_procreation(mocker):
+    herb = Herbivore(4, 30)
+    herb_born = herb.procreation(1)
+    assert herb_born is None
+
+    herb = Herbivore(4, 30)
+    weight = herb.weight
+    lose_weight = herb.params["zeta"] * (herb.params["w_birth"] + herb.params["sigma_birth"]) #33.25
+    assert weight < lose_weight
+    assert herb.procreation(10) is None
+
+    herb = Herbivore(5, 40)
+    mocker.patch('random.gauss', return_value=5)
+    assert herb.get_initial_weight_offspring() == 5
+
+def test_migrate(mocker):
+    herb = Herbivore(0, 5)
+    phi = herb.fitness_calculation()
+    assert herb.params['mu'] * phi == approx(0.0943535)
+
+
+def test_growing_older():
+    herbivore = Herbivore(3, 12)
+    assert herbivore.age == 3
+    assert herbivore.weight == 12
+
+    herbivore.growing_older()
+    assert herbivore.age == 4
+    assert herbivore.weight == 11.4
+
 
 def test_prob_of_dying():
     herb = Herbivore(5, 40)

@@ -51,6 +51,12 @@ class Animals:
         else:
             self.age = age
 
+        if age < 0 or age is float:
+            raise ValueError("Age of animal must be positive and integer.")
+        else:
+            self.age = age
+>>>>>>> Stashed changes
+
         if weight is None:
             self.weight = self.get_initial_weight_offspring()
         else:
