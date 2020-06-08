@@ -162,7 +162,7 @@ class Animals:
         -------
 
         """
-        birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
+        birth_offspring = np.minimum(1, gamma * phi * (num_same_species - 1))
         return birth_offspring
 
     def birth_check(self, num_same_species):

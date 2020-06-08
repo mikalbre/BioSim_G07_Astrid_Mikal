@@ -34,12 +34,16 @@ def test_weight_loss_mother(mocker):
     assert herb.weight_loss_mother(1.2) == 6
 
 
-def test_prob_birth_offspring():
-    pass
+def test_birth_offspring():
+    herb = Herbivore()
+    prob_birth = herb.birth_offspring(0.2, 10, 1)
+    assert prob_birth == 0
 
 
-def test_prob_of_procreation():
+
+def test_birth_check():
     pass
+
 
 
 def test_procreation():
