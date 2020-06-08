@@ -1,6 +1,7 @@
-from animals import Animals, Herbivore
+from animals import Herbivore
 from numpy import random
 import random
+import numpy as np
 
 
 class SingleCell:
@@ -47,16 +48,26 @@ class SingleCell:
     def __init__(self):
         self.available_fodder = 0
         self.present_herbivores = []
+        self.present_carnivores = []
 
-    def animals_allocate(self, animals):
+    def animals_allocate(self, animal_list):
         """
         Adds given animals of a given species to a given cell on the island.
+
         Parameters
         ----------
-        animals: list
-            List of instances of a given species.
+        animal_list
+
+        Returns
+        -------
+
         """
-        pass
+        for animal in animal_list:
+            if animal.get("species") == "Herbivore":
+                age = animal.get("age")
+                weight = animal.get("weight")
+                animal = Herbivore(age=age, weight=weight)
+                self.present_herbivores.append(animal)
 
     def num_herb(self):
         return len(self.present_herbivores)
@@ -64,7 +75,6 @@ class SingleCell:
     def fodder_regrow(self):
         """
         The method updates the amount of available food.
-        Zero is the given default value of regrowth.
 
         evt Pass
         Returns
@@ -73,16 +83,13 @@ class SingleCell:
         """
         pass
 
-    def randomise_herb(self): # sett direkte inn
-        return random.shuffle(self.present_herbivores)
-
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
 
     def feed_herb(self):
         random.shuffle(self.present_herbivores)
-        for herb in self.randomise_herb():  # sett in random.shuffle() direkte inn
+        for herb in self.present_herbivores:
             if self.available_fodder > 0:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
@@ -99,23 +106,37 @@ class SingleCell:
         number_of_herbivores_in_cell = self.num_herb()
         if number_of_herbivores_in_cell >= 2:
             for herbivores in self.present_herbivores:
-                new_herb_offspring = herbivores.birth_check()  # Endre til .procreation()
-                if not new_herb_offspring:
-                    continue
-                herb_newborn.append(new_herb_offspring)
-                self.present_herbivores.extend(herb_newborn)
+                new_herb_offspring = herbivores.procreation(number_of_herbivores_in_cell)
+                if new_herb_offspring:
+                    herb_newborn.append(new_herb_offspring)
+                    self.present_herbivores.extend(herb_newborn)
 
     def animal_death(self):
         dead_herbi = []
         for herbivore in self.present_herbivores:
             if herbivore.potential_death():
-                dead_herbi.remove(self.present_herbivores)  # ikke ta ting ut av løkke
+                dead_herbi.append(herbivore)
+                self.present_herbivores = [herb for herb in self.present_herbivores if not dead_herbi]
+        # for death_herb in dead_herbi:
+        #     self.present_herbivores.remove(death_herb)  # Bruker remove?
+        self.present_herbivores = [herb for herb in dead_herbi if not herb.potential_death()]  # Funker potential death?
 
     def migrate(self):
         pass
 
     def get_fodder(self):
         return self.available_fodder
+
+    def aging(self):
+        for herbivore in self.present_herbivores:
+            herbivore.growing_older()
+
+    def get_weight(self):
+        for animals in self.present_herbivores:
+            animals.get_weight()
+    def get_age(self):
+        for animals in self.present_herbivores:
+            animals.get_age()
 
 
 class Highland(SingleCell):
@@ -129,7 +150,6 @@ class Highland(SingleCell):
 
     def __init__(self):
         super().__init__()
-
 
     def fodder_regrow(self):
         """
@@ -151,7 +171,6 @@ class Lowland(SingleCell):
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -191,6 +210,23 @@ class PassedBounds:
 
 
 if __name__ == "__main__":
-    a = Herbivore()
     c = Lowland()
-    c.present_herbivores.append()
+    print(c.get_fodder())
+    h1 = Herbivore()
+    h2 = Herbivore()
+    h3 = Herbivore()
+    h4 = Herbivore()
+    h_list = [h1, h2, h3, h4]
+    c.animals_allocate(h_list)
+
+    print(c.num_herb())
+    print(c.get_fodder())
+    print(c.get_age())
+    print("______________")
+
+    for years in range(15):
+        c.eat()
+        c.procreation()
+        c.animal_death()
+        print(c.num_herb())
+

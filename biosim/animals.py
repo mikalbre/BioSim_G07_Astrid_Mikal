@@ -46,17 +46,11 @@ class Animals:
         :param weight: float
             The weight of the animal
         """
-
-        if age < 0 or age is not int:
-            raise ValueError("Age of animal must be positive and integer.")
-        else:
-            self.age = age
+        self.age = age
 
         if weight is None:
             self.weight = self.get_initial_weight_offspring()
-            if self.weight < 0:
-                self.weight = 0  # Dies at end of year
-        elif weight is not None:
+        else:
             self.weight = weight
 
         # sjekk dette
@@ -131,55 +125,6 @@ class Animals:
         self.fitness_calculation()
         return eaten
 
-    # def weight_loss_mother(self, xi):
-    #     """
-    #     Calculates how much weight the mother loses due to procreation.
-    #     Parameters
-    #     ----------
-    #     xi
-    #
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     offspring_birth_weight = self.gauss_dist(self.params["w_birth"], self.params["sigma_birth"]) #
-    #     weight_loss_mother = xi * offspring_birth_weight
-    #     return weight_loss_mother
-    #
-    # @staticmethod # flytt inn
-    # def birth_offspring(gamma, phi, num_same_species):  # legge inn i procreation
-    #     """
-    #     Calculates probability for getting an offspring.
-    #     Required to have more than one animal of the same species for offspring to be possible.
-    #     Parameters
-    #     ----------
-    #     gamma
-    #     phi
-    #     num_same_species
-    #
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     birth_offspring = np.min(1, gamma * phi * (num_same_species - 1))
-    #     return birth_offspring
-    #
-    # def birth_check(self, num_same_species): # flytt inn
-    #     """
-    #     Checks if procreation will is possible or not.
-    #     If procreation is possible, we direct to the procreation method.
-    #     Parameters
-    #     ----------
-    #     num_same_species
-    #
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     #
-    #     if self.birth_offspring(self.params["gamma"], self.phi, num_same_species) and \
-    #             self.weight > self.weight_loss_mother(self.params["xi"]):
-    #         return self.procreation(num_same_species)
 
     def procreation(self, num_same_species):
         """
@@ -201,10 +146,10 @@ class Animals:
         """
 
         offspring_weight = self.get_initial_weight_offspring()
-        if self.weight < self.params["zeta"] * (self.params["w_birth"] + self.params["sigma_birth"]
+        if self.weight < self.params["zeta"] * (self.params["w_birth"] + self.params["sigma_birth"]):
             return
         else:
-            if random.random <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+            if random.random() <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
                 self.weight -= self.params["xi"] * offspring_weight
 
             if isinstance(self, Herbivore):
