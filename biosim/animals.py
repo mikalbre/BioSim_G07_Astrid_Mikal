@@ -117,11 +117,11 @@ class Animals:
         """
 
         if available_food < 0:
-            eaten = 0
+            self.eaten = 0
         else:
-            eaten = np.minimum(self.params["F"], available_food)
+            self.eaten = np.minimum(self.params["F"], available_food)
 
-        self.weight += self.params["beta"] * eaten
+        self.weight += self.params["beta"] * self.eaten
         self.fitness_calculation()
         return self.eaten
 
@@ -142,23 +142,29 @@ class Animals:
 
         :param num_same_species: int
             The amount of animals of the same species in a single cell.
+
         :return:
+        offspring: Object
         """
 
         offspring_weight = self.get_initial_weight_offspring()
         if self.weight < self.params["zeta"] * (self.params["w_birth"] + self.params["sigma_birth"]):
-            return
-        else:
-            if random.random() <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
-                self.weight -= self.params["xi"] * offspring_weight
+            return 0
 
+        if random.random() <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+            self.weight -= self.params["xi"] * offspring_weight
             if isinstance(self, Herbivore):
                 return Herbivore(0, offspring_weight)
 
-            # elif isinstance(self, Carnivore):
-            #     return Carnivore(0, offspring_weight)
+            self.fitness_calculation()
 
-        self.fitness_calculation()
+
+        # if isinstance(self, Herbivore):
+        #     return Herbivore(0, offspring_weight)
+        #     # elif isinstance(self, Carnivore):
+        #     #     return Carnivore(0, offspring_weight)
+
+
 
     def prob_migrate(self):
         """
@@ -181,14 +187,17 @@ class Animals:
         self.weight -= self.params["eta"] * self.weight
         self.fitness_calculation()
 
-    def potential_death(self):
+    def animal_dying(self):
         """
         Calculate the probability of the animal dying
         :return:
         """
-
-        dying = random.random() < self.params["omega"] * (1 - self.phi)
-        return self.phi <= 0 or dying  # Hva skjer her
+        if self.weight == 0:
+            return True
+        elif random.random() < self.params["omega"] * (1 - self.phi):
+            return True
+        elif random.random() >= self.params["omega"] * (1 - self.phi):
+            return False
 
     def get_age(self):
         return self.age

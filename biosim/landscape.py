@@ -1,7 +1,6 @@
 from animals import Herbivore
 from numpy import random
 import random
-import numpy as np
 
 
 class SingleCell:
@@ -63,14 +62,14 @@ class SingleCell:
 
         """
         for animal in animal_list:
-            if animal.get("species") == "Herbivore":
-                age = animal.get("age")
-                weight = animal.get("weight")
-                animal = Herbivore(age=age, weight=weight)
-                self.present_herbivores.append(animal)
+            self.present_herbivores.append(animal)
 
-    def num_herb(self):
+    def num_herb_in_cell(self):
         return len(self.present_herbivores)
+
+    def eat(self):  # herbivore feeding
+        self.fodder_regrow()
+        self.feed_herb()
 
     def fodder_regrow(self):
         """
@@ -82,10 +81,6 @@ class SingleCell:
 
         """
         pass
-
-    def eat(self):  # herbivore feeding
-        self.fodder_regrow()
-        self.feed_herb()
 
     def feed_herb(self):
         random.shuffle(self.present_herbivores)
@@ -103,23 +98,17 @@ class SingleCell:
         -------
         """
         herb_newborn = []
-        number_of_herbivores_in_cell = self.num_herb()
-        if number_of_herbivores_in_cell >= 2:
+        if self.num_herb_in_cell() >= 2:
             for herbivores in self.present_herbivores:
-                new_herb_offspring = herbivores.procreation(number_of_herbivores_in_cell)
-                if new_herb_offspring:
-                    herb_newborn.append(new_herb_offspring)
-                    self.present_herbivores.extend(herb_newborn)
+                offspring = herbivores.procreation(self.num_herb_in_cell())
+                if not offspring:
+                    continue
+                self.present_herbivores.append(offspring)
+                herb_newborn.append(offspring)
 
     def animal_death(self):
-        dead_herbi = []
-        for herbivore in self.present_herbivores:
-            if herbivore.potential_death():
-                dead_herbi.append(herbivore)
-                self.present_herbivores = [herb for herb in self.present_herbivores if not dead_herbi]
-        # for death_herb in dead_herbi:
-        #     self.present_herbivores.remove(death_herb)  # Bruker remove?
-        self.present_herbivores = [herb for herb in dead_herbi if not herb.potential_death()]  # Funker potential death?
+        self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
+                                   not herbivore.animal_dying()]
 
     def migrate(self):
         pass
@@ -131,9 +120,12 @@ class SingleCell:
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
 
+    def get_age(self):
+        return self.age
+
     def get_weight(self):
-        for animals in self.present_herbivores:
-            animals.get_weight()
+        return self.weight
+
     def get_age(self):
         for animals in self.present_herbivores:
             animals.get_age()
@@ -171,6 +163,7 @@ class Lowland(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -211,22 +204,51 @@ class PassedBounds:
 
 if __name__ == "__main__":
     c = Lowland()
-    print(c.get_fodder())
+    print(f"fodder: {c.get_fodder()}")
     h1 = Herbivore()
     h2 = Herbivore()
     h3 = Herbivore()
     h4 = Herbivore()
-    h_list = [h1, h2, h3, h4]
+    h5 = Herbivore()
+    h6 = Herbivore()
+    h7 = Herbivore()
+    h8 = Herbivore()
+    h_list = [h1, h2, h3, h4, h5, h6, h7, h8]
     c.animals_allocate(h_list)
 
-    print(c.num_herb())
-    print(c.get_fodder())
-    print(c.get_age())
+#     print(f"h1_weight to h1: {h1.get_weight()}")
+#     c.eat()
+#     print(f"h1_weight to h1: {h1.get_weight()}")
+#     print(f"fodder: {c.get_fodder()}")
+#     print(f"num of animal: {c.num_herb()}")
+#     c.animal_death()
+#     print(f"num of animal: {c.num_herb()}")
+# #    print(f"dead_herb: {c.dead_herb()}")
+#
+#
+#     print("______________")
+    print(c.num_herb_in_cell())
+    c.animal_death()
+    print(c.num_herb_in_cell())
+
     print("______________")
 
-    for years in range(15):
-        c.eat()
-        c.procreation()
-        c.animal_death()
-        print(c.num_herb())
+    print(c.num_herb_in_cell())
+    c.procreation()
+    print(c.num_herb_in_cell())
+    print(c.procreation())
 
+
+    print("______________")
+
+    for j in range(3):
+        for years in range(200):
+            c.eat()
+            c.procreation()
+            c.aging()
+            c.animal_death()
+
+        print(c.num_herb_in_cell())
+
+# death
+# procreation
