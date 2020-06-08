@@ -129,7 +129,7 @@ class Animals:
 
         self.weight += self.params["beta"] * eaten
         self.fitness_calculation()
-        return eaten
+        return self.eaten
 
     # def weight_loss_mother(self, xi):
     #     """
