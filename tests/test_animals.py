@@ -40,10 +40,8 @@ def test_birth_offspring():
     assert prob_birth == 0
 
 
-
 def test_birth_check():
     pass
-
 
 
 def test_procreation():

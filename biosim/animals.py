@@ -123,7 +123,7 @@ class Animals:
 
         self.weight += self.params["beta"] * eaten
         self.fitness_calculation()
-        return eaten
+        return self.eaten
 
 
     def procreation(self, num_same_species):
