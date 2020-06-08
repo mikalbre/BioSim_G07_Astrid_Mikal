@@ -1,4 +1,4 @@
-from .animals import Animals
+from animals import Animals, Herbivore
 from numpy import random
 from random import shuffle
 
@@ -104,9 +104,6 @@ class SingleCell:
                     herb_newborn.append(new_herb_offspring)
             self.present_herbivores.extend(herb_newborn)
 
-    def create_new_animal(self, newborn_weight):
-        pass
-
     def animal_death(self):
         dead_herbi = []
         for herbivore in self.present_herbivores:
@@ -118,10 +115,6 @@ class SingleCell:
 
     def get_fodder(self):
         return self.available_fodder
-
-    def get_num_animals(self):
-        return len(self.present_herbivores)
-
 
 
 class Highland(SingleCell):
@@ -194,3 +187,9 @@ class PassedBounds:
     Can not add animals to this cell, and no animal can access it.
     """
     pass
+
+
+if __name__ == "__main__":
+    a = Herbivore()
+    c = Lowland()
+    c.present_herbivores.append()

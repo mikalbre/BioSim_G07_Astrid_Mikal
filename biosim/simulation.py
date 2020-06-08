@@ -35,8 +35,3 @@ for iterator in range(10):  # years
         print("Age: ", herb.get_age(),
               "weight: ", herb.get_weight(),
               "fitness: ", herb.get_fitness())
-
-
-from landscape import Lowland
-c = Lowland()
-c.herb = herb_list
