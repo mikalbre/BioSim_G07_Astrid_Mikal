@@ -95,6 +95,9 @@ class SingleCell:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
+    def feed_carn_with_herb(self):
+        pass
+
     def procreation(self):
         """
         Checks if there are at least two other animal of the same species in this cell
