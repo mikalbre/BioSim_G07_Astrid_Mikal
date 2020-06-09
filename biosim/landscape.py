@@ -102,13 +102,15 @@ class SingleCell:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
-    def sorted_phi_list(self):
-        phi_sorted_list = sorted(self.present_herbivores, key=attrgetter('phi'))
+    def phi_sorted_list(self):
+        #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
+        phi_sorted_list = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         return phi_sorted_list
 
 
     def feed_carn_with_herb(self):
         pass
+
 
     def procreation(self):
         """
@@ -260,14 +262,15 @@ if __name__ == "__main__":
     c.animals_allocate(popc)
     print(f"num_an herb: {c.num_herb_in_cell()}")
     print(f"num_an carn: {c.num_carn_in_cell()}")
-    print(c.sorted_phi_list())
+    print(c.phi_sorted_list())
 
     for j in range(4):
         for years in range(200):
             c.eat()
+            c.feed_carn_with_herb()
             c.procreation()
             c.aging()
-            #c.animal_death()
+            c.animal_death()
         print("______ Etter syklus ______")
         print(f'Herb: {c.num_herb_in_cell()}')
         print(f'Carn: {c.num_carn_in_cell()}')
