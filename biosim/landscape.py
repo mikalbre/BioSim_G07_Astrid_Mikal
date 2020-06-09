@@ -233,6 +233,7 @@ if __name__ == "__main__":
     for j in range(10):
         for years in range(200):
             c.eat()
+
             c.procreation()
             c.aging()
             c.animal_death()

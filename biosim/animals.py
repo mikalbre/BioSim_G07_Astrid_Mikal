@@ -261,30 +261,61 @@ class Carnivore(Animals):
 
 # carni hunt herbi
     def hunt_herb(self, herbi_phi_sorted_list):
+        #herbi_phi_sorted_list = sorted(herbi_phi_sorted_list)
 
         for herb in herbi_phi_sorted_list:
-            if self.phi <= herb.phi:
+
+            if self.phi <= herb:
                 kill_prob = 0
-
-            elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
-                kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
-
+            elif self.phi - herb < self.params["DeltaPhiMax"]:
+                kill_prob = (self.phi - herb) / (self.params["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
-            if random.random() <= kill_prob:
+            if random.random() >= kill_prob:
 
-                if self.params["F"] >= herb.weight:
-                    self.weight += self.params["beta"] * herb.weight
-                    herb.alive = False
-                    self.fitness_calculation()
+                if kill_prob == 0:
+                    self.eaten = 0
                     return
-
                 else:
-                    self.weight += self.params["beta"] * self.params["F"]
+                    self.eaten = np.minimum(self.params["F"], herb.weight)
+                    self.weight += self.params["beta"] * self.eaten
                     herb.alive = False
+                    herbi_phi_sorted_list.remove(herb)
                     self.fitness_calculation()
-                    return
+                    return herbi_phi_sorted_list
+
+                #herb_phi_sorted_list.remove(herb)
+
+
+
+
+
+if __name__ == '__main__':
+
+    h1 = Herbivore()
+    h2 = Herbivore()
+    h3 = Herbivore()
+    h4 = Herbivore()
+    h5 = Herbivore()
+    h6 = Herbivore()
+    h7 = Herbivore()
+    h8 = Herbivore()
+    h_list = [h1.phi, h2.phi, h3.phi, h4.phi, h5.phi, h6.phi, h7.phi, h8.phi]
+
+    herbi_phi_sorted_list = sorted(h_list)
+
+    carn = Carnivore()
+    print(herbi_phi_sorted_list)
+    print(carn.phi)
+    print(h1.phi)
+    carn.hunt_herb(herbi_phi_sorted_list)
+    print(herbi_phi_sorted_list)
+
+
+
+
+
 
 
 
