@@ -89,6 +89,9 @@ class SingleCell:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
+    def feed_carn_with_herb(self):
+        pass
+
     def procreation(self):
         """
         Checks if there are at least two other animal of the same species in this cell
@@ -204,6 +207,7 @@ if __name__ == "__main__":
     h7 = Herbivore()
     h8 = Herbivore()
     h_list = [h1, h2, h3, h4, h5, h6, h7, h8]
+    print(h3.phi)
     c.animals_allocate(h_list)
 
     # print(f"h1_weight to h1: {h1.get_weight()}")
