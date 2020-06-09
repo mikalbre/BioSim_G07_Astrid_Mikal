@@ -265,8 +265,8 @@ class Carnivore(Animals):
 
 # carni hunt herbi
     def hunt_herb(self, herbi_phi_sorted_list):
-        #herbi_phi_sorted_list = sorted(herbi_phi_sorted_list)
 
+        del_herb = []
         for herb in herbi_phi_sorted_list:
 
             if self.phi <= herb:
@@ -276,18 +276,18 @@ class Carnivore(Animals):
             else:
                 kill_prob = 1
 
-            if random.random() >= kill_prob:
+            if random.random() <= kill_prob:
+                self.eaten = np.minimum(self.params["F"], herb.weight)
+                self.weight += self.params["beta"] * self.eaten
+                herb.alive = False
+                del_herb.append(herb)
+                self.fitness_calculation()
+                return herbi_phi_sorted_list
 
-                if kill_prob == 0:
-                    self.eaten = 0
-                    return
-                else:
-                    self.eaten = np.minimum(self.params["F"], herb.weight)
-                    self.weight += self.params["beta"] * self.eaten
-                    herb.alive = False
-                    herbi_phi_sorted_list.remove(herb)
-                    self.fitness_calculation()
-                    return herbi_phi_sorted_list
+        for herb in del_herb:
+            herbi_phi_sorted_list.remove(herb)
+        return herbi_phi_sorted_list
+
 
                 #herb_phi_sorted_list.remove(herb)
 

@@ -1,7 +1,7 @@
 from animals import Herbivore, Carnivore
 from numpy import random
 import random
-
+from operator import itemgetter, attrgetter
 
 class SingleCell:
     """
@@ -49,7 +49,7 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-    def animals_allocate(self, animal_h, animal_c):
+    def animals_allocate(self, animal_h):
         """
         Adds given animals of a given species to a given cell on the island.
 
@@ -68,13 +68,19 @@ class SingleCell:
             weight = animal["weight"]
             if species == "Herbivore":
                 self.present_herbivores.append(Herbivore(age, weight))
-
-        for animal in animal_c:
-            species = animal["species"]
-            age = animal["age"]
-            weight = animal["weight"]
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
+
+        # for animal in h_list:
+        #     species = animal["species"]
+        #     age = animal["age"]
+        #     weight = animal["weight"]
+        #     if species == "Carnivore":
+        #         self.present_carnivores.append(Carnivore(age, weight))
+
+
+
+
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
@@ -95,6 +101,11 @@ class SingleCell:
             if self.available_fodder > 0:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
+
+    def sorted_phi_list(self):
+        phi_sorted_list = sorted(self.present_herbivores, key=attrgetter('phi'))
+        return phi_sorted_list
+
 
     def feed_carn_with_herb(self):
         pass
@@ -245,11 +256,13 @@ if __name__ == "__main__":
     # c1 = Carnivore()
     # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
     # h_list = [Herbivore(), Herbivore(), Carnivore()]
-    c.animals_allocate(poph, popc)
+    c.animals_allocate(poph)
+    c.animals_allocate(popc)
     print(f"num_an herb: {c.num_herb_in_cell()}")
     print(f"num_an carn: {c.num_carn_in_cell()}")
+    print(c.sorted_phi_list())
 
-    for j in range(10):
+    for j in range(4):
         for years in range(200):
             c.eat()
             c.procreation()
