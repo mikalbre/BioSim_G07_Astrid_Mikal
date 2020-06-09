@@ -104,7 +104,6 @@ class Animals:
             self.phi = q_age * q_weight
         return self.phi
 
-
     def procreation(self, num_same_species):
         """
         Calculates the probability of animal having an offspring.
@@ -144,7 +143,6 @@ class Animals:
             #     return Herbivore(0, offspring_weight)
             # elif isinstance(self, Carnivore):
             #     return Carnivore(0, offspring_weight)
-
 
     def prob_migrate(self):
         """
@@ -263,7 +261,6 @@ class Carnivore(Animals):
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
-# carni hunt herbi
     def hunt_herb(self, herbi_phi_sorted_list):
 
         del_herb = []
@@ -290,9 +287,6 @@ class Carnivore(Animals):
 
 
                 #herb_phi_sorted_list.remove(herb)
-
-
-
 
 
 if __name__ == '__main__':
