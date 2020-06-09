@@ -49,7 +49,7 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-    def animals_allocate(self, animal_list):
+    def animals_allocate(self, animal_h, animal_c):
         """
         Adds given animals of a given species to a given cell on the island.
 
@@ -61,11 +61,30 @@ class SingleCell:
         -------
 
         """
-        for animal in animal_list:
-            if animal is isinstance(animal, Herbivore):
-                self.present_herbivores.append(animal)
-            elif animal is isinstance(animal, Carnivore):
-                self.present_carnivores.append(animal)
+        #
+        for animal in animal_h:
+            species = animal["species"]
+            age = animal["age"]
+            weight = animal["weight"]
+            if species == "Herbivore":
+                self.present_herbivores.append(Herbivore(age, weight))
+
+        for animal in animal_c:
+            species = animal["species"]
+            age = animal["age"]
+            weight = animal["weight"]
+            if species == "Carnivore":
+                self.present_carnivores.append(Carnivore(age, weight))
+
+            # if dicti.animal_list("species") == Herbivore():
+            #     animal = Herbivore(age, weight)
+            #     self.present_herbivores.append(animal)
+        #
+        # for animal in animal_list:
+        #     if animal is isinstance(animal, Herbivore):
+        #         self.present_herbivores.append(animal)
+        #     elif animal is isinstance(animal, Carnivore):
+        #         self.present_carnivores.append(animal)
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
@@ -225,42 +244,52 @@ class PassedBounds:
 
 if __name__ == "__main__":
     c = Lowland()
+    poph = [{'species': 'Herbivore',
+                           'age': 5,
+                           'weight': 20}
+                          for _ in range(150)]
+    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(40)]
+
+
     print(f"fodder: {c.get_fodder()}")
-    h1 = Herbivore()
-    h2 = Herbivore()
-    h3 = Herbivore()
-    h4 = Herbivore()
-    h5 = Herbivore()
-    h6 = Herbivore()
-    h7 = Herbivore()
-    h8 = Herbivore()
-    c1 = Carnivore()
-    h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
-    c.animals_allocate(h_list)
-    # print(f"num_an carn: {c.num_carn_in_cell}")
-    # print(f"num_an herb: {c.num_herb_in_cell}")
+    # h1 = Herbivore()
+    # h2 = Herbivore()
+    # h3 = Herbivore()
+    # h4 = Herbivore()
+    # h5 = Herbivore()
+    # h6 = Herbivore()
+    # h7 = Herbivore()
+    # h8 = Herbivore()
+    # c1 = Carnivore()
+    # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
+    # h_list = [Herbivore(), Herbivore(), Carnivore()]
+    c.animals_allocate(poph, popc)
+    print(f"num_an carn: {c.num_carn_in_cell()}")
+    print(f"num_an herb: {c.num_herb_in_cell()}")
+
+
 
     print("___________")
-    print(c1.get_weight())
-    c1.aging()
-    print(c1.get_weight())
-    print("___________")
-
-
-    # print(f'Carn 1 (phi) = {c1.phi}')
-    # print(f'Carn 1 (weight) = {c1.weight}')
-    # print(f'Carn 1 (age) = {c1.age}')
-    # c1.aging()
-    # print(f'Carn 1 (age) = {c1.get_age()}')
+    # print(c1.get_weight())
+    # c.aging()
+    # print(c1.get_weight())
+    # print("___________")
     #
-
-    print(f"h1_weight to h1: {h1.get_weight()}")
-    c.eat()
-    print(f"h1_weight to h1: {h1.get_weight()}")
-    print(f"fodder: {c.get_fodder()}")
-    print(f"num of animal: {c.num_herb_in_cell()}")
-    c.animal_death()
-    print(f"num of animal: {c.num_herb_in_cell()}")
+    #
+    # # print(f'Carn 1 (phi) = {c1.phi}')
+    # # print(f'Carn 1 (weight) = {c1.weight}')
+    # # print(f'Carn 1 (age) = {c1.age}')
+    # # c1.aging()
+    # # print(f'Carn 1 (age) = {c1.get_age()}')
+    # #
+    #
+    # print(f"h1_weight to h1: {h1.get_weight()}")
+    # c.eat()
+    # print(f"h1_weight to h1: {h1.get_weight()}")
+    # print(f"fodder: {c.get_fodder()}")
+    # print(f"num of animal: {c.num_herb_in_cell()}")
+    # c.animal_death()
+    # print(f"num of animal: {c.num_herb_in_cell()}")
 
 
 #     print("______________")
@@ -274,18 +303,14 @@ if __name__ == "__main__":
 #     c.procreation()
 #     print(c.num_herb_in_cell())
 #
-#
-    # print("______________")
-    # import timeit
-    #
-    # for j in range(10):
-    #     for years in range(200):
-    #         c.eat()
-    #
-    #         c.procreation()
-    #         c.aging()
-    #         c.animal_death()
-    #
-    #     print(c.num_herb_in_cell())
-    #
+    for j in range(5):
+        for years in range(200):
+            c.eat()
+            c.procreation()
+            c.aging()
+            c.animal_death()
+        print("______ Etter syklus ______")
+        print(f'Herb: {c.num_herb_in_cell()}')
+        print(f'Carn: {c.num_carn_in_cell()}')
+
     # print(timeit.timeit(number=1000))
