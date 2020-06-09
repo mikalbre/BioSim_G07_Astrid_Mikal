@@ -59,7 +59,7 @@ class Animals:
             self.weight = weight
 
         # sjekk dette
-        self.alive = True  # Fjerne?
+        self.alive = True
         self.has_migrated = False
         self.eaten = 0
 
@@ -126,21 +126,25 @@ class Animals:
         offspring: Object
         """
 
-        offspring_weight = self.get_initial_weight_offspring()
+        #offspring_weight = self.get_initial_weight_offspring()
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
 
         if (random.random()
                 <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
-            self.weight -= self.params["xi"] * offspring_weight
-
-            if isinstance(self, Herbivore):
-                return Herbivore(0, offspring_weight)
-            elif isinstance(self, Carnivore):
-                return Carnivore(0, offspring_weight)
-
+            offspring = type(self)()
+            self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
+            return offspring
+
+        return 0
+            #
+            # if isinstance(self, Herbivore):
+            #     return Herbivore(0, offspring_weight)
+            # elif isinstance(self, Carnivore):
+            #     return Carnivore(0, offspring_weight)
+
 
     def prob_migrate(self):
         """

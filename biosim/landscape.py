@@ -76,16 +76,6 @@ class SingleCell:
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
 
-            # if dicti.animal_list("species") == Herbivore():
-            #     animal = Herbivore(age, weight)
-            #     self.present_herbivores.append(animal)
-        #
-        # for animal in animal_list:
-        #     if animal is isinstance(animal, Herbivore):
-        #         self.present_herbivores.append(animal)
-        #     elif animal is isinstance(animal, Carnivore):
-        #         self.present_carnivores.append(animal)
-
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
 
@@ -97,14 +87,6 @@ class SingleCell:
         self.feed_herb()
 
     def fodder_regrow(self):
-        """
-        The method updates the amount of available food.
-
-        evt Pass
-        Returns
-        -------
-
-        """
         pass
 
     def feed_herb(self):
@@ -125,10 +107,6 @@ class SingleCell:
         Returns
         -------
         """
-
-       # if self.num_herb_in_cell() >= 2 or self.num_carn_in_cell() >= 2:
-            #herb_newborn = []
-            #carn_newborn =[]
 
         herb_newborn = []
         if self.num_herb_in_cell() >= 2:
@@ -234,6 +212,7 @@ class Water(SingleCell):
     def __init__(self):
         super().__init__()
 
+
 class PassedBounds:
     """
     Makes sure no animal can go beyond the map created.
@@ -245,10 +224,13 @@ class PassedBounds:
 if __name__ == "__main__":
     c = Lowland()
     poph = [{'species': 'Herbivore',
-                           'age': 5,
-                           'weight': 20}
-                          for _ in range(150)]
-    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(40)]
+            'age': 5,
+            'weight': 20}
+            for _ in range(150)]
+    popc = [{'species': 'Carnivore',
+            'age': 5,
+             'weight': 20}
+            for _ in range(40)]
 
 
     print(f"fodder: {c.get_fodder()}")
@@ -264,53 +246,16 @@ if __name__ == "__main__":
     # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
     # h_list = [Herbivore(), Herbivore(), Carnivore()]
     c.animals_allocate(poph, popc)
-    print(f"num_an carn: {c.num_carn_in_cell()}")
     print(f"num_an herb: {c.num_herb_in_cell()}")
+    print(f"num_an carn: {c.num_carn_in_cell()}")
 
-
-
-    print("___________")
-    # print(c1.get_weight())
-    # c.aging()
-    # print(c1.get_weight())
-    # print("___________")
-    #
-    #
-    # # print(f'Carn 1 (phi) = {c1.phi}')
-    # # print(f'Carn 1 (weight) = {c1.weight}')
-    # # print(f'Carn 1 (age) = {c1.age}')
-    # # c1.aging()
-    # # print(f'Carn 1 (age) = {c1.get_age()}')
-    # #
-    #
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # c.eat()
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # print(f"fodder: {c.get_fodder()}")
-    # print(f"num of animal: {c.num_herb_in_cell()}")
-    # c.animal_death()
-    # print(f"num of animal: {c.num_herb_in_cell()}")
-
-
-#     print("______________")
-#     print(c.num_herb_in_cell())
-#     c.animal_death()
-#     print(c.num_herb_in_cell())
-#
-#     print("______________")
-#
-#     print(c.num_herb_in_cell())
-#     c.procreation()
-#     print(c.num_herb_in_cell())
-#
-    for j in range(5):
+    for j in range(10):
         for years in range(200):
             c.eat()
             c.procreation()
             c.aging()
-            c.animal_death()
+            #c.animal_death()
         print("______ Etter syklus ______")
         print(f'Herb: {c.num_herb_in_cell()}')
         print(f'Carn: {c.num_carn_in_cell()}')
 
-    # print(timeit.timeit(number=1000))
