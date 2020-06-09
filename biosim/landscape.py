@@ -1,4 +1,4 @@
-from animals import Herbivore
+from animals import Herbivore, Carnivore
 from numpy import random
 import random
 
@@ -62,10 +62,16 @@ class SingleCell:
 
         """
         for animal in animal_list:
-            self.present_herbivores.append(animal)
+            if animal is isinstance(animal, Herbivore):
+                self.present_herbivores.append(animal)
+            elif animal is isinstance(animal, Carnivore):
+                self.present_carnivores.append(animal)
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
+
+    def num_carn_in_cell(self):
+        return len(self.present_carnivores)
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
@@ -97,6 +103,11 @@ class SingleCell:
         Returns
         -------
         """
+
+       # if self.num_herb_in_cell() >= 2 or self.num_carn_in_cell() >= 2:
+            #herb_newborn = []
+            #carn_newborn =[]
+
         herb_newborn = []
         if self.num_herb_in_cell() >= 2:
             for herbivores in self.present_herbivores:
@@ -106,9 +117,23 @@ class SingleCell:
                 self.present_herbivores.append(offspring)
                 herb_newborn.append(offspring)
 
+        carn_newborn = []
+        if self.num_carn_in_cell() >= 2:
+            for carnivores in self.present_carnivores:
+                offspring = carnivores.procreation(self.num_carn_in_cell())
+                if not offspring:
+                    continue
+                self.present_carnivores.append(offspring)
+                carn_newborn.append(offspring)
+
+        return herb_newborn, carn_newborn
+
     def animal_death(self):
         self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
                                    not herbivore.animal_dying()]
+
+        self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
+                                   not carnivore.animal_dying()]
 
     def migrate(self):
         pass
@@ -119,6 +144,9 @@ class SingleCell:
     def aging(self):
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
+
+        for carnivore in self.present_carnivores:
+            carnivore.growing_older()
 
 
 class Highland(SingleCell):
@@ -203,16 +231,33 @@ if __name__ == "__main__":
     h6 = Herbivore()
     h7 = Herbivore()
     h8 = Herbivore()
-    h_list = [h1, h2, h3, h4, h5, h6, h7, h8]
+    c1 = Carnivore()
+    h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
     c.animals_allocate(h_list)
+    # print(f"num_an carn: {c.num_carn_in_cell}")
+    # print(f"num_an herb: {c.num_herb_in_cell}")
 
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # c.eat()
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # print(f"fodder: {c.get_fodder()}")
-    # print(f"num of animal: {c.num_herb_in_cell()}")
-    # c.animal_death()
-    # print(f"num of animal: {c.num_herb_in_cell()}")
+    print("___________")
+    print(c1.get_weight())
+    c1.aging()
+    print(c1.get_weight())
+    print("___________")
+
+
+    # print(f'Carn 1 (phi) = {c1.phi}')
+    # print(f'Carn 1 (weight) = {c1.weight}')
+    # print(f'Carn 1 (age) = {c1.age}')
+    # c1.aging()
+    # print(f'Carn 1 (age) = {c1.get_age()}')
+    #
+
+    print(f"h1_weight to h1: {h1.get_weight()}")
+    c.eat()
+    print(f"h1_weight to h1: {h1.get_weight()}")
+    print(f"fodder: {c.get_fodder()}")
+    print(f"num of animal: {c.num_herb_in_cell()}")
+    c.animal_death()
+    print(f"num of animal: {c.num_herb_in_cell()}")
 
 
 #     print("______________")
@@ -227,17 +272,17 @@ if __name__ == "__main__":
 #     print(c.num_herb_in_cell())
 #
 #
-    print("______________")
-    import timeit
-
-    for j in range(10):
-        for years in range(200):
-            c.eat()
-
-            c.procreation()
-            c.aging()
-            c.animal_death()
-
-        print(c.num_herb_in_cell())
-
-    print(timeit.timeit(number=1000))
+    # print("______________")
+    # import timeit
+    #
+    # for j in range(10):
+    #     for years in range(200):
+    #         c.eat()
+    #
+    #         c.procreation()
+    #         c.aging()
+    #         c.animal_death()
+    #
+    #     print(c.num_herb_in_cell())
+    #
+    # print(timeit.timeit(number=1000))
