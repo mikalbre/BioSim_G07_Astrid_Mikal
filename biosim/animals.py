@@ -259,6 +259,7 @@ class Carnivore(Animals):
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
+# carni hunt herbi
     def hunt_herb(self, herbi_phi_sorted_list):
 
         for herb in herbi_phi_sorted_list:
