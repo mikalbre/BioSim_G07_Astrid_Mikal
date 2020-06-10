@@ -67,6 +67,62 @@ class TestSingleClass:
         #     carn_weight_eaten = carn.weight
         # assert carn_weight < carn_weight_eaten
 
+
+
+
+class TestHighland:
+    def test_init(self):
+        highland = Highland()
+        assert type(highland.present_herbivores) is list
+        assert type(highland.present_carnivores) is list
+        assert highland.get_fodder() == 300
+
+
+class TestLowland:
+    def test_init(self):
+        lowland = Lowland()
+        assert type(lowland.present_herbivores) is list
+        assert type(lowland.present_carnivores) is list
+        assert lowland.get_fodder() == 800
+
+class TestDesert:
+    def test_init(self):
+        desert = Desert()
+        assert type(desert.present_herbivores) is list
+        assert type(desert.present_carnivores) is list
+        assert desert.get_fodder() == 0
+
+class TestWater:
+    def test_init(self):
+        water = Water()
+        assert type(water.present_herbivores) is list
+        assert type(water.present_carnivores) is list
+        assert water.get_fodder() == 0
+
+
+
+def test_procreation(): # Blir 50 < 50
+    lowland = Lowland()
+    pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
+    len_pop_herb = len(pop_herb)
+    lowland.animals_allocate(pop_herb)
+    lowland.procreation()
+    len_popHerb = len(pop_herb)
+    assert len_pop_herb < len_popHerb
+
+def test_procreation():
+    lowland = Lowland()
+    pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
+    len_pop_herb = len(pop_herb)
+    lowland.animals_allocate(pop_herb)
+    lowland.procreation()
+    len_popHerb = len(pop_herb)
+    assert len_pop_herb < len_popHerb
+
+
+
+
+
         # mocker.patch('random.shuffle', return_value=5)
         #
         # herb = Herbivore(3, None)

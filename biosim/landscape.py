@@ -51,18 +51,8 @@ class SingleCell:
         self.present_carnivores = []
 
     def animals_allocate(self, ini_animals):
-        """
-        Adds given animals of a given species to a given cell on the island.
 
-        Parameters
-        ----------
-        animal_list
-
-        Returns
-        -------
-
-        """
-        # # #        #Except
+        # #        #Except
         for animal in ini_animals:
             species = animal["species"]
             age = animal["age"]
@@ -168,6 +158,7 @@ class Highland(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -198,7 +189,7 @@ class Lowland(SingleCell):
         -------
 
         """
-        self.available_fodder = self.params["f_max"]
+        pass
 
 
 class Desert(SingleCell):
@@ -211,6 +202,16 @@ class Desert(SingleCell):
     def __init__(self):
         super().__init__()
 
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        pass
+
+
 
 class Water(SingleCell):
     """
@@ -219,6 +220,17 @@ class Water(SingleCell):
     """
     def __init__(self):
         super().__init__()
+
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        pass
+
+
 
 
 class PassedBounds:
@@ -241,7 +253,6 @@ if __name__ == "__main__":
             'age': 5,
              'weight': 20} for _ in range(20)
             ]
-
 
     print(f"fodder: {c.get_fodder()}")
 
