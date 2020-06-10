@@ -292,35 +292,6 @@ class Carnivore(Animals):
         #print('del:',del_herb)
         return del_herb
 
-        # for herb in del_herb:
-        #     herbi_phi_sorted_list.remove(herb)
-        # return herbi_phi_sorted_list
-
-
-                #herb_phi_sorted_list.remove(herb)
-
-
-if __name__ == '__main__':
-
-    h1 = Herbivore()
-    h2 = Herbivore()
-    h3 = Herbivore()
-    h4 = Herbivore()
-    h5 = Herbivore()
-    h6 = Herbivore()
-    h7 = Herbivore()
-    h8 = Herbivore()
-    h_list = [h1.phi, h2.phi, h3.phi, h4.phi, h5.phi, h6.phi, h7.phi, h8.phi]
-
-    herbi_phi_sorted_list = sorted(h_list)
-
-    carn = Carnivore()
-    print(herbi_phi_sorted_list)
-    print(carn.phi)
-    print(h1.phi)
-    carn.hunt_herb(herbi_phi_sorted_list)
-    print(herbi_phi_sorted_list)
-
 
 
 

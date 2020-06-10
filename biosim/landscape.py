@@ -91,6 +91,7 @@ class SingleCell:
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
+        self.feed_carn_with_herb()
 
     def fodder_regrow(self):
         pass
