@@ -50,20 +50,21 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-    def animals_allocate(self, animal_h):
+    def animals_allocate(self, ini_animals):
         """
         Adds given animals of a given species to a given cell on the island.
 
         Parameters
         ----------
-        animal_list
+        ini_animals
 
         Returns
         -------
 
         """
-        # Try/Except for not finding herb/carn 
-        for animal in animal_h:
+
+        # Try/Except for not finding herb/carn
+        for animal in ini_animals:
             species = animal["species"]
             age = animal["age"]
             weight = animal["weight"]
@@ -71,6 +72,20 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
+
+            # try:
+            #     for animal in ini_animals:
+            #         species = animal["species"]
+            #         age = animal["age"]
+            #         weight = animal["weight"]
+            #         if species == "Herbivore":
+            #             self.present_herbivores.append(Herbivore(age, weight))
+            #         if species == "Carnivore":
+            #             self.present_carnivores.append(Carnivore(age, weight))
+            # except ValueError:
+            #     raise ValueError(f'This island is exclusive for only herbivores and carnivores!')
+
+
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
@@ -144,6 +159,7 @@ class SingleCell:
 
     def get_fodder(self): # Kan fjernes
         return self.available_fodder
+
 
 class Highland(SingleCell):
     """
@@ -223,11 +239,11 @@ if __name__ == "__main__":
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,
-            'weight': 20} for _ in range(50)
+            'weight': 20} for _ in range(150)
             ]
     popc = [{'species': 'Carnivore',
             'age': 5,
-             'weight': 20} for _ in range(20)
+             'weight': 20} for _ in range(40)
             ]
 
 
@@ -240,8 +256,7 @@ if __name__ == "__main__":
     print(c.present_herbivores)
     print(c.present_carnivores)
 
-
-    for j in range(4):
+    for j in range(10):
         for years in range(200):
             c.eat()
             c.procreation()
