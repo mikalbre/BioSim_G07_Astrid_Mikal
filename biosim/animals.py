@@ -66,9 +66,15 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
+    def __str__(self):
+        return f'Type:{type(self)}, Age:{self.get_age()}, Fitness:{self.get_fitness()}'
+
     def __repr__(self):
-        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        """How the instance presents itself if called"""
+        string = f"Animal Type: {type(self).__name__}, Age: {self.age}, " \
+                 f"Weight: {self.weight}, Fitness: {self.phi}"
         return string
+
 
     def get_initial_weight_offspring(self):
         offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
@@ -133,16 +139,16 @@ class Animals:
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
-
+        # checks if birth will happen:
         if (random.random()
                 <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
             offspring = type(self)()
-            self.weight -= self.params["xi"] * offspring.weight
-            self.fitness_calculation()
-            return offspring
 
+            if self.weight >= self.params["xi"] * offspring.weight:
+                self.weight -= self.params["xi"] * offspring.weight
+                return offspring
         return 0
-            #
+
             # if isinstance(self, Herbivore):
             #     return Herbivore(0, offspring_weight)
             # elif isinstance(self, Carnivore):
@@ -191,6 +197,7 @@ class Animals:
         return self.phi
 
 
+
 class Herbivore(Animals):
     """
 
@@ -214,6 +221,9 @@ class Herbivore(Animals):
 
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
+
+    def __str__(self):
+        return f'Type:{type(self)} /n Age:{self.get_age()} /n Fitness:{self.get_fitness()}'
 
     def feeding(self, available_food):
         """
@@ -262,8 +272,12 @@ class Carnivore(Animals):
         'F': 50.0,
         'DeltaPhiMax': 10.0
     }
+
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
+
+    def __str__(self):
+        return f'Type:{type(self)} /n Age:{self.get_age()} /n Fitness:{self.get_fitness()}'
 
     def hunt_herb(self, herbi_phi_sorted_list):
 
@@ -278,7 +292,7 @@ class Carnivore(Animals):
             else:
                 kill_prob = 1
 
-            if random.random() <= kill_prob:
+            if random.random() <= kill_prob:  # But carn can eat max 50- its appetite
                 self.eaten = np.minimum(self.params["F"], herb.weight)
                 self.weight += self.params["beta"] * self.eaten
                 eaten_amount += herb.weight
@@ -289,15 +303,4 @@ class Carnivore(Animals):
                 if eaten_amount >= self.params["F"]:
                     break
 
-        #print('del:',del_herb)
         return del_herb
-
-
-
-
-
-
-
-
-
-
