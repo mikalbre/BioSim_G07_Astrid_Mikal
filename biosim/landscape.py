@@ -117,7 +117,7 @@ class SingleCell:
         for carnivore in self.present_carnivores:
             self.present_herbivores = [herb for herb in self.present_herbivores
                                        if not carnivore.hunt_herb(self.present_herbivores)]
-        return self.present_carnivores
+        return
 
 
 
@@ -251,24 +251,16 @@ class PassedBounds:
 
 
 if __name__ == "__main__":
+    import numpy as np
+    np.random.seed(1)
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,
-            'weight': 3}, {'species': 'Herbivore',
-            'age': 2,
-            'weight': 10}, {'species': 'Herbivore',
-            'age': 15,
-            'weight': 50}, {'species': 'Herbivore',
-            'age': 5,
-            'weight': 4}
+            'weight': 20} for _ in range(50)
             ]
     popc = [{'species': 'Carnivore',
-            'age': 7,
-             'weight': 30}, {'species': 'Carnivore',
-            'age': 3,
-             'weight': 20}, {'species': 'Carnivore',
-            'age': 12,
-             'weight': 10}
+            'age': 5,
+             'weight': 20} for _ in range(20)
             ]
 
 
@@ -292,8 +284,8 @@ if __name__ == "__main__":
     print(c.present_carnivores)
 
 
-    for j in range(1):
-        for years in range(100):
+    for j in range(4):
+        for years in range(2):
             c.eat()
             c.feed_carn_with_herb()
             c.procreation()
