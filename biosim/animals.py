@@ -66,6 +66,10 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
+    def __repr__(self):
+        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        return string
+
     def get_initial_weight_offspring(self):
         offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
         return offspring_weight
@@ -269,10 +273,10 @@ class Carnivore(Animals):
         del_herb = []
         for herb in herbi_phi_sorted_list:
 
-            if self.phi <= herb:
+            if self.phi <= herb.phi:
                 kill_prob = 0
-            elif self.phi - herb < self.params["DeltaPhiMax"]:
-                kill_prob = (self.phi - herb) / (self.params["DeltaPhiMax"])
+            elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
+                kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
@@ -282,11 +286,12 @@ class Carnivore(Animals):
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()
-                return herbi_phi_sorted_list
+                return del_herb
+        return del_herb
 
-        for herb in del_herb:
-            herbi_phi_sorted_list.remove(herb)
-        return herbi_phi_sorted_list
+        # for herb in del_herb:
+        #     herbi_phi_sorted_list.remove(herb)
+        # return herbi_phi_sorted_list
 
 
                 #herb_phi_sorted_list.remove(herb)

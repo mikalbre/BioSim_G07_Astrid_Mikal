@@ -49,6 +49,8 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
+
+
     def animals_allocate(self, animal_h):
         """
         Adds given animals of a given species to a given cell on the island.
@@ -79,9 +81,6 @@ class SingleCell:
         #         self.present_carnivores.append(Carnivore(age, weight))
 
 
-
-
-
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
 
@@ -102,14 +101,30 @@ class SingleCell:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
-    def phi_sorted_list(self):
-        #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
-        phi_sorted_list = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
-        return phi_sorted_list
+    # def phi_sorted_list(self, list_to_sort):
+    #     #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
+    #     phi_sorted_list_herb = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
+    #     phi_sorted_list_carn = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'), reverse=True)
+    #     return phi_sorted_list_herb, phi_sorted_list_carn
 
 
     def feed_carn_with_herb(self):
-        pass
+        self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
+        self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
+                                         reverse=True)
+
+        for carnivore in self.present_carnivores:
+            self.present_herbivores = [herb for herb in self.present_herbivores
+                                       if not carnivore.hunt_herb(self.present_herbivores)]
+        return self.present_carnivores
+
+
+
+
+
+
+
+
 
 
     def procreation(self):
@@ -238,12 +253,22 @@ if __name__ == "__main__":
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,
-            'weight': 20}
-            for _ in range(150)]
-    popc = [{'species': 'Carnivore',
+            'weight': 3}, {'species': 'Herbivore',
+            'age': 2,
+            'weight': 10}, {'species': 'Herbivore',
+            'age': 15,
+            'weight': 50}, {'species': 'Herbivore',
             'age': 5,
-             'weight': 20}
-            for _ in range(40)]
+            'weight': 4}
+            ]
+    popc = [{'species': 'Carnivore',
+            'age': 7,
+             'weight': 30}, {'species': 'Carnivore',
+            'age': 3,
+             'weight': 20}, {'species': 'Carnivore',
+            'age': 12,
+             'weight': 10}
+            ]
 
 
     print(f"fodder: {c.get_fodder()}")
@@ -262,16 +287,21 @@ if __name__ == "__main__":
     c.animals_allocate(popc)
     print(f"num_an herb: {c.num_herb_in_cell()}")
     print(f"num_an carn: {c.num_carn_in_cell()}")
-    print(c.phi_sorted_list())
+    print(c.present_herbivores)
+    print(c.present_carnivores)
 
-    for j in range(4):
-        for years in range(200):
+
+    for j in range(1):
+        for years in range(100):
             c.eat()
             c.feed_carn_with_herb()
             c.procreation()
             c.aging()
             c.animal_death()
-        print("______ Etter syklus ______")
-        print(f'Herb: {c.num_herb_in_cell()}')
-        print(f'Carn: {c.num_carn_in_cell()}')
+            print("______ Etter syklus ______")
+            print(f'Herb: {c.num_herb_in_cell()}')
+            print(f'Carn: {c.num_carn_in_cell()}')
+
+    print(c.present_herbivores)
+    print(c.present_carnivores)
 
