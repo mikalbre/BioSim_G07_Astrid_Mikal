@@ -94,7 +94,10 @@ class SingleCell:
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
         for carn in self.present_carnivores:  # add if to check herb > 0
-            self.present_herbivores = list(set(self.present_herbivores) -
+            if len(self.present_herbivores) == 0:
+                break
+            else:
+                self.present_herbivores = list(set(self.present_herbivores) -
                                            set(carn.hunt_herb(self.present_herbivores)))
         return
 
@@ -140,7 +143,7 @@ class SingleCell:
         self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
                                    not carnivore.animal_dying()]
 
-    def get_fodder(self): # Kan fjernes
+    def get_fodder(self):  # Kan fjernes
         return self.available_fodder
 
 class Highland(SingleCell):
