@@ -1,6 +1,7 @@
 from biosim.animals import Herbivore, Carnivore
 from biosim.landscape import Lowland, Highland, Desert, Water
 import unittest
+import pytest
 
 def test_cell_parameters():
     pass

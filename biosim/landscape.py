@@ -189,7 +189,7 @@ class Lowland(SingleCell):
         -------
 
         """
-        pass
+        self.available_fodder = self.params["f_max"]
 
 
 class Desert(SingleCell):
@@ -198,9 +198,11 @@ class Desert(SingleCell):
     There is no fodder in Desert, so nothing to eat for herbivores.
     Carnivores can prey on herbivores in the Desert.
     """
+    params = {"f_max": 0}
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -209,7 +211,7 @@ class Desert(SingleCell):
         -------
 
         """
-        pass
+        self.available_fodder = self.params["f_max"]
 
 
 
@@ -218,8 +220,10 @@ class Water(SingleCell):
     The landscape type Water is a sub-class of the superclass Cell.
     Water are passive cell because the animals can not enter.
     """
+    params = {"f_max": 0}
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -228,10 +232,7 @@ class Water(SingleCell):
         -------
 
         """
-        pass
-
-
-
+        self.available_fodder = self.params["f_max"]
 
 class PassedBounds:
     """
