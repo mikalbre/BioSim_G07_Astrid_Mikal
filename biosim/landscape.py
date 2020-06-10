@@ -61,7 +61,7 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
-        #
+
         # try:
         #     for animal in ini_animals:
         #         species = animal["species"]
