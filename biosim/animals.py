@@ -129,7 +129,6 @@ class Animals:
         offspring: Object
         """
 
-        #offspring_weight = self.get_initial_weight_offspring()
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
@@ -142,11 +141,6 @@ class Animals:
             return offspring
 
         return 0
-            #
-            # if isinstance(self, Herbivore):
-            #     return Herbivore(0, offspring_weight)
-            # elif isinstance(self, Carnivore):
-            #     return Carnivore(0, offspring_weight)
 
     def prob_migrate(self):
         """
@@ -262,6 +256,7 @@ class Carnivore(Animals):
         'F': 50.0,
         'DeltaPhiMax': 10.0
     }
+
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
@@ -289,6 +284,3 @@ class Carnivore(Animals):
                     break
 
         return del_herb
-"""
-testing if it works
-"""
