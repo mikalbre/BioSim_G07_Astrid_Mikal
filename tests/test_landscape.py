@@ -58,18 +58,32 @@ class TestSingleClass:
                        'age': 5,
                        'weight': 20}]
         lowland = Lowland()
-        lowland.animals_allocate(ini_animal)
-        self.carn = Lowland().present_carnivores
-        self.herb = len(self.carn)
-        Lowland().procreation()
-        self.herb_pro = len(self.carn)
-        assert self.herb < self.herb_pro
+        carn = lowland.present_carnivores.append(Carnivore())
+        carn = lowland.present_carnivores.append(Carnivore())
+        num_carn = len(lowland.present_carnivores)
+        for _ in range(100):
+            lowland.procreation()
+
+        assert len(lowland.present_carnivores) > num_carn
+
+        # carn_pro = len(lowland.present_carnivores)
+        # assert num_carn < carn_pro
 
         # for carn in Lowland().present_carnivores:
         #     carn_weight = carn.weight
         #     carn.eat()
         #     carn_weight_eaten = carn.weight
         # assert carn_weight < carn_weight_eaten
+
+    def test_feed_herb(self):
+        lowland = Lowland()
+        lowland.present_herbivores.append(Herbivore())
+        lowland.available_fodder = 1
+        lowland.feed_herb()
+        assert lowland.available_fodder == 0
+
+
+
 
 
 
