@@ -50,8 +50,6 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-
-
     def animals_allocate(self, animal_h):
         """
         Adds given animals of a given species to a given cell on the island.
@@ -73,14 +71,6 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
-
-        # for animal in h_list:
-        #     species = animal["species"]
-        #     age = animal["age"]
-        #     weight = animal["weight"]
-        #     if species == "Carnivore":
-        #         self.present_carnivores.append(Carnivore(age, weight))
-
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
@@ -115,7 +105,8 @@ class SingleCell:
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
         for carn in self.present_carnivores:
-            self.present_herbivores = list(set(self.present_herbivores) - set(carn.hunt_herb(self.present_herbivores)))
+            self.present_herbivores = list(set(self.present_herbivores) -
+                                           set(carn.hunt_herb(self.present_herbivores)))
         return
 
     def procreation(self):
@@ -265,15 +256,14 @@ if __name__ == "__main__":
 
 
     for j in range(4):
-        for years in range(2):
+        for years in range(200):
             c.eat()
-            c.feed_carn_with_herb()
             c.procreation()
             c.aging()
             c.animal_death()
-            print("______ Etter syklus ______")
-            print(f'Herb: {c.num_herb_in_cell()}')
-            print(f'Carn: {c.num_carn_in_cell()}')
+        print("______ Etter syklus ______")
+        print(f'Herb: {c.num_herb_in_cell()}')
+        print(f'Carn: {c.num_carn_in_cell()}')
 
     print(c.present_herbivores)
     print(c.present_carnivores)
