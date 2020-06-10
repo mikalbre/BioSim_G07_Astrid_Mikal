@@ -113,20 +113,9 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-
-        for carnivore in self.present_carnivores:
-            self.present_herbivores = [herb for herb in self.present_herbivores
-                                       if not carnivore.hunt_herb(self.present_herbivores)]
+        for carn in self.present_carnivores:
+            self.present_herbivores = list(set(self.present_herbivores) - set(carn.hunt_herb(self.present_herbivores)))
         return
-
-
-
-
-
-
-
-
-
 
     def procreation(self):
         """

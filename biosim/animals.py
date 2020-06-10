@@ -289,7 +289,7 @@ class Carnivore(Animals):
                 if eaten_amount >= self.params["F"]:
                     break
 
-        print('del:',del_herb)
+        #print('del:',del_herb)
         return del_herb
 
         # for herb in del_herb:
