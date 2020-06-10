@@ -1,4 +1,4 @@
-from animals import Herbivore, Carnivore
+from .animals import Herbivore, Carnivore
 from numpy import random
 import random
 
@@ -62,7 +62,7 @@ class SingleCell:
         -------
 
         """
-        #        #Except
+        # #        #Except
         for animal in ini_animals:
             species = animal["species"]
             age = animal["age"]
@@ -71,6 +71,18 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
+        #
+        # try:
+        #     for animal in ini_animals:
+        #         species = animal["species"]
+        #         age = animal["age"]
+        #         weight = animal["weight"]
+        #         if species == "Herbivore":
+        #             self.present_herbivores.append(Herbivore(age, weight))
+        #         if species == "Carnivore":
+        #             self.present_carnivores.append(Carnivore(age, weight))
+        # except ValueError:
+        #     raise ValueError('This island only except herbivores and carnivores!')
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
