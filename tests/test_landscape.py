@@ -1,5 +1,5 @@
 from biosim.animals import Herbivore, Carnivore
-from biosim.landscape import Lowland, Highland, Desert, Water
+from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
 import unittest
 import pytest
 import numpy as np
@@ -10,10 +10,13 @@ class TestSingleClass:
         pass
 
     def test_init(self):
-        pass
+        cell = SingleCell()
+        assert type(cell.present_herbivores) is list
+        assert type(cell.present_carnivores) is list
+        assert cell.get_fodder() == 0
 
     def test_age(self):
-        herb = Herbivore(8,3)
+        herb = Herbivore(8, 3)
         assert herb.get_age() == 8
 
     def test_lowland_instance(self):
