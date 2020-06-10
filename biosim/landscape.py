@@ -62,7 +62,7 @@ class SingleCell:
         -------
 
         """
-        #        #Except
+        # Try/Except for not finding herb/carn 
         for animal in animal_h:
             species = animal["species"]
             age = animal["age"]
