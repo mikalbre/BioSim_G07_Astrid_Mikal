@@ -29,9 +29,12 @@ for herb in herb_list:
 
 # simulates 10 years
 for iterator in range(10):  # years
-    for herb in herb_list:  # herbivore
-        herb.growing_older()  # adds year and
+    for herb in herb_list:# herbivore
         herb.feeding(11)
+        herb.procreation(num_animals)
+        herb.growing_older()  # adds year and
+        herb.dying()
+
         print("Age: ", herb.get_age(),
               "weight: ", herb.get_weight(),
               "fitness: ", herb.get_fitness())

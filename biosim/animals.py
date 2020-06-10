@@ -59,12 +59,16 @@ class Animals:
             self.weight = weight
 
         # sjekk dette
-        self.alive = True  # Fjerne?
+        self.alive = True
         self.has_migrated = False
         self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
+
+    def __repr__(self):
+        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        return string
 
     def get_initial_weight_offspring(self):
         offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
@@ -104,7 +108,6 @@ class Animals:
             self.phi = q_age * q_weight
         return self.phi
 
-
     def procreation(self, num_same_species):
         """
         Calculates the probability of animal having an offspring.
@@ -126,21 +129,24 @@ class Animals:
         offspring: Object
         """
 
-        offspring_weight = self.get_initial_weight_offspring()
+        #offspring_weight = self.get_initial_weight_offspring()
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
 
         if (random.random()
                 <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
-            self.weight -= self.params["xi"] * offspring_weight
-
-            if isinstance(self, Herbivore):
-                return Herbivore(0, offspring_weight)
-            elif isinstance(self, Carnivore):
-                return Carnivore(0, offspring_weight)
-
+            offspring = type(self)()
+            self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
+            return offspring
+
+        return 0
+            #
+            # if isinstance(self, Herbivore):
+            #     return Herbivore(0, offspring_weight)
+            # elif isinstance(self, Carnivore):
+            #     return Carnivore(0, offspring_weight)
 
     def prob_migrate(self):
         """
@@ -261,29 +267,35 @@ class Carnivore(Animals):
 
     def hunt_herb(self, herbi_phi_sorted_list):
 
+        del_herb = []
+        eaten_amount = 0
         for herb in herbi_phi_sorted_list:
+
             if self.phi <= herb.phi:
                 kill_prob = 0
-
             elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
                 kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
-
             else:
                 kill_prob = 1
 
             if random.random() <= kill_prob:
+                self.eaten = np.minimum(self.params["F"], herb.weight)
+                self.weight += self.params["beta"] * self.eaten
+                eaten_amount += herb.weight
+                #print('eaten amount:',eaten_amount)
+                herb.alive = False
+                del_herb.append(herb)
+                self.fitness_calculation()
+                if eaten_amount >= self.params["F"]:
+                    break
 
-                if self.params["F"] >= herb.weight:
-                    self.weight += self.params["beta"] * herb.weight
-                    herb.alive = False
-                    self.fitness_calculation()
-                    return
+        #print('del:',del_herb)
+        return del_herb
 
-                else:
-                    self.weight += self.params["beta"] * self.params["F"]
-                    herb.alive = False
-                    self.fitness_calculation()
-                    return
+
+
+
+
 
 
 

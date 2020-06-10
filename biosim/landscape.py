@@ -1,7 +1,7 @@
-from animals import Herbivore
+from animals import Herbivore, Carnivore
 from numpy import random
 import random
-
+from operator import itemgetter, attrgetter
 
 class SingleCell:
     """
@@ -31,6 +31,7 @@ class SingleCell:
         -------
 
         """
+
         if not isinstance(parameters, dict):
             raise TypeError("Parameter must be type dict")
 
@@ -49,7 +50,9 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-    def animals_allocate(self, animal_list):
+
+
+    def animals_allocate(self, animal_h):
         """
         Adds given animals of a given species to a given cell on the island.
 
@@ -61,25 +64,36 @@ class SingleCell:
         -------
 
         """
-        for animal in animal_list:
-            self.present_herbivores.append(animal)
+        #        #Except
+        for animal in animal_h:
+            species = animal["species"]
+            age = animal["age"]
+            weight = animal["weight"]
+            if species == "Herbivore":
+                self.present_herbivores.append(Herbivore(age, weight))
+            if species == "Carnivore":
+                self.present_carnivores.append(Carnivore(age, weight))
+
+        # for animal in h_list:
+        #     species = animal["species"]
+        #     age = animal["age"]
+        #     weight = animal["weight"]
+        #     if species == "Carnivore":
+        #         self.present_carnivores.append(Carnivore(age, weight))
+
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
 
+    def num_carn_in_cell(self):
+        return len(self.present_carnivores)
+
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
+        self.feed_carn_with_herb()
 
     def fodder_regrow(self):
-        """
-        The method updates the amount of available food.
-
-        evt Pass
-        Returns
-        -------
-
-        """
         pass
 
     def feed_herb(self):
@@ -89,6 +103,21 @@ class SingleCell:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
+    # def phi_sorted_list(self, list_to_sort):
+    #     #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
+    #     phi_sorted_list_herb = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
+    #     phi_sorted_list_carn = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'), reverse=True)
+    #     return phi_sorted_list_herb, phi_sorted_list_carn
+
+
+    def feed_carn_with_herb(self):
+        self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
+        self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
+                                         reverse=True)
+        for carn in self.present_carnivores:
+            self.present_herbivores = list(set(self.present_herbivores) - set(carn.hunt_herb(self.present_herbivores)))
+        return
+
     def procreation(self):
         """
         Checks if there are at least two other animal of the same species in this cell
@@ -97,6 +126,7 @@ class SingleCell:
         Returns
         -------
         """
+
         herb_newborn = []
         if self.num_herb_in_cell() >= 2:
             for herbivores in self.present_herbivores:
@@ -106,9 +136,23 @@ class SingleCell:
                 self.present_herbivores.append(offspring)
                 herb_newborn.append(offspring)
 
+        carn_newborn = []
+        if self.num_carn_in_cell() >= 2:
+            for carnivores in self.present_carnivores:
+                offspring = carnivores.procreation(self.num_carn_in_cell())
+                if not offspring:
+                    continue
+                self.present_carnivores.append(offspring)
+                carn_newborn.append(offspring)
+
+        return herb_newborn, carn_newborn
+
     def animal_death(self):
         self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
                                    not herbivore.animal_dying()]
+
+        self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
+                                   not carnivore.animal_dying()]
 
     def migrate(self):
         pass
@@ -119,6 +163,9 @@ class SingleCell:
     def aging(self):
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
+
+        for carnivore in self.present_carnivores:
+            carnivore.growing_older()
 
 
 class Highland(SingleCell):
@@ -184,6 +231,7 @@ class Water(SingleCell):
     def __init__(self):
         super().__init__()
 
+
 class PassedBounds:
     """
     Makes sure no animal can go beyond the map created.
@@ -193,50 +241,50 @@ class PassedBounds:
 
 
 if __name__ == "__main__":
+    import numpy as np
+    np.random.seed(1)
     c = Lowland()
+    poph = [{'species': 'Herbivore',
+            'age': 5,
+            'weight': 20} for _ in range(50)
+            ]
+    popc = [{'species': 'Carnivore',
+            'age': 5,
+             'weight': 20} for _ in range(20)
+            ]
+
+
     print(f"fodder: {c.get_fodder()}")
-    h1 = Herbivore()
-    h2 = Herbivore()
-    h3 = Herbivore()
-    h4 = Herbivore()
-    h5 = Herbivore()
-    h6 = Herbivore()
-    h7 = Herbivore()
-    h8 = Herbivore()
-    h_list = [h1, h2, h3, h4, h5, h6, h7, h8]
-    c.animals_allocate(h_list)
+    # h1 = Herbivore()
+    # h2 = Herbivore()
+    # h3 = Herbivore()
+    # h4 = Herbivore()
+    # h5 = Herbivore()
+    # h6 = Herbivore()
+    # h7 = Herbivore()
+    # h8 = Herbivore()
+    # c1 = Carnivore()
+    # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
+    # h_list = [Herbivore(), Herbivore(), Carnivore()]
+    c.animals_allocate(poph)
+    c.animals_allocate(popc)
+    print(f"num_an herb: {c.num_herb_in_cell()}")
+    print(f"num_an carn: {c.num_carn_in_cell()}")
+    print(c.present_herbivores)
+    print(c.present_carnivores)
 
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # c.eat()
-    # print(f"h1_weight to h1: {h1.get_weight()}")
-    # print(f"fodder: {c.get_fodder()}")
-    # print(f"num of animal: {c.num_herb_in_cell()}")
-    # c.animal_death()
-    # print(f"num of animal: {c.num_herb_in_cell()}")
 
-
-#     print("______________")
-#     print(c.num_herb_in_cell())
-#     c.animal_death()
-#     print(c.num_herb_in_cell())
-#
-#     print("______________")
-#
-#     print(c.num_herb_in_cell())
-#     c.procreation()
-#     print(c.num_herb_in_cell())
-#
-#
-    print("______________")
-    import timeit
-
-    for j in range(10):
-        for years in range(200):
+    for j in range(4):
+        for years in range(2):
             c.eat()
+            c.feed_carn_with_herb()
             c.procreation()
             c.aging()
             c.animal_death()
+            print("______ Etter syklus ______")
+            print(f'Herb: {c.num_herb_in_cell()}')
+            print(f'Carn: {c.num_carn_in_cell()}')
 
-        print(c.num_herb_in_cell())
+    print(c.present_herbivores)
+    print(c.present_carnivores)
 
-    print(timeit.timeit(number=1000))
