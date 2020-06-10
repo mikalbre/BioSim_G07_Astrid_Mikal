@@ -1,7 +1,7 @@
 from animals import Herbivore, Carnivore
 from numpy import random
 import random
-from operator import itemgetter, attrgetter
+from operator import attrgetter
 
 class SingleCell:
     """
@@ -50,21 +50,13 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
+    def __repr__(self):
+        """How the instance presents itself if called"""
+        string = f"Animal Type: {type(self).__name__}, Age: {self.get_age()}, " \
+                 f"Weight: {self.get_weight()}, Fitness: {self.get_fitness()}"
+        return string
 
-
-    def animals_allocate(self, animal_h):
-        """
-        Adds given animals of a given species to a given cell on the island.
-
-        Parameters
-        ----------
-        animal_list
-
-        Returns
-        -------
-
-        """
-        #        #Except
+    def animals_allocate(self, animal_h):  # evt inn i __init__()
         for animal in animal_h:
             species = animal["species"]
             age = animal["age"]
@@ -73,14 +65,6 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
-
-        # for animal in h_list:
-        #     species = animal["species"]
-        #     age = animal["age"]
-        #     weight = animal["weight"]
-        #     if species == "Carnivore":
-        #         self.present_carnivores.append(Carnivore(age, weight))
-
 
     def num_herb_in_cell(self):
         return len(self.present_herbivores)
@@ -96,18 +80,35 @@ class SingleCell:
         pass
 
     def feed_herb(self):
-        random.shuffle(self.present_herbivores)
+        random.shuffle(self.present_herbivores)  # Check if it eats in random order
         for herb in self.present_herbivores:
             if self.available_fodder > 0:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
 
-    # def phi_sorted_list(self, list_to_sort):
-    #     #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
-    #     phi_sorted_list_herb = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
-    #     phi_sorted_list_carn = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'), reverse=True)
-    #     return phi_sorted_list_herb, phi_sorted_list_carn
+    def weight_herbs(self):  # Available fodder for carni to eat is weight of all herbs
+        fodder_available = 0
+        for herb in self.present_herbivores:
+            fodder_available += herb.weight
+        return fodder_available
 
+    def eat_herb(self):
+        weight = 0
+        for herb in self.present_herbivores:
+            init_w = herb.weight
+            eaten = herb.feeding()
+            weight = eaten + init_w
+        return weight
+
+    def sorted_herb_phi_list(self):
+        self.present_herbivores = sorted(self.present_herbivores,
+                                         key=lambda x: x.phi)
+        return self.present_herbivores
+
+    def sorted_carn_phi_list(self):  # sort eller sorted?
+        self.present_carnivores = sorted(self.present_carnivores,
+                                         key=lambda x: x.phi, reverse=True)
+        return self.present_carnivores
 
     def feed_carn_with_herb(self):
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
@@ -120,8 +121,7 @@ class SingleCell:
     def procreation(self):
         """
         Checks if there are at least two other animal of the same species in this cell
-        and having proper weight for both
-        then they will make a new offspring.
+        and having proper weight for both then they will make a new offspring.
         Returns
         -------
         """
@@ -252,19 +252,8 @@ if __name__ == "__main__":
              'weight': 20} for _ in range(20)
             ]
 
-
     print(f"fodder: {c.get_fodder()}")
-    # h1 = Herbivore()
-    # h2 = Herbivore()
-    # h3 = Herbivore()
-    # h4 = Herbivore()
-    # h5 = Herbivore()
-    # h6 = Herbivore()
-    # h7 = Herbivore()
-    # h8 = Herbivore()
-    # c1 = Carnivore()
-    # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
-    # h_list = [Herbivore(), Herbivore(), Carnivore()]
+
     c.animals_allocate(poph)
     c.animals_allocate(popc)
     print(f"num_an herb: {c.num_herb_in_cell()}")
