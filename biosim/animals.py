@@ -289,13 +289,3 @@ class Carnivore(Animals):
                     break
 
         return del_herb
-
-
-
-
-
-
-
-
-
-
