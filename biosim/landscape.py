@@ -50,7 +50,7 @@ class SingleCell:
         self.present_herbivores = []
         self.present_carnivores = []
 
-    def animals_allocate(self, animal_h):
+    def animals_allocate(self, ini_animals):
         """
         Adds given animals of a given species to a given cell on the island.
 
@@ -63,7 +63,7 @@ class SingleCell:
 
         """
         #        #Except
-        for animal in animal_h:
+        for animal in ini_animals:
             species = animal["species"]
             age = animal["age"]
             weight = animal["weight"]
@@ -91,7 +91,7 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-        for carn in self.present_carnivores:
+        for carn in self.present_carnivores:  # add if to check herb > 0
             self.present_herbivores = list(set(self.present_herbivores) -
                                            set(carn.hunt_herb(self.present_herbivores)))
         return
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     print(c.present_carnivores)
 
 
-    for j in range(4):
+    for j in range(10):
         for years in range(200):
             c.eat()
             c.procreation()
