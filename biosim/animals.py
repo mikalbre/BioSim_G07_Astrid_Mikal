@@ -282,14 +282,12 @@ class Carnivore(Animals):
                 self.eaten = np.minimum(self.params["F"], herb.weight)
                 self.weight += self.params["beta"] * self.eaten
                 eaten_amount += herb.weight
-                #print('eaten amount:',eaten_amount)
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()
                 if eaten_amount >= self.params["F"]:
                     break
 
-        #print('del:',del_herb)
         return del_herb
 
 
