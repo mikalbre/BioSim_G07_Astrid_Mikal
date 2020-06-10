@@ -31,6 +31,7 @@ class SingleCell:
         -------
 
         """
+
         if not isinstance(parameters, dict):
             raise TypeError("Parameter must be type dict")
 
@@ -63,7 +64,7 @@ class SingleCell:
         -------
 
         """
-        #
+        #        #Except
         for animal in animal_h:
             species = animal["species"]
             age = animal["age"]
