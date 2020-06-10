@@ -107,24 +107,20 @@ class SingleCell:
         -------
         """
 
-        herb_newborn = []
         if len(self.present_herbivores) >= 2:
             for herbivores in self.present_herbivores:
                 offspring = herbivores.procreation(len(self.present_herbivores))
                 if not offspring:
                     continue
                 self.present_herbivores.append(offspring)
-                herb_newborn.append(offspring)
 
-        #carn_newborn = []
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
                 offspring = carnivores.procreation(len(self.present_carnivores))
                 if not offspring:
                     continue
                 self.present_carnivores.append(offspring)
-                #carn_newborn.append(offspring)
-
+   
         return self.present_herbivores, self.present_carnivores
 
     def migrate(self):
