@@ -83,11 +83,6 @@ class TestSingleClass:
         assert lowland.available_fodder == 0
 
 
-
-
-
-
-
 class TestHighland:
     def test_init(self):
         highland = Highland()
