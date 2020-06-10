@@ -1,7 +1,6 @@
 from animals import Herbivore, Carnivore
 from numpy import random
 import random
-from operator import itemgetter, attrgetter
 
 class SingleCell:
     """
@@ -13,6 +12,7 @@ class SingleCell:
     alpha: Regrowth of fodder constant. Alpha is how much a cell is able to regrow each year.
 
     """
+
     params = None
 
     @classmethod
@@ -72,12 +72,6 @@ class SingleCell:
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
 
-    def num_herb_in_cell(self):
-        return len(self.present_herbivores)
-
-    def num_carn_in_cell(self):
-        return len(self.present_carnivores)
-
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
@@ -92,13 +86,6 @@ class SingleCell:
             if self.available_fodder > 0:
                 eaten = herb.feeding(self.available_fodder)
                 self.available_fodder -= eaten
-
-    # def phi_sorted_list(self, list_to_sort):
-    #     #self.present_herbivores = sorted(self.present_herbivores, key=attrgetter('phi'))
-    #     phi_sorted_list_herb = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
-    #     phi_sorted_list_carn = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'), reverse=True)
-    #     return phi_sorted_list_herb, phi_sorted_list_carn
-
 
     def feed_carn_with_herb(self):
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
@@ -119,18 +106,18 @@ class SingleCell:
         """
 
         herb_newborn = []
-        if self.num_herb_in_cell() >= 2:
+        if len(self.present_herbivores) >= 2:
             for herbivores in self.present_herbivores:
-                offspring = herbivores.procreation(self.num_herb_in_cell())
+                offspring = herbivores.procreation(len(self.present_herbivores))
                 if not offspring:
                     continue
                 self.present_herbivores.append(offspring)
                 herb_newborn.append(offspring)
 
         carn_newborn = []
-        if self.num_carn_in_cell() >= 2:
+        if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
-                offspring = carnivores.procreation(self.num_carn_in_cell())
+                offspring = carnivores.procreation(len(self.present_carnivores))
                 if not offspring:
                     continue
                 self.present_carnivores.append(offspring)
@@ -138,18 +125,8 @@ class SingleCell:
 
         return herb_newborn, carn_newborn
 
-    def animal_death(self):
-        self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
-                                   not herbivore.animal_dying()]
-
-        self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
-                                   not carnivore.animal_dying()]
-
     def migrate(self):
         pass
-
-    def get_fodder(self):
-        return self.available_fodder
 
     def aging(self):
         for herbivore in self.present_herbivores:
@@ -158,6 +135,15 @@ class SingleCell:
         for carnivore in self.present_carnivores:
             carnivore.growing_older()
 
+    def animal_death(self):
+        self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
+                                   not herbivore.animal_dying()]
+
+        self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
+                                   not carnivore.animal_dying()]
+
+    def get_fodder(self): # Kan fjernes
+        return self.available_fodder
 
 class Highland(SingleCell):
     """
@@ -249,8 +235,8 @@ if __name__ == "__main__":
 
     c.animals_allocate(poph)
     c.animals_allocate(popc)
-    print(f"num_an herb: {c.num_herb_in_cell()}")
-    print(f"num_an carn: {c.num_carn_in_cell()}")
+    print(f"num_an herb: {len(c.present_herbivores)}")
+    print(f"num_an carn: {len(c.present_carnivores)}")
     print(c.present_herbivores)
     print(c.present_carnivores)
 
@@ -262,8 +248,8 @@ if __name__ == "__main__":
             c.aging()
             c.animal_death()
         print("______ Etter syklus ______")
-        print(f'Herb: {c.num_herb_in_cell()}')
-        print(f'Carn: {c.num_carn_in_cell()}')
+        print(f'Herb: {len(c.present_herbivores)}')
+        print(f'Carn: {len(c.present_carnivores)}')
 
     print(c.present_herbivores)
     print(c.present_carnivores)
