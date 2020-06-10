@@ -255,17 +255,7 @@ if __name__ == "__main__":
 
 
     print(f"fodder: {c.get_fodder()}")
-    # h1 = Herbivore()
-    # h2 = Herbivore()
-    # h3 = Herbivore()
-    # h4 = Herbivore()
-    # h5 = Herbivore()
-    # h6 = Herbivore()
-    # h7 = Herbivore()
-    # h8 = Herbivore()
-    # c1 = Carnivore()
-    # h_list = [h1, h2, h3, h4, h5, h6, h7, h8, c1]
-    # h_list = [Herbivore(), Herbivore(), Carnivore()]
+
     c.animals_allocate(poph)
     c.animals_allocate(popc)
     print(f"num_an herb: {c.num_herb_in_cell()}")
