@@ -293,53 +293,14 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:  # But carn can eat max 50- its appetite
-                self.eaten = np.minimum((self.params["F"], herb.weight))
+                self.eaten = np.minimum(self.params["F"], herb.weight)
                 self.weight += self.params["beta"] * self.eaten
                 eaten_amount += herb.weight
                 #print('eaten amount:',eaten_amount)
                 herb.alive = False
-                dead_herb.append(herb)
+                del_herb.append(herb)
                 self.fitness_calculation()
                 if eaten_amount >= self.params["F"]:
                     break
 
-        #print('del:',del_herb)
         return del_herb
-
-                if eaten_amount >= self.params["F"]:
-                    break
-
-        return dead_herb
-
-
-#
-# if __name__ == '__main__':
-#
-#     h1 = Herbivore()
-#     h2 = Herbivore()
-#     h3 = Herbivore()
-#     h4 = Herbivore()
-#     h5 = Herbivore()
-#     h6 = Herbivore()
-#     h7 = Herbivore()
-#     h8 = Herbivore()
-#     h_list = [h1.phi, h2.phi, h3.phi, h4.phi, h5.phi, h6.phi, h7.phi, h8.phi]
-#
-#     herbi_phi_sorted_list = sorted(h_list)
-#
-#     carn = Carnivore()
-#     print(herbi_phi_sorted_list)
-#     print(carn.phi)
-#     print(h1.phi)
-#     carn.hunt_herb(herbi_phi_sorted_list)
-#     print(herbi_phi_sorted_list)
-
-
-
-
-
-
-
-
-
-

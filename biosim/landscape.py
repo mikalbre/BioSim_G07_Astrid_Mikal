@@ -75,6 +75,7 @@ class SingleCell:
     def eat(self):  # herbivore feeding
         self.fodder_regrow()
         self.feed_herb()
+        self.feed_carn_with_herb()
 
     def fodder_regrow(self):
         pass
@@ -115,7 +116,8 @@ class SingleCell:
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
         for carn in self.present_carnivores:
-            self.present_herbivores = list(set(self.present_herbivores) - set(carn.hunt_herb(self.present_herbivores)))
+            self.present_herbivores = list(set(self.present_herbivores) -
+                                           set(carn.hunt_herb(self.present_herbivores)))
         return
 
     def procreation(self):
@@ -262,10 +264,10 @@ if __name__ == "__main__":
     print(c.present_carnivores)
 
 
-    for j in range(4):
-        for years in range(2):
+    for j in range(1):
+        for years in range(200):
             c.eat()
-            c.feed_carn_with_herb()
+            #c.feed_carn_with_herb()
             c.procreation()
             c.aging()
             c.animal_death()
