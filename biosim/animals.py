@@ -8,6 +8,7 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 from math import exp
 import random
 import numpy as np
+random.seed(1)
 
 
 class Animals:
@@ -134,7 +135,7 @@ class Animals:
             return 0
 
         if (random.random()
-                <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
+                <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
@@ -230,7 +231,7 @@ class Herbivore(Animals):
         if available_food < 0:
             self.eaten = 0
         else:
-            self.eaten = np.minimum(self.params["F"], available_food)
+            self.eaten = min(self.params["F"], available_food)
 
         self.weight += self.params["beta"] * self.eaten
         self.fitness_calculation()
@@ -274,7 +275,7 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten = np.minimum(self.params["F"], herb.weight)
+                self.eaten = min(self.params["F"], herb.weight)
                 self.weight += self.params["beta"] * self.eaten
                 eaten_amount += herb.weight
                 herb.alive = False

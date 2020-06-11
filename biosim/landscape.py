@@ -1,5 +1,5 @@
 from .animals import Herbivore, Carnivore
-from numpy import random
+import numpy
 import random
 
 class SingleCell:
@@ -243,7 +243,7 @@ class PassedBounds:
 
 if __name__ == "__main__":
     import numpy as np
-    np.random.seed(1)
+    random.seed(1)
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,

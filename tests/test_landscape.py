@@ -3,7 +3,8 @@ from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
 import unittest
 import pytest
 import numpy as np
-np.random.seed(1)
+import random
+random.seed(1)
 
 class TestSingleClass:
     def test_cell_parameters(self):
@@ -97,10 +98,12 @@ class TestSingleClass:
                        'age': 5,
                        'weight': 25}])
 
-        available_herb = len(lowland.present_herbivores)
+        # available_herb = len(lowland.present_herbivores)
+        # lowland.feed_carn_with_herb()
+        # available_herb_after = len(lowland.present_herbivores)
+        # assert available_herb > available_herb_after
         lowland.feed_carn_with_herb()
-        available_herb_after = len(lowland.present_herbivores)
-        assert available_herb > available_herb_after
+
         sorted_phi_herb = [herb.phi for herb in lowland.present_herbivores]
 
         assert sorted_phi_herb[0] < sorted_phi_herb[1]
