@@ -50,28 +50,27 @@ class SingleCell:
         self.present_carnivores = []
 
     def animals_allocate(self, ini_animals):
+        """
 
-        # #        #Except
+        Parameters
+        ----------
+        ini_animals
+
+        Returns
+        -------
+
+        """
+
         for animal in ini_animals:
             species = animal["species"]
             age = animal["age"]
             weight = animal["weight"]
             if species == "Herbivore":
                 self.present_herbivores.append(Herbivore(age, weight))
-            if species == "Carnivore":
+            elif species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
-        # HIVE INN SJEKK, ENTEN IF OG VALUEERROR ELLER FPR TRY/EXCEPT TIL Å FUNKE
-        # try:
-        #     for animal in ini_animals:
-        #         species = animal["species"]
-        #         age = animal["age"]
-        #         weight = animal["weight"]
-        #         if species == "Herbivore":
-        #             self.present_herbivores.append(Herbivore(age, weight))
-        #         if species == "Carnivore":
-        #             self.present_carnivores.append(Carnivore(age, weight))
-        # except ValueError:
-        #     raise ValueError('This island only except herbivores and carnivores!')
+            else:
+                raise TypeError('This animal is not a valid animal')
 
     def eat(self):  # herbivore feeding
         self.fodder_regrow()

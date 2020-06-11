@@ -1,8 +1,8 @@
 from biosim.animals import Herbivore, Carnivore
 from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
-import unittest
+# import unittest
 import pytest
-import numpy as np
+# import numpy as np
 import random
 random.seed(1)
 
@@ -33,10 +33,6 @@ class TestSingleClass:
         with pytest.raises(ValueError):
             SingleCell.cell_parameter(params)
 
-
-
-
-
     def test_init(self):
         cell = SingleCell()
         assert type(cell.present_herbivores) is list
@@ -44,26 +40,20 @@ class TestSingleClass:
         assert cell.get_fodder() == 0
 
     def test_animal_allocates(self):
-        # ini_animal = [{'species': 'Dog',
-        #                        'age': 5,
-        #                        'weight': 20}]
-        # Lowland().animals_allocate(ini_animal)
-        # assert ValueError
-
-        ini_animal = [{'species': 'Herbivore',
-                       'age': 5,
-                       'weight': 20}]
         lowland = Lowland()
-        animal = lowland.animals_allocate(ini_animal)
-        liste = lowland.present_herbivores
-        assert len(liste) == 1
-
-        ini_animal = [{'species': 'Herbivore',
-                       'age': 5,
-                       'weight': 20} for _ in range(20)]
-        lowland = Lowland()
+        ini_animal = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)]
         lowland.animals_allocate(ini_animal)
-        assert len(lowland.present_herbivores) == 20
+        num_herb = len(lowland.present_herbivores)
+        assert num_herb == 20
+
+        ini_animal = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_animal)
+        num_carn = len(lowland.present_carnivores)
+        assert num_carn == 20
+
+        ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
+        with pytest.raises(TypeError):
+            SingleCell.animals_allocate(ini_animal)
 
     def test_eat(self):
         for herb in Lowland().present_herbivores:
@@ -78,47 +68,23 @@ class TestSingleClass:
         available_fodder = lowland.eat()
         assert available_fodder == 800
 
-    def test_procreation(self):
-        lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(150)])
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(40)])
-
-        num_carn = len(lowland.present_carnivores)
-        for _ in range(100):
-            lowland.procreation()
-        num_carn_after = len(lowland.present_carnivores)
-
-        assert num_carn < num_carn_after
-
-        # carn_pro = len(lowland.present_carnivores)
-        # assert num_carn < carn_pro
-
-
     def test_feed_herb(self):
         lowland = Lowland()
         lowland.present_herbivores.append(Herbivore())
         lowland.available_fodder = 10
         lowland.feed_herb()
         assert lowland.available_fodder == 0
-    #
+
     def test_feed_carn_with_herb(self, ):
         lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Herbivore',
-                       'age': 6,
-                       'weight': 20}, {'species': 'Herbivore',
-                       'age': 3,
-                       'weight': 7}, {'species': 'Herbivore',
-                       'age': 6,
-                       'weight': 6}, {'species': 'Herbivore',
-                       'age': 1,
-                       'weight': 3}])
-        lowland.animals_allocate([{'species': 'Carnivore',
-                       'age': 5,
-                       'weight': 20}, {'species': 'Carnivore',
-                       'age': 4,
-                       'weight': 15}, {'species': 'Carnivore',
-                       'age': 5,
-                       'weight': 25}])
+        lowland.animals_allocate([{'species': 'Herbivore', 'age': 6, 'weight': 20},
+                                  {'species': 'Herbivore', 'age': 3, 'weight': 7},
+                                  {'species': 'Herbivore', 'age': 6, 'weight': 6},
+                                  {'species': 'Herbivore', 'age': 1, 'weight': 3}])
+
+        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
+                                  {'species': 'Carnivore', 'age': 4, 'weight': 15},
+                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}])
 
         available_herb = len(lowland.present_herbivores)
         for _ in range(1):
@@ -129,10 +95,26 @@ class TestSingleClass:
         sorted_phi_carn = [carn.phi for carn in lowland.present_carnivores]
         assert sorted_phi_carn[0] > sorted_phi_carn[1]
 
-
         # sorted_phi_herb = [herb.phi for herb in lowland.present_herbivores]
         # assert sorted_phi_herb[0] < sorted_phi_herb[1]
-        ## MÅ SEES PÅ, IKKE SORTERT RIKTIG
+        # MÅ SEES PÅ, IKKE SORTERT RIKTIG
+
+    def test_procreation(self):
+        lowland = Lowland()
+        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20}
+                                  for _ in range(150)])
+        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 20}
+                                  for _ in range(40)])
+
+        num_carn = len(lowland.present_carnivores)
+        for _ in range(100):
+            lowland.procreation()
+        num_carn_after = len(lowland.present_carnivores)
+
+        assert num_carn < num_carn_after
+
+        # carn_pro = len(lowland.present_carnivores)
+        # assert num_carn < carn_pro
 
     def test_aging(self):
         lowland = Lowland()
@@ -166,9 +148,6 @@ class TestSingleClass:
         assert herb_dying not in lowland.present_herbivores
 
 
-
-
-
 class TestHighland:
     def test_init(self):
         highland = Highland()
@@ -184,12 +163,14 @@ class TestLowland:
         assert type(lowland.present_carnivores) is list
         assert lowland.get_fodder() == 800
 
+
 class TestDesert:
     def test_init(self):
         desert = Desert()
         assert type(desert.present_herbivores) is list
         assert type(desert.present_carnivores) is list
         assert desert.get_fodder() == 0
+
 
 class TestWater:
     def test_init(self):
@@ -198,29 +179,24 @@ class TestWater:
         assert type(water.present_carnivores) is list
         assert water.get_fodder() == 0
 
+# def test_procreation(): # Blir 50 < 50
+#     lowland = Lowland()
+#     pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
+#     len_pop_herb = len(pop_herb)
+#     lowland.animals_allocate(pop_herb)
+#     lowland.procreation()
+#     len_popHerb = len(pop_herb)
+#     assert len_pop_herb < len_popHerb
+#
+# def test_procreation():
+#     lowland = Lowland()
+#     pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
+#     len_pop_herb = len(pop_herb)
+#     lowland.animals_allocate(pop_herb)
+#     lowland.procreation()
+#     len_popHerb = len(pop_herb)
+#     assert len_pop_herb < len_popHerb
 
-
-def test_procreation(): # Blir 50 < 50
-    lowland = Lowland()
-    pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
-    len_pop_herb = len(pop_herb)
-    lowland.animals_allocate(pop_herb)
-    lowland.procreation()
-    len_popHerb = len(pop_herb)
-    assert len_pop_herb < len_popHerb
-
-def test_procreation():
-    lowland = Lowland()
-    pop_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
-    len_pop_herb = len(pop_herb)
-    lowland.animals_allocate(pop_herb)
-    lowland.procreation()
-    len_popHerb = len(pop_herb)
-    assert len_pop_herb < len_popHerb
-
-
-
-    #
     # def test_lowland_instance(self):
     #     lowland_default = Lowland()
     #     lowland_100 = Lowland()
@@ -235,6 +211,3 @@ def test_procreation():
         # land.eat()
         # herb_weight_eaten = Herbivore().get_weight()
         # assert herb_weight < herb_weight_eaten
-
-
-
