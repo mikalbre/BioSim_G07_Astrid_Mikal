@@ -1,4 +1,4 @@
-from .animals import Herbivore, Carnivore
+from animals import Herbivore, Carnivore
 import numpy
 import random
 
@@ -61,7 +61,7 @@ class SingleCell:
                 self.present_herbivores.append(Herbivore(age, weight))
             if species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
-
+        # HIVE INN SJEKK, ENTEN IF OG VALUEERROR ELLER FPR TRY/EXCEPT TIL Å FUNKE
         # try:
         #     for animal in ini_animals:
         #         species = animal["species"]
@@ -276,4 +276,5 @@ if __name__ == "__main__":
 
     print(c.present_herbivores)
     print(c.present_carnivores)
+    print(herb.phi for herb in c.present_herbivores)
 

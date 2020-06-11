@@ -84,12 +84,14 @@ class TestSingleClass:
     def test_feed_carn_with_herb(self, ):
         lowland = Lowland()
         lowland.animals_allocate([{'species': 'Herbivore',
-                       'age': 5,
+                       'age': 6,
                        'weight': 20}, {'species': 'Herbivore',
                        'age': 3,
                        'weight': 7}, {'species': 'Herbivore',
                        'age': 6,
-                       'weight': 6}])
+                       'weight': 6}, {'species': 'Herbivore',
+                       'age': 1,
+                       'weight': 3}])
         lowland.animals_allocate([{'species': 'Carnivore',
                        'age': 5,
                        'weight': 20}, {'species': 'Carnivore',
@@ -98,14 +100,16 @@ class TestSingleClass:
                        'age': 5,
                        'weight': 25}])
 
-        # available_herb = len(lowland.present_herbivores)
-        # lowland.feed_carn_with_herb()
-        # available_herb_after = len(lowland.present_herbivores)
-        # assert available_herb > available_herb_after
-        lowland.feed_carn_with_herb()
+        available_herb = len(lowland.present_herbivores)
+        for _ in range(1):
+            lowland.feed_carn_with_herb()
+        available_herb_after = len(lowland.present_herbivores)
+        assert available_herb > available_herb_after
+
+        sorted_phi_carn = [carn.phi for carn in lowland.present_carnivores]
+        assert sorted_phi_carn[0] > sorted_phi_carn[1]
 
         sorted_phi_herb = [herb.phi for herb in lowland.present_herbivores]
-
         assert sorted_phi_herb[0] < sorted_phi_herb[1]
 
 
