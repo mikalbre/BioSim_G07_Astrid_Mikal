@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Simulation():
-    def __init__(self):
+    def __init__(self, geography_island_string, initial_population):
 
 
 

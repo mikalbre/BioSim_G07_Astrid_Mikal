@@ -50,16 +50,8 @@ class SingleCell:
         self.present_carnivores = []
 
     def animals_allocate(self, ini_animals):
-        """
-
-        Parameters
-        ----------
-        ini_animals
-
-        Returns
-        -------
-
-        """
+        """Allocate herbivores and carnivores to its own list where it belongs.
+        ini_animal is a list of dice. Dictionary contain the species, age and weight of animal."""
 
         for animal in ini_animals:
             species = animal["species"]
@@ -73,14 +65,20 @@ class SingleCell:
                 raise TypeError('This animal is not a valid animal')
 
     def eat(self):  # herbivore feeding
+        """First calls the fodder_regrow- method to make fodder available, depends on
+        type of landscape. Thereafter the feed_herb- method is called and the herb
+        gets to eat in random. Lastly, the carnivores get to eat the herbivores in a order
+        decided by the animals of both species' fitness."""
         self.fodder_regrow()
         self.feed_herb()
         self.feed_carn_with_herb()
 
     def fodder_regrow(self):
+        """Grows fodder. Amount of fodder descided by type of landscape."""
         pass
 
     def feed_herb(self):
+        """Method to feed herbivores randomly with fodder."""
         random.shuffle(self.present_herbivores)
         for herb in self.present_herbivores:
             if self.available_fodder > 0:
@@ -88,10 +86,14 @@ class SingleCell:
                 self.available_fodder -= eaten
 
     def feed_carn_with_herb(self):
+        """Method to feed carnivores with herbivores. Both species gets sorted based on each
+        individual animals' fitness, carivores from highest to lowest and herbivores from
+        lowest to highest. Carnivores with highest fitness get to first try to kill the
+        herbivore with the least amount of fitness."""
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-        for carn in self.present_carnivores:  # add if to check herb > 0
+        for carn in self.present_carnivores:
             if len(self.present_herbivores) == 0:
                 break
             else:
@@ -101,12 +103,8 @@ class SingleCell:
 
     def procreation(self):
         """
-        Checks if there are at least two other animal of the same species in this cell
-        and having proper weight for both
-        then they will make a new offspring.
-        Returns
-        -------
-        """
+        Checks if there are at least two other animal of the same species in this cell.
+        If it is, an offspring might happen."""
 
         if len(self.present_herbivores) >= 2:
             for herbivores in self.present_herbivores:
@@ -128,6 +126,7 @@ class SingleCell:
         pass
 
     def aging(self):
+        """Method to increment age by 1 and decrease weight for every animal."""
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
 
@@ -135,13 +134,15 @@ class SingleCell:
             carnivore.growing_older()
 
     def animal_death(self):
+        """Checks if animal dies. If it dies, the method removes the animal from the
+        list of current animals."""
         self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
                                    not herbivore.animal_dying()]
 
         self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
                                    not carnivore.animal_dying()]
 
-    def get_fodder(self):  # Kan fjernes
+    def get_fodder(self):
         return self.available_fodder
 
 class Highland(SingleCell):
