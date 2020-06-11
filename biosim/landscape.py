@@ -13,7 +13,7 @@ class SingleCell:
 
     """
 
-    params = {} #{}
+    params = {}
 
     @classmethod
     def cell_parameter(cls, parameter):
