@@ -2,6 +2,13 @@ from animals import Herbivore
 import numpy as np
 
 
+class Simulation():
+    def __init__(self):
+
+
+
+
+
 """
     Set population
     initial year = 0
@@ -11,7 +18,7 @@ import numpy as np
     simulate
     num_animals_per_species
     num_animals_on_island
-"""
+
 herb_list = []
 
 num_animals = 5
@@ -38,3 +45,5 @@ for iterator in range(10):  # years
         print("Age: ", herb.get_age(),
               "weight: ", herb.get_weight(),
               "fitness: ", herb.get_fitness())
+
+"""

@@ -6,7 +6,6 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 from biosim.landscape import Lowland
 import matplotlib.pyplot as plt
-import numpy as np
 import random
 random.seed(1)
 

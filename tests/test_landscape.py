@@ -61,6 +61,7 @@ class TestSingleClass:
             herb.eat()
             herb_weight_eaten = herb.weight
             assert herb_weight < herb_weight_eaten
+        # kan også teste eat ved å sjekke om fodder_available er red., og om #herb er red.
 
     def test_fodder_regrow(self):
         lowland = Lowland()
