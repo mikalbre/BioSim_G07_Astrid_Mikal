@@ -132,15 +132,13 @@ class Animals:
 
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
-            return 0
+            return
 
         if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
             return offspring
-
-        return 0
 
     def prob_migrate(self):
         """
