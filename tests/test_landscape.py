@@ -65,7 +65,7 @@ class TestSingleClass:
 
     def test_fodder_regrow(self):
         lowland = Lowland()
-        available_fodder = lowland.fodder_regrow()
+        available_fodder = lowland.available_fodder
         assert available_fodder == 800
 
     def test_feed_herb(self):
@@ -107,12 +107,19 @@ class TestSingleClass:
         lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                   for _ in range(40)])
 
-        num_carn = len(lowland.present_carnivores)
+        # num_carn = len(lowland.present_carnivores)
+        # for _ in range(100):
+        #     lowland.procreation()
+        # num_carn_after = len(lowland.present_carnivores)
+        #
+        # assert num_carn < num_carn_after
+
+        num_herb = len(lowland.present_herbivores)
         for _ in range(100):
             lowland.procreation()
-        num_carn_after = len(lowland.present_carnivores)
+        num_herb_after = len(lowland.present_herbivores)
 
-        assert num_carn < num_carn_after
+        assert num_herb < num_herb_after
 
         # carn_pro = len(lowland.present_carnivores)
         # assert num_carn < carn_pro

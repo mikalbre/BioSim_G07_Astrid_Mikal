@@ -134,8 +134,7 @@ class Animals:
                 (self.params["w_birth"] + self.params["sigma_birth"])):
             return 0
 
-        if (random.random()
-                <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
+        if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
