@@ -17,12 +17,12 @@ class Animals:
     It represents a single animal, and does not specify the type of animal.
     It contains methods, variables and properties that are common for both carnivore and herbivore.
     """
-    params = None  # instead of setting all parameters equal to None
+    params = None  # instead of setting all parameter equal to None
 
     @classmethod
     def set_parameters(cls, params):
         """
-        Takes a dictionary of parameters as input.
+        Takes a dictionary of parameter as input.
         :param params:
         :return:
         """

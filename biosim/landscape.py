@@ -1,4 +1,4 @@
-from animals import Herbivore, Carnivore
+from .animals import Herbivore, Carnivore
 import numpy
 import random
 
@@ -13,10 +13,10 @@ class SingleCell:
 
     """
 
-    params = None
+    params = {} #{}
 
     @classmethod
-    def cell_parameters(cls, parameters):
+    def cell_parameter(cls, parameter):
         """
         This method updates the values of available amount of fodder, f_max.
 
@@ -24,7 +24,7 @@ class SingleCell:
         illegal for the parameters.
         Parameters
         ----------
-        parameters
+        parameter
             Dictionary containing f_max
 
         Returns
@@ -32,18 +32,17 @@ class SingleCell:
 
         """
 
-        if not isinstance(parameters, dict):
+        if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
-        for iterators in parameters:
-            if iterators in cls.params:
-                if iterators == 'f_max' and parameters[iterators] < 0:
-                    raise ValueError("f_max cannot be negative")
-                cls.params[iterators] = parameters[iterators]
-            else:
-                raise ValueError("This specific parameter not defined for this cell")
+        cls.params.update(parameter)
 
-        cls.params.update(parameters)
+        for iterators in parameter:
+            if iterators in cls.params:
+                if iterators == 'f_max' and parameter[iterators] < 0:
+                    raise ValueError("f_max cannot be negative")
+                else:
+                    raise ValueError("This specific parameter not defined for this cell")
 
     def __init__(self):
         self.available_fodder = 0
