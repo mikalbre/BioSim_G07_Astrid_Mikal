@@ -54,33 +54,62 @@ class TestSingleClass:
             assert herb_weight < herb_weight_eaten
 
     def test_procreation(self):
-        ini_animal = [{'species': 'Carnivore',
-                       'age': 5,
-                       'weight': 20}]
         lowland = Lowland()
-        carn = lowland.present_carnivores.append(Carnivore())
-        carn = lowland.present_carnivores.append(Carnivore())
+        lowland.animals_allocate([{'species': 'Carnivore',
+                       'age': 5,
+                       'weight': 20} for _ in range(20)])
+        lowland.animals_allocate([{'species': 'Herbivore',
+                                  'age': 5,
+                                  'weight': 20} for _ in range(20)])
+
         num_carn = len(lowland.present_carnivores)
         for _ in range(100):
             lowland.procreation()
+        num_carn_after = len(lowland.present_carnivores)
 
-        assert len(lowland.present_carnivores) > num_carn
+        assert num_carn_after > num_carn
 
         # carn_pro = len(lowland.present_carnivores)
         # assert num_carn < carn_pro
 
-        # for carn in Lowland().present_carnivores:
-        #     carn_weight = carn.weight
-        #     carn.eat()
-        #     carn_weight_eaten = carn.weight
-        # assert carn_weight < carn_weight_eaten
 
     def test_feed_herb(self):
         lowland = Lowland()
         lowland.present_herbivores.append(Herbivore())
-        lowland.available_fodder = 1
+        lowland.available_fodder = 10
         lowland.feed_herb()
         assert lowland.available_fodder == 0
+    #
+    def test_feed_carn_with_herb(self, ):
+        lowland = Lowland()
+        lowland.animals_allocate([{'species': 'Herbivore',
+                       'age': 5,
+                       'weight': 20}, {'species': 'Herbivore',
+                       'age': 3,
+                       'weight': 7}, {'species': 'Herbivore',
+                       'age': 6,
+                       'weight': 6}])
+        lowland.animals_allocate([{'species': 'Carnivore',
+                       'age': 5,
+                       'weight': 20}, {'species': 'Carnivore',
+                       'age': 4,
+                       'weight': 15}, {'species': 'Carnivore',
+                       'age': 5,
+                       'weight': 25}])
+
+        available_herb = len(lowland.present_herbivores)
+        lowland.feed_carn_with_herb()
+        available_herb_after = len(lowland.present_herbivores)
+        assert available_herb > available_herb_after
+        sorted_phi_herb = [herb.phi for herb in lowland.present_herbivores]
+
+        assert sorted_phi_herb[0] < sorted_phi_herb[1]
+
+
+
+
+
+
 
 
 class TestHighland:

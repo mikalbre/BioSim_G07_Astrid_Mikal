@@ -98,7 +98,7 @@ class SingleCell:
                 break
             else:
                 self.present_herbivores = list(set(self.present_herbivores) -
-                                           set(carn.hunt_herb(self.present_herbivores)))
+                                               set(carn.hunt_herb(self.present_herbivores)))
         return
 
     def procreation(self):
