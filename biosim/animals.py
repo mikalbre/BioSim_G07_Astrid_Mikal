@@ -143,7 +143,6 @@ class Animals:
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
-            print(offspring)
             return offspring
 
     def prob_migrate(self):
