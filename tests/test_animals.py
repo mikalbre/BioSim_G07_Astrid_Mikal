@@ -171,3 +171,14 @@ class TestCarnivore:
         phi_eaten = carn.phi
         assert carn.weight == 21.5
         assert phi < phi_eaten
+
+        carn = Carnivore(5, 20)
+        herb_phi = [Herbivore(5, 0)]
+        del_herb = carn.hunt_herb(herb_phi)
+        assert len(del_herb) == 1
+
+        carn = Carnivore(5, 20)
+        herb_phi_sorted_list = [Herbivore(3, 10), Herbivore(3, 10), Herbivore(3, 10),Herbivore(3, 10),Herbivore(3, 10), Herbivore(20, 60), Herbivore(3, 10)]
+        del_herb = carn.hunt_herb(herb_phi_sorted_list)
+        assert len(del_herb) == 5
+

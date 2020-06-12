@@ -61,6 +61,7 @@ class Animals:
         # sjekk dette
         self.alive = True
         self.has_migrated = False
+        self.eaten_amount = 0 
 
         self.phi = 0
         self.fitness_calculation()
@@ -266,7 +267,6 @@ class Carnivore(Animals):
     def hunt_herb(self, herbi_phi_sorted_list):
 
         del_herb = []
-        eaten_amount = 0
         for herb in herbi_phi_sorted_list:
 
             if self.phi <= herb.phi:
@@ -277,10 +277,10 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                eaten_amount += min(self.params["F"], herb.weight)
-                if eaten_amount >= self.params["F"]:
+                self.eaten_amount += min(self.params["F"], herb.weight)
+                if self.eaten_amount > self.params["F"]:
                     break
-                self.weight += self.params["beta"] * eaten_amount
+                self.weight += self.params["beta"] * self.eaten_amount
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()
