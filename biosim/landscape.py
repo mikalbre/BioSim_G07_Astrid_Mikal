@@ -128,6 +128,7 @@ class SingleCell:
                 if not offspring:
                     continue
                 self.present_herbivores.append(offspring)
+
             return self.present_herbivores
 
         if len(self.present_carnivores) >= 2:
