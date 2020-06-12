@@ -1,7 +1,6 @@
 
 from .landscape import SingleCell, Highland, Lowland, Desert, Water
 
-# ISland just to
 class CreateIsland:
 
     map_params_dict = {"H": Highland,
@@ -29,42 +28,51 @@ class CreateIsland:
         self.add_population(initial_population)  # simulation file
 
     @property
+    def num_animals(self):
+        """Returns total number of animals on island.
+        Returns: int of total number of animals.
+        """
+
+        num_animals = 0
+        for num_type in self.num_animals_per_species.values():
+            num_animals += num_type
+        return num_animals
+
+    @property
     def num_animals_per_species(self):
         """Returns number of herbivores and carnivores on island.
         Iterates through each cell and count number of animals.
+        Returns: dict of number per species
         """
 
         num_animals_per_species = {}
         num_herbivores = 0
         num_carnivores = 0
+
         for cell in self.map.values():
-            num_herbivores +=
-            num_carnivores += SingleCell.num_carnivores
+            num_herbivores += cell.num_herbivores
+            num_carnivores += cell.num_carnivores
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
 
         return num_animals_per_species
 
-    @property
-    def num_animals(self):
-        """Returns total number of animals on island."""
-        num_animals = 0
-        for num_type in self.num_animals_per_species.values():
-            num_animals += num_type
-        return num_animals
-
     @staticmethod
     def conditions_for_island_map_string(geography_island_string):
         """Method to check whether the string of the landscape type of island are rectangular.
         Checks if all lines have same length as the first (base) line.
         If conditions are met, the method returns a list of strings in map_list.
+        Parameters:
+            geography_island_string: multilinestring of island map
+        Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
 
-        map_list = []  # Converts multilinestring into a list
+        map_list = []  # Converts multilinestring into a list og strings
+        multilinesstring = geography_island_string.splitlines()
 
-        for row_num_string in geography_island_string.splitlines():
-            if not len(row_num_string) == len(geography_island_string.splitlines()[0]):
+        for row_num_string in multilinesstring:
+            if not len(row_num_string) == len(multilinesstring()[0]):
                 raise ValueError("The map of the island is not rectangular")
             else:
                 map_list.append(row_num_string)
@@ -82,7 +90,7 @@ class CreateIsland:
             if not landscape_type == 'W':
                 raise ValueError("Cells in west and east must consist of water!")
 
-        return map_list
+        return map_list  # list of strings
 
     def make_map(self, geography_island_string):
         """Create a dictionary from the multi- line string.
@@ -90,7 +98,9 @@ class CreateIsland:
         Output is the island_map with;
         Key: Instance of cell (landscape type- 'Highland', 'Lowland', 'Desert', 'Water')
         Value: Coordinates in (x, y) tuple form. (1,1) is upper left corner
+        Returns: dict where key: tuple, value: instance of landscape type
         """
+        # se mer på denne metoden
         map_list = self.conditions_for_island_map_string(geography_island_string)
 
         island_map = {}
@@ -99,23 +109,23 @@ class CreateIsland:
         for line in map_list:
             coord_y = 1
             for type_landscape in line:
-                island_map[(coord_x, coord_y)] = type_landscape  # X: (0,0) is 'W'
+                island_map[(coord_x, coord_y)] = self.map_params_dict[type_landscape]()
                 coord_y += 1
             coord_x += 1
 
-        return island_map
+        return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Landscape}
 
     def add_population(self, population):
         """Population is dict.
         Method feeds the dict to a cell by position.
         """
-        SingleCell.animals_allocate(population)
+        #SingleCell.animals_allocate(population)
 
         for map_location in population:  # map_location: dict with loc
             loc = map_location["loc"]
 
             if loc not in self.map.keys():
-                raise ValueError("The location does not exist")
+                raise ValueError("Given location does not exist")
 
             if not self.map[loc].passable:
                 raise ValueError("The location is not passable")
@@ -123,23 +133,10 @@ class CreateIsland:
             animals_dict = map_location["pop"]
             self.map[loc].animal_allocate(animals_dict)
 
-    # def create_dict_geography(self):  # make_map
-    #     """Geography string to a dict. Landscape type -> coordinates on form (x, y)
-    #     Takes the first row of multilinestring and converts it into coordinates, then do the same
-    #     with the next line.
-    #     Key: coordinates (x,y)
-    #     Value: type of landscape ('L', 'H', 'D', 'W')
-    #     """
-    #     self.conditions_for_island_map_string()
-    #
-    #     # (1,1) is top left corner.
-    #     coord_x = 1
-    #     for line in self.geography_string.splitlines():
-    #         coord_y = 1
-    #         for type_of_landscape in line:
-    #             self.map_island_coord[(coord_x, coord_y)] = type_of_landscape  # X: (1,1),(1,2),(1,3), (2,1).. assigns a coordinate to the type of landscape
-    #             coord_y += 1
-    #         coord_x += 1
+    def new_year_reset(self):
+        #remember that fodder gets regrown in feed_animals- method
+        for cell in self.map.values():
+            #mer
 
     def feed_animals(self):
         """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat

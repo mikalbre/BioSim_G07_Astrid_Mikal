@@ -34,13 +34,12 @@ class SingleCell:
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
-        #cls.params.update(parameter)  # Trenger?
+        cls.params.update(parameter)  # Trenger?
 
         for iterators in parameter:
             if iterators in cls.params:
                 if iterators == 'f_max' and parameter[iterators] < 0:
                     raise ValueError("f_max cannot be negative")
-                cls.params[iterators] = parameter[iterators]  # Added
             else:
                 raise ValueError("This specific parameter not defined for this cell")
 
