@@ -31,6 +31,7 @@ class Test_Animals:
         assert carn.get_initial_weight_offspring() == 5
 
     def test_sigmoid(self):
+        pass
 
 
     def test_fitness_calculation(self):

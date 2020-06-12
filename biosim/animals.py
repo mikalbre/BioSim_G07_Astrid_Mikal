@@ -72,10 +72,8 @@ class Animals:
     def set_migration_flag_False(self):
         self.has_migrated = False
 
-
-
     def __repr__(self):
-        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
         return string
 
     def get_initial_weight_offspring(self):
@@ -145,6 +143,7 @@ class Animals:
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
+            print(offspring)
             return offspring
 
     def prob_migrate(self):

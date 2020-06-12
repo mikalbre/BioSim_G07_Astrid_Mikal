@@ -1,4 +1,4 @@
-from .animals import Herbivore, Carnivore
+from animals import Herbivore, Carnivore
 import numpy
 import random
 
