@@ -61,6 +61,17 @@ class TestSingleClass:
             herb.eat()
             herb_weight_eaten = herb.weight
             assert herb_weight < herb_weight_eaten
+
+        for carn in Lowland().present_carnivores:
+            carn_weight = carn.weight
+            carn.eat()
+            carn_weight_eaten = carn.weight
+            assert carn_weight < carn_weight_eaten
+
+        highland = Highland()
+        highland.eat()
+        available_fodder = highland.available_fodder
+        assert available_fodder == 300
         # kan også teste eat ved å sjekke om fodder_available er red., og om #herb er red.
 
     def test_fodder_regrow(self):
@@ -75,7 +86,9 @@ class TestSingleClass:
         lowland.feed_herb()
         assert lowland.available_fodder == 0
 
-    def test_feed_carn_with_herb(self, ):
+    def test_feed_carn_with_herb(self):
+        # mocker.patch('random.random', return_value=0.8)
+
         lowland = Lowland()
 
         lowland.animals_allocate([{'species': 'Herbivore', 'age': 6, 'weight': 20},
@@ -87,12 +100,12 @@ class TestSingleClass:
                                   {'species': 'Carnivore', 'age': 4, 'weight': 15},
                                   {'species': 'Carnivore', 'age': 5, 'weight': 25}])
 
-        lowland.feed_herb()
+        lowland.feed_carn_with_herb()
         sorted_phi_herb = [herb.phi for herb in lowland.present_herbivores]
         assert sorted_phi_herb[0] < sorted_phi_herb[1]
 
         available_herb = len(lowland.present_herbivores)
-        for _ in range(10):
+        for _ in range(100):
             lowland.feed_carn_with_herb()
         available_herb_after = len(lowland.present_herbivores)
         assert available_herb > available_herb_after
@@ -100,12 +113,13 @@ class TestSingleClass:
         sorted_phi_carn = [carn.phi for carn in lowland.present_carnivores]
         assert sorted_phi_carn[0] > sorted_phi_carn[1]
 
-    def test_procreation(self):
+    def test_procreation(self, mocker):
+        mocker.patch('random.random', return_value=0.2)
+        mocker.patch('random.gauss', return_value=5)
         lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20}
-                                  for _ in range(150)])
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 20}
-                                  for _ in range(40)])
+        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
+                                  {'species': 'Carnivore', 'age': 4, 'weight': 15},
+                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}])
 
         num_carn = len(lowland.present_carnivores)
         for _ in range(100):
@@ -114,6 +128,10 @@ class TestSingleClass:
 
         assert num_carn < num_carn_after
 
+        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 20},
+                                  {'species': 'Herbivore', 'age': 3, 'weight': 7},
+                                  {'species': 'Herbivore', 'age': 5, 'weight': 17},
+                                  {'species': 'Herbivore', 'age': 10, 'weight': 15}])
         num_herb = len(lowland.present_herbivores)
         for _ in range(100):
             lowland.procreation()
@@ -121,20 +139,21 @@ class TestSingleClass:
 
         assert num_herb < num_herb_after
 
-        # carn_pro = len(lowland.present_carnivores)
-        # assert num_carn < carn_pro
-
     def test_aging(self):
         lowland = Lowland()
         lowland.animals_allocate(
             [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)])
         lowland.animals_allocate(
             [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(150)])
+
         herb = lowland.present_herbivores[0].age
         carn = lowland.present_carnivores[1].age
+
         lowland.aging()
+
         herb_aged = lowland.present_herbivores[0].age
         carn_aged = lowland.present_carnivores[1].age
+
         assert herb < herb_aged
         assert carn < carn_aged
 

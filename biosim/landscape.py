@@ -1,4 +1,4 @@
-from animals import Herbivore, Carnivore
+from .animals import Herbivore, Carnivore
 import numpy
 import random
 
@@ -112,6 +112,7 @@ class SingleCell:
                 if not offspring:
                     continue
                 self.present_herbivores.append(offspring)
+            return self.present_herbivores
 
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
@@ -120,7 +121,7 @@ class SingleCell:
                     continue
                 self.present_carnivores.append(offspring)
 
-        return self.present_herbivores, self.present_carnivores
+            return self.present_carnivores
 
     def migrate(self):
         pass
