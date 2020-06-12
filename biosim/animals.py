@@ -11,33 +11,33 @@ random.seed(1)
 
 
 class Animals:
-    """
-    Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
-    It represents a single animal, and does not specify the type of animal.
-    It contains methods, variables and properties that are common for both carnivore and herbivore.
-    """
-    params = None  # instead of setting all parameter equal to None
-
-    @classmethod
-    def set_parameters(cls, params):
-        """
-        Takes a dictionary of parameter as input.
-        :param params:
-        :return:
-        """
-
-        animal_set_parameters = cls.params.update()
-
-        for parameter in animal_set_parameters:
-            if parameter in cls.params:
-                if params[parameter] < 0:
-                    raise ValueError(f"{parameter} cannot be negative.")
-                if parameter == "DeltaPhiMax" and params[parameter] <= 0:
-                    raise ValueError("DeltaPhiMax must be larger than zero")
-                if parameter == "eta" and not 0 <= params[parameter] <= 1:
-                    raise ValueError("Eta must be greater than zero and smaller than one")
-            else:
-                raise ValueError("Parameter not defined for this animal")
+    # """
+    # Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
+    # It represents a single animal, and does not specify the type of animal.
+    # It contains methods, variables and properties that are common for both carnivore and herbivore.
+    # """
+    # params = None  # instead of setting all parameter equal to None
+    #
+    # ""@classmethod
+    # def set_parameters(cls, params):
+    #     """
+    #     Takes a dictionary of parameter as input.
+    #     :param params:
+    #     :return:
+    #     """
+    #
+    #     animal_set_parameters = cls.params.update()
+    #
+    #     for parameter in animal_set_parameters:
+    #         if parameter in cls.params:
+    #             if params[parameter] < 0:
+    #                 raise ValueError(f"{parameter} cannot be negative.")
+    #             if parameter == "DeltaPhiMax" and params[parameter] <= 0:
+    #                 raise ValueError("DeltaPhiMax must be larger than zero")
+    #             if parameter == "eta" and not 0 <= params[parameter] <= 1:
+    #                 raise ValueError("Eta must be greater than zero and smaller than one")
+    #         else:
+    #             raise ValueError("Parameter not defined for this animal")""
 
     def __init__(self, age=0, weight=None):
         """
@@ -61,21 +61,12 @@ class Animals:
         # sjekk dette
         self.alive = True
         self.has_migrated = False
-        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
 
-    def set_migration_flag_true(self):
-        self.has_migrated = True
-
-    def set_migration_flag_False(self):
-        self.has_migrated = False
-
-
-
     def __repr__(self):
-        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
         return string
 
     def get_initial_weight_offspring(self):
@@ -279,13 +270,12 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten = min(self.params["F"], herb.weight)
-                self.weight += self.params["beta"] * self.eaten
-                eaten_amount += herb.weight
+                eaten_amount += min(self.params["F"], herb.weight)
+                if eaten_amount >= self.params["F"]:
+                    break
+                self.weight += self.params["beta"] * eaten_amount
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()
-                if eaten_amount >= self.params["F"]:
-                    break
 
         return del_herb
