@@ -6,11 +6,11 @@ from pytest import approx
 
 
 class Test_Animals:
-    @pytest.fixture
-    def set_parameters(request):
-        Animals.set_parameters(request.param)
-        yield
-        Animals.set_parameters(Animals.params)
+    # @pytest.fixture
+    # def set_parameters(request):
+    #     Animals.set_parameters(request.param)
+    #     yield
+    #     Animals.set_parameters(Animals.params)
 
     def test_init(self):
         herb = Herbivore(5, 3)
@@ -20,6 +20,11 @@ class Test_Animals:
 
         with pytest.raises(ValueError):
             Animals(Carnivore(-2, None))
+
+    def test_repr(self):
+        herb = Herbivore(5, 20)
+        string = 'Type: Herbivore, Age: 5, Fitness: 0.7303925468387672'
+        assert string == Animals.__repr__(herb)
 
     def test_get_initial_weight(self, mocker):
         mocker.patch('random.gauss', return_value=5)
@@ -65,15 +70,26 @@ class Test_Animals:
             assert procreation is None
 
         herb = Herbivore(5, 40)
+        phi = herb.phi
+        mocker.patch('random.random', return_value=0.01)
         herb.procreation(2)
         mocker.patch('random.gauss', return_value=5)
-        new_weight = herb.weight - herb.params["xi"] * herb.get_initial_weight_offspring()
-        assert new_weight == 34
+
+        # herb.weight -= herb.params["xi"] * herb.get_initial_weight_offspring()
+        phi_procreated = herb.phi
+        assert herb.weight == 34
+        assert phi > phi_procreated
+        #
+        # herb = Herbivore(5, 20)
+        # mocker.patch('random.random', return_value=0.001)
+        # offspring = herb.procreation(2)
+        # assert offspring["Type"] == "Herbivore"
 
     def test_migrate(self):
         herb = Herbivore(0, 5)
         phi = herb.fitness_calculation()
-        assert herb.params['mu'] * phi == approx(0.0943535)
+        prob_migrate = herb.prob_migrate()
+        assert prob_migrate == approx(0.0943535)
 
     def test_growing_older(self):
         herbivore = Herbivore(3, 12)
@@ -85,18 +101,34 @@ class Test_Animals:
         assert herbivore.weight == 11.4
 
     def test_animal_dying(self, mocker):
-        herb = Herbivore(5, 40)
-        dead = herb.animal_dying()
-        assert dead is False
-
         carn = Carnivore(20, 0)
         dead = carn.animal_dying()
+        assert dead is True
+
+        herb = Herbivore(5, 20)
+        mocker.patch('random.random', return_value=0.001)
+        dead = herb.animal_dying()
         assert dead is True
 
         carn = Carnivore(5, 20)
         mocker.patch('random.random', return_value=0.9)
         dead = carn.animal_dying()
         assert dead is False
+
+
+    def test_get_age(self):
+        herb = Herbivore(5, 20)
+        assert herb.get_age() == 5
+
+    def test_get_weight(self):
+        herb = Herbivore(5, 20)
+        assert herb.get_weight() == 20
+
+    def test_get_fitness(self):
+        herb = Herbivore(5, 20)
+        phi = herb.phi
+        assert herb.get_fitness() == phi
+
 
 
 class TestHerbivore:
@@ -133,6 +165,9 @@ class TestCarnivore:
         assert len(del_herb) == 3
 
         carn = Carnivore(5, 20)
+        phi = carn.phi
         herb_phi_sorted_list = [Herbivore(20, 2)]
         carn.hunt_herb(herb_phi_sorted_list)
+        phi_eaten = carn.phi
         assert carn.weight == 21.5
+        assert phi < phi_eaten

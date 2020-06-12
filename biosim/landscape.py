@@ -62,7 +62,7 @@ class SingleCell:
             elif species == "Carnivore":
                 self.present_carnivores.append(Carnivore(age, weight))
             else:
-                raise TypeError('This animal is not a valid animal')
+                raise TypeError("This animal is not a valid animal")
 
     @property
     def num_herbivores(self):
@@ -111,6 +111,7 @@ class SingleCell:
             else:
                 self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
+
                 self.present_herbivores = sorted(self.present_herbivores,
                                                  key=lambda x: getattr(x, 'phi'))
         return
@@ -292,4 +293,6 @@ if __name__ == "__main__":
     print(c.present_herbivores)
     print(c.present_carnivores)
     print(herb.phi for herb in c.present_herbivores)
+    herb = Herbivore(5, 20)
+    print(herb.phi)
 
