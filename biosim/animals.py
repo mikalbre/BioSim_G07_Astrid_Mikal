@@ -61,7 +61,6 @@ class Animals:
         # sjekk dette
         self.alive = True
         self.has_migrated = False
-        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
@@ -143,7 +142,6 @@ class Animals:
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
-            print(offspring)
             return offspring
 
     def prob_migrate(self):
@@ -278,13 +276,12 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten = min(self.params["F"], herb.weight)
-                self.weight += self.params["beta"] * self.eaten
-                eaten_amount += herb.weight
+                eaten_amount += min(self.params["F"], herb.weight)
+                if eaten_amount > self.params["F"]:
+                    break
+                self.weight += self.params["beta"] * eaten_amount
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()
-                if eaten_amount >= self.params["F"]:
-                    break
 
         return del_herb

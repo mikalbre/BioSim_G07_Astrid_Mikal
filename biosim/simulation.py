@@ -4,7 +4,7 @@ import numpy as np
 
 class Simulation():
     def __init__(self,
-                 geography_island_string,
+                 map_string,
                  initial_population,
                  seed,
                  ymax_animals=None,
@@ -33,6 +33,14 @@ class Simulation():
         img_fmt
             String with type for figures, e.g. 'png'
         """
+
+        if map_string is None:
+            geography_island_string = """WWW
+                                         WLW
+                                         WWW"""
+
+
+
     def set_animal_parameters(self, species, img_fmt):
         pass
 
