@@ -1,6 +1,7 @@
 
 from .landscape import SingleCell, Highland, Lowland, Desert, Water
 
+# ISland just to
 class CreateIsland:
 
     map_params_dict = {"H": Highland,
@@ -23,9 +24,9 @@ class CreateIsland:
         self.num_years = 0  # years simulates
 
         # Makes the map based on the multi- line string passed in
-        self.map = self.make_map(geography_island_string)
+        self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
-        self.add_population(initial_population)
+        self.add_population(initial_population)  # simulation file
 
     @property
     def num_animals_per_species(self):

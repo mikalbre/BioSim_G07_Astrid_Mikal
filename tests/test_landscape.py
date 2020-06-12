@@ -117,9 +117,16 @@ class TestSingleClass:
         mocker.patch('random.random', return_value=0.0)
         mocker.patch('random.gauss', return_value=5)
         lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
-                                  {'species': 'Carnivore', 'age': 4, 'weight': 15},
-                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}])
+        # lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
+        #                           {'species': 'Carnivore', 'age': 4, 'weight': 15},
+        #                           {'species': 'Carnivore', 'age': 5, 'weight': 25}])
+        #
+        # num_carn = len(lowland.present_carnivores)
+        # for _ in range(100):
+        #     lowland.procreation()
+        # num_carn_after = len(lowland.present_carnivores)
+        #
+        # assert num_carn < num_carn_after
 
         num_carn = len(lowland.present_carnivores)
         for _ in range(100):

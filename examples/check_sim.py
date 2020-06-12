@@ -45,6 +45,7 @@ if __name__ == '__main__':
                            'weight': 20}
                           for _ in range(40)]}]
 
+# LOOK AT THIS
     sim = BioSim(island_map=geogr, ini_pop=ini_herbs,
                  seed=123456,
                  hist_specs = {'fitness': {'max': 1.0, 'delta': 0.05},
