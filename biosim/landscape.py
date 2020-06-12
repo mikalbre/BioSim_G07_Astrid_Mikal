@@ -34,14 +34,15 @@ class SingleCell:
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
-        cls.params.update(parameter)
+        #cls.params.update(parameter)  # Trenger?
 
         for iterators in parameter:
             if iterators in cls.params:
                 if iterators == 'f_max' and parameter[iterators] < 0:
                     raise ValueError("f_max cannot be negative")
-                else:
-                    raise ValueError("This specific parameter not defined for this cell")
+                cls.params[iterators] = parameter[iterators]  # Added
+            else:
+                raise ValueError("This specific parameter not defined for this cell")
 
     def __init__(self):
         self.available_fodder = 0
@@ -107,9 +108,9 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-        #print(f"len in eat: {len(self.present_carnivores)}")
+
         for carn in self.present_carnivores:
-            #print(carn.phi)
+
             if len(self.present_herbivores) == 0:
                 break
             else:
@@ -117,9 +118,7 @@ class SingleCell:
                                                set(carn.hunt_herb(self.present_herbivores)))
 
                 self.present_herbivores = sorted(self.present_herbivores,
-                                                 key=lambda x: getattr(x, 'phi'))
-
-        return self.present_herbivores, self.present_herbivores
+                                                 key=lambda x: getattr(x, 'phi'))  # Men nye kan ikke dø første året?
 
     def procreation(self):
         """
@@ -134,6 +133,8 @@ class SingleCell:
                 self.present_herbivores.append(offspring)
 
             return self.present_herbivores
+        print(len(self.present_herbivores))
+        print(len(self.present_carnivores))
 
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
@@ -259,33 +260,38 @@ class Water(SingleCell):
 if __name__ == "__main__":
     random.seed(1)
     c = Lowland()
-    poph = [{'species': 'Herbivore',
-            'age': 5,
-            'weight': 20} for _ in range(50)
-            ]
-    popc = [{'species': 'Carnivore',
-            'age': 5,
-             'weight': 20} for _ in range(20)
-            ]
-
-    print(f"fodder: {c.get_fodder()}")
-
+    # poph = [{'species': 'Herbivore',
+    #         'age': 5,
+    #         'weight': 20} for _ in range(50)
+    #         ]
+    # popc = [{'species': 'Carnivore',
+    #         'age': 5,
+    #          'weight': 20} for _ in range(20)
+    #         ]
+    #
+    #print(f"fodder: {c.get_fodder()}")
+    poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20}, {'species': 'Herbivore', 'age': 5, 'weight': 20}]
+    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20}, {'species': 'Carnivore', 'age': 5, 'weight': 20}]
+    #
     c.animals_allocate(poph)
     c.animals_allocate(popc)
-    print(f"num_an herb: {len(c.present_herbivores)}")
-    print(f"num_an carn: {len(c.present_carnivores)}")
-    print(c.present_herbivores)
-    print(c.present_carnivores)
+    # print(f"num_an herb: {len(c.present_herbivores)}")
+    # print(f"num_an carn: {len(c.present_carnivores)}")
+    # print(c.present_herbivores)
+    # print(c.present_carnivores)
 
-    for j in range(4):
-        for years in range(30):
-            c.eat()
+
+
+    for j in range(1):
+        for years in range(10):
+            #c.eat()
             c.procreation()  # carn not procreate, herb does
-            c.aging()
-            c.animal_death()  # works for herb, carns has []
-        print("______ Etter syklus ______")
-        print(f'Herb: {len(c.present_herbivores)}')
-        print(f'Carn: {len(c.present_carnivores)}')
+            #c.aging()
+            #c.animal_death()  # works for herb, carns has []
+            print("______ Etter syklus ______")
+            print(f'Herb: {len(c.present_herbivores)}')
+            print(f'Carn: {len(c.present_carnivores)}')
+
 
     print(c.present_herbivores)
     print(c.present_carnivores)
