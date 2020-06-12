@@ -12,7 +12,7 @@ class SingleCell:
 
     """
 
-    params = {}
+    params = None  # {}
 
     @classmethod
     def cell_parameter(cls, parameter):
@@ -107,9 +107,9 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-        print(f"len in eat: {len(self.present_carnivores)}")
+        #print(f"len in eat: {len(self.present_carnivores)}")
         for carn in self.present_carnivores:
-            print(carn.phi)
+            #print(carn.phi)
             if len(self.present_herbivores) == 0:
                 break
             else:
@@ -160,7 +160,7 @@ class SingleCell:
         list of current animals."""
         self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
                                    not herbivore.animal_dying()]
-
+        #print(len(self.present_carnivores))
         self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
                                    not carnivore.animal_dying()]
 
@@ -223,17 +223,16 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
-
-        self.available_fodder = self.params["f_max"]  # ?
-
-    def fodder_regrow(self):
-        """
-        Restores the amount of available fodder to f_max when this method is called
-        Returns
-        -------
-
-        """
-        self.available_fodder = self.params["f_max"]
+    #     self.available_fodder = self.params["f_max"]  # ?
+    #
+    # def fodder_regrow(self):
+    #     """
+    #     Restores the amount of available fodder to f_max when this method is called
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     self.available_fodder = self.params["f_max"]
 
 
 class Water(SingleCell):
@@ -245,16 +244,16 @@ class Water(SingleCell):
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
-
-    def fodder_regrow(self):
-        """
-        Restores the amount of available fodder to f_max when this method is called
-        Returns
-        -------
-
-        """
-        self.available_fodder = self.params["f_max"]
+    #     self.available_fodder = self.params["f_max"]
+    #
+    # def fodder_regrow(self):
+    #     """
+    #     Restores the amount of available fodder to f_max when this method is called
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     self.available_fodder = self.params["f_max"]
 
 
 if __name__ == "__main__":
@@ -278,12 +277,12 @@ if __name__ == "__main__":
     print(c.present_herbivores)
     print(c.present_carnivores)
 
-    for j in range(10):
+    for j in range(4):
         for years in range(30):
             c.eat()
-            c.procreation()  # carn not procreate
+            c.procreation()  # carn not procreate, herb does
             c.aging()
-            #c.animal_death()  # not working
+            c.animal_death()  # works for herb, carns has []
         print("______ Etter syklus ______")
         print(f'Herb: {len(c.present_herbivores)}')
         print(f'Carn: {len(c.present_carnivores)}')
