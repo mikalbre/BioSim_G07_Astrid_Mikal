@@ -7,7 +7,6 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 from math import exp
 import random
-import numpy as np
 random.seed(1)
 
 
@@ -66,6 +65,14 @@ class Animals:
 
         self.phi = 0
         self.fitness_calculation()
+
+    def set_migration_flag_true(self):
+        self.has_migrated = True
+
+    def set_migration_flag_False(self):
+        self.has_migrated = False
+
+
 
     def __repr__(self):
         string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'

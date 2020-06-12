@@ -30,6 +30,9 @@ class Test_Animals:
         carn = Carnivore(2, None)
         assert carn.get_initial_weight_offspring() == 5
 
+    def test_sigmoid(self):
+
+
     def test_fitness_calculation(self):
         herb = Herbivore(6, 0)
         assert herb.phi == 0

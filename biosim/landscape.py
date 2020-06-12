@@ -111,7 +111,10 @@ class SingleCell:
             else:
                 self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
+                self.present_herbivores = sorted(self.present_herbivores,
+                                                 key=lambda x: getattr(x, 'phi'))
         return
+
 
     def procreation(self):
         """
