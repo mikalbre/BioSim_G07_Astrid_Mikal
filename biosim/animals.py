@@ -11,33 +11,33 @@ random.seed(1)
 
 
 class Animals:
-    # """
-    # Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
-    # It represents a single animal, and does not specify the type of animal.
-    # It contains methods, variables and properties that are common for both carnivore and herbivore.
-    # """
-    # params = None  # instead of setting all parameter equal to None
-    #
-    # ""@classmethod
-    # def set_parameters(cls, params):
-    #     """
-    #     Takes a dictionary of parameter as input.
-    #     :param params:
-    #     :return:
-    #     """
-    #
-    #     animal_set_parameters = cls.params.update()
-    #
-    #     for parameter in animal_set_parameters:
-    #         if parameter in cls.params:
-    #             if params[parameter] < 0:
-    #                 raise ValueError(f"{parameter} cannot be negative.")
-    #             if parameter == "DeltaPhiMax" and params[parameter] <= 0:
-    #                 raise ValueError("DeltaPhiMax must be larger than zero")
-    #             if parameter == "eta" and not 0 <= params[parameter] <= 1:
-    #                 raise ValueError("Eta must be greater than zero and smaller than one")
-    #         else:
-    #             raise ValueError("Parameter not defined for this animal")""
+    """
+    Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
+    It represents a single animal, and does not specify the type of animal.
+    It contains methods, variables and properties that are common for both carnivore and herbivore.
+    """
+    params = None  # instead of setting all parameter equal to None
+
+    @classmethod
+    def set_parameters(cls, params):
+        """
+        Takes a dictionary of parameter as input.
+        :param params:
+        :return:
+        """
+
+        animal_set_parameters = cls.params.update()
+
+        for parameter in animal_set_parameters:
+            if parameter in cls.params:
+                if params[parameter] < 0:
+                    raise ValueError(f"{parameter} cannot be negative.")
+                if parameter == "DeltaPhiMax" and params[parameter] <= 0:
+                    raise ValueError("DeltaPhiMax must be larger than zero")
+                if parameter == "eta" and not 0 <= params[parameter] <= 1:
+                    raise ValueError("Eta must be greater than zero and smaller than one")
+            else:
+                raise ValueError("Parameter not defined for this animal")
 
     def __init__(self, age=0, weight=None):
         """
@@ -58,18 +58,21 @@ class Animals:
         else:
             self.weight = weight
 
-        # sjekk dette
+        # sjekk
         self.alive = True
         self.has_migrated = False
+        self.eaten = 0
 
         self.phi = 0
         self.fitness_calculation()
 
     def set_migration_flag_true(self):
-        self.has_migrated = True
+        pass
+        #self.has_migrated = True
 
     def set_migration_flag_False(self):
-        self.has_migrated = False
+        pass
+        #self.has_migrated = False
 
     def __repr__(self):
         string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
@@ -142,6 +145,7 @@ class Animals:
             offspring = type(self)()
             self.weight -= self.params["xi"] * offspring.weight
             self.fitness_calculation()
+            #print(offspring)
             return offspring
 
     def prob_migrate(self):
@@ -265,21 +269,20 @@ class Carnivore(Animals):
     def hunt_herb(self, herbi_phi_sorted_list):
 
         del_herb = []
-        eaten_amount = 0
         for herb in herbi_phi_sorted_list:
 
             if self.phi <= herb.phi:
                 kill_prob = 0
-            elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
+            elif (self.phi - herb.phi) < self.params["DeltaPhiMax"]:
                 kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                eaten_amount += min(self.params["F"], herb.weight)
-                if eaten_amount >= self.params["F"]:
+                self.eaten += min(self.params["F"], herb.weight)
+                if self.eaten >= self.params["F"]:
                     break
-                self.weight += self.params["beta"] * eaten_amount
+                self.weight += self.params["beta"] * self.eaten
                 herb.alive = False
                 del_herb.append(herb)
                 self.fitness_calculation()

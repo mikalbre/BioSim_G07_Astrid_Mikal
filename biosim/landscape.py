@@ -1,5 +1,4 @@
-from animals import Herbivore, Carnivore
-import numpy
+from animals import Carnivore, Herbivore
 import random
 
 class SingleCell:
@@ -64,19 +63,20 @@ class SingleCell:
             else:
                 raise TypeError("This animal is not a valid animal")
 
-    @property
-    def num_herbivores(self):
-        return len(self.present_herbivores)
 
-    @property
-    def num_carnivores(self):
-        return len(self.present_carnivores)
+    # @property
+    # def num_herbivores(self):
+    #     return len(self.present_herbivores)
+    #
+    # @property
+    # def num_carnivores(self):
+    #     return len(self.present_carnivores)
+    #
+    # @property
+    # def num_animals(self):
+    #     return self.num_herbivores + self.num_carnivores
 
-    @property
-    def num_animals(self):
-        return self.num_herbivores + self.num_carnivores
-
-    def eat(self):  # herbivore feeding
+    def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on
         type of landscape. Thereafter the feed_herb- method is called and the herb
         gets to eat in random. Lastly, the carnivores get to eat the herbivores in a order
@@ -91,6 +91,7 @@ class SingleCell:
 
     def feed_herb(self):
         """Method to feed herbivores randomly with fodder."""
+
         random.shuffle(self.present_herbivores)
         for herb in self.present_herbivores:
             if self.available_fodder > 0:
@@ -99,13 +100,16 @@ class SingleCell:
 
     def feed_carn_with_herb(self):
         """Method to feed carnivores with herbivores. Both species gets sorted based on each
-        individual animals' fitness, carivores from highest to lowest and herbivores from
+        individual animals' fitness, carnivores from highest to lowest and herbivores from
         lowest to highest. Carnivores with highest fitness get to first try to kill the
         herbivore with the least amount of fitness."""
+
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
+        print(f"len in eat: {len(self.present_carnivores)}")
         for carn in self.present_carnivores:
+            print(carn.phi)
             if len(self.present_herbivores) == 0:
                 break
             else:
@@ -114,8 +118,8 @@ class SingleCell:
 
                 self.present_herbivores = sorted(self.present_herbivores,
                                                  key=lambda x: getattr(x, 'phi'))
-        return
 
+        return self.present_herbivores, self.present_herbivores
 
     def procreation(self):
         """
@@ -162,6 +166,7 @@ class SingleCell:
 
     def get_fodder(self):
         return self.available_fodder
+
 
 class Highland(SingleCell):
     """
@@ -218,6 +223,7 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
+
         self.available_fodder = self.params["f_max"]  # ?
 
     def fodder_regrow(self):
@@ -230,13 +236,13 @@ class Desert(SingleCell):
         self.available_fodder = self.params["f_max"]
 
 
-
 class Water(SingleCell):
     """
     The landscape type Water is a sub-class of the superclass Cell.
     Water are passive cell because the animals can not enter.
     """
     params = {"f_max": 0}
+
     def __init__(self):
         super().__init__()
         self.available_fodder = self.params["f_max"]
@@ -249,13 +255,6 @@ class Water(SingleCell):
 
         """
         self.available_fodder = self.params["f_max"]
-
-class PassedBounds:
-    """
-    Makes sure no animal can go beyond the map created.
-    Can not add animals to this cell, and no animal can access it.
-    """
-    pass
 
 
 if __name__ == "__main__":
@@ -279,20 +278,16 @@ if __name__ == "__main__":
     print(c.present_herbivores)
     print(c.present_carnivores)
 
-
     for j in range(10):
-        for years in range(200):
+        for years in range(30):
             c.eat()
-            c.procreation()
+            c.procreation()  # carn not procreate
             c.aging()
-            c.animal_death()
+            #c.animal_death()  # not working
         print("______ Etter syklus ______")
         print(f'Herb: {len(c.present_herbivores)}')
         print(f'Carn: {len(c.present_carnivores)}')
 
     print(c.present_herbivores)
     print(c.present_carnivores)
-    print(herb.phi for herb in c.present_herbivores)
-    herb = Herbivore(5, 20)
-    print(herb.phi)
 
