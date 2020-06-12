@@ -64,6 +64,18 @@ class SingleCell:
             else:
                 raise TypeError('This animal is not a valid animal')
 
+    @property
+    def num_herbivores(self):
+        return len(self.present_herbivores)
+
+    @property
+    def num_carnivores(self):
+        return len(self.present_carnivores)
+
+    @property
+    def num_animals(self):
+        return self.num_herbivores + self.num_carnivores
+
     def eat(self):  # herbivore feeding
         """First calls the fodder_regrow- method to make fodder available, depends on
         type of landscape. Thereafter the feed_herb- method is called and the herb
@@ -201,7 +213,7 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
+        self.available_fodder = self.params["f_max"]  # ?
 
     def fodder_regrow(self):
         """

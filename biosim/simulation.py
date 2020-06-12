@@ -3,8 +3,59 @@ import numpy as np
 
 
 class Simulation():
-    def __init__(self, geography_island_string, initial_population):
+    def __init__(self,
+                 geography_island_string,
+                 initial_population,
+                 seed,
+                 ymax_animals=None,
+                 cmax_animals=None,
+                 hist_specs=None,
+                 img_base=None,
+                 img_fmt='png'):
+        """
 
+        Parameters
+        ----------
+        geography_island_string
+            Multi- line string specifying island geography
+        initial_population
+            List of dictionaries specifying initial population
+        seed
+            Integer used as random number seed
+        ymax_animals
+            Number of specifying y-axis limit for graph showing animal numbers
+        cmax_animals
+            Dict specifying color-code limits for animal densities
+        hist_specs
+            Specifications for histogram. Dictionary.
+        img_base
+            String with the beginning of file name for figures, including path
+        img_fmt
+            String with type for figures, e.g. 'png'
+        """
+    def set_animal_parameters(self, species, img_fmt):
+        pass
+
+    def set_landscape_parameters(self, landscape, params):
+        pass
+
+    def simulate(self, num_years, vis_years=1, img_years=None):
+        pass
+
+    def add_population(self, population):
+        pass
+
+    @property
+    def year(self):
+        pass
+
+    @property
+    def num_animals(self):
+        return
+
+    @property
+    def num_animals_per_species(self):
+        return
 
 
 
