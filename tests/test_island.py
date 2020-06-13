@@ -3,10 +3,11 @@ from biosim.landscape import *
 import pytest
 #\n
 
+
 def test_string_line_length():
-    map_list = ['abc', 'def']
-    island = CreateIsland(map_list)
-    assert island.check_length_of_string(map_list) is True
+    string = """abc\ndef\nghi"""
+    island = CreateIsland(string)
+    assert island.check_length_of_string(string) is True
 
 
 class TestCreateIsland:
@@ -90,9 +91,9 @@ class TestCreateIsland:
     def test_feed_animals(self):
         multi_string = "WWW\nWLW\nWWW"
         test_island = CreateIsland(multi_string)
-        test_island.add_population([{'loc': (1, 1), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
-        test_island.map[(2, 2)].present_herbivores[0].weight = 170
-        assert test_island.map[(2, 2)].present_herbivores[0].weight > 20
+        test_island.add_population([{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+        test_island.map[(2, 2)].present_herbivores[0].weight = 50
+        assert test_island.map[(2, 2)].present_herbivores[0].weight > 19
 
     def test_procreation_animals(self):
         pass
@@ -101,7 +102,17 @@ class TestCreateIsland:
         pass
 
     def test_death_animals(self):
-        pass
+        multi_string = "WWW\nWLW\nWWW"
+        test_island = CreateIsland(multi_string)
+        test_island.add_population([{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 2}
+                                                            for _ in range(50)]}])
+        num_animals_before = test_island.num_animals
+        for _ in range(15):
+            test_island.death_animals()
+        num_animals_after = test_island.num_animals
+        print(num_animals_before, num_animals_after)
+        assert num_animals_before > num_animals_after
+
 
     def test_simulate_one_year(self):
         pass

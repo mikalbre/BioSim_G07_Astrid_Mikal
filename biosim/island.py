@@ -7,6 +7,7 @@ def check_length_of_string(map_list):
         return False
     return True
 
+
 class CreateIsland:
 
     map_params_dict = {"H": Highland,
@@ -22,7 +23,9 @@ class CreateIsland:
         self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
         # self.add_population(initial_population)  # simulation file
-        geography_island_string = geography_island_string.strip()
+
+        #geography_island_string_map = geography_island_string.strip()
+        #geography_island_string = geography_island_string_map.strip().split('\n')
 
     def check_length_of_string(self, map_list):
         if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
@@ -69,9 +72,12 @@ class CreateIsland:
             geography_island_string: multilinestring of island map
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
+        #map_list = []
+        geography_island_string_map = geography_island_string.strip().split('\n')
+        #geography_island_string_map = [i.strip('[]') for i in geography_island_string]
+        #map_list = geography_island_string_map.split('\n')
+        map_list = geography_island_string_map
 
-        #geography_island_string_map = geography_island_string.strip()
-        map_list = geography_island_string_map.split('\n')
 
         if not check_length_of_string(map_list):
             raise ValueError("Multi line string must have equal length, must be a rectangle.")
@@ -127,11 +133,34 @@ class CreateIsland:
             pop = map_location['pop']  # Takes out 'pop' as key and gets the value
             self.map[loc].animals_allocate(pop)  # puts animal in location_cell in landscape.py file
 
-    def feed_animals(self):
-        """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat
-        and carn eat herb. """
+
+
+
+
+
+
+
+
+
+
+    def migration_animals(self):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+    def death_animals(self):
         for cell in self.map.values():
-            cell.eat()
+            cell.animal_death()
+
+
 
 
 
