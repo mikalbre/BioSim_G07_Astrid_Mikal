@@ -22,6 +22,12 @@ class CreateIsland:
         self.map = self.make_map()  # simulation file
         # Passes in the population
         # self.add_population(initial_population)  # simulation file
+        geography_island_string = geography_island_string.strip()
+
+    def check_length_of_string(self, map_list):
+        if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
+            return False
+        return True
 
 
     @staticmethod
@@ -34,10 +40,10 @@ class CreateIsland:
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
 
-        geography_island_string_map = geography_island_string.strip()
+        #geography_island_string_map = geography_island_string.strip()
         map_list = geography_island_string_map.split('\n')
 
-        if not self.check_length_of_string(map_list):
+        if not check_length_of_string(map_list):
             raise ValueError("Multi line string must have equal length, must be a rectangle.")
 
         first_line_north = map_list[0]

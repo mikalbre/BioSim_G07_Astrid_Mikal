@@ -197,14 +197,14 @@ class Highland(SingleCell):
         super().__init__()
         self.available_fodder = self.params["f_max"]
 
-    # def fodder_regrow(self):
-    #     """
-    #     When called, the method restores the amount of available fodder to f_max
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     self.available_fodder = self.params["f_max"]
+    def fodder_regrow(self):
+        """
+        When called, the method restores the amount of available fodder to f_max
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
 
 
 class Lowland(SingleCell):

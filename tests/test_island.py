@@ -4,7 +4,8 @@ import pytest
 
 def test_string_line_length():
     map_list = ['abc', 'def']
-    assert check_length_of_string(map_list) is True
+    island = CreateIsland(map_list)
+    assert island.check_length_of_string(map_list) is True
 
 
 # def test_conditions_for_multiline_string1(geogr):
