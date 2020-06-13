@@ -94,7 +94,7 @@ class SingleCell:
         decided by the animals of both species' fitness."""
         self.fodder_regrow()
         self.feed_herb()
-        self.feed_carn_with_herb()
+        #self.feed_carn_with_herb()
 
     def fodder_regrow(self):
         """Grows fodder. Amount of fodder descided by type of landscape."""
@@ -279,12 +279,20 @@ if __name__ == "__main__":
     # print(c.present_herbivores)
     # print(c.present_carnivores)
 
-    for j in range(2):
-        for years in range(200):
+    for j in range(1):
+        for years in range(1):
             c.eat()
-            c.procreation()  # carn not procreate, herb does
-            c.aging()
-            c.animal_death()  # works for herb, carns has []
+            print(f"Fodder_after_eating: {c.available_fodder}")
+            print(f"num_herb: {len(c.present_herbivores)}")
+            print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
+
+            #c.procreation()  # carn not procreate, herb does
+            print(f"num_herb: {len(c.present_herbivores)}")
+            print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
+
+            #c.aging()
+
+            #c.animal_death()  # works for herb, carns has []
             print("______ Etter syklus ______")
             print(f'Herb: {len(c.present_herbivores)}')
             print(f'Carn: {len(c.present_carnivores)}')
