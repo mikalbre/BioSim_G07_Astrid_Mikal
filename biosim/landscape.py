@@ -252,7 +252,6 @@ class Desert(SingleCell):
         self.available_fodder = self.params["f_max"]
 
 
-
 class Water(SingleCell):
     """
     The landscape type Water is a sub-class of the superclass Cell.
@@ -262,6 +261,7 @@ class Water(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
