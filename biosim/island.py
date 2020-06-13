@@ -19,7 +19,7 @@ class CreateIsland:
         self.year_num = 0  # years simulates
 
         # Makes the map based on the multi- line string passed in
-        self.map = self.make_map()  # simulation file
+        self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
         # self.add_population(initial_population)  # simulation file
         geography_island_string = geography_island_string.strip()
@@ -29,9 +29,39 @@ class CreateIsland:
             return False
         return True
 
+    @property
+    def num_animals(self):
+        """Returns total number of animals on island.
+        Returns: int of total number of animals.
+        """
+
+        num_animals = 0
+        for num_type in self.num_animals_per_species.values():
+            num_animals += num_type
+        return num_animals
+
+    @property
+    def num_animals_per_species(self):
+        """Returns number of herbivores and carnivores on island.
+        Iterates through each cell and count number of animals.
+        Returns: dict of number per species
+        """
+
+        num_animals_per_species = {}
+        num_herbivores = 0
+        num_carnivores = 0
+
+        for cell in self.map.values():
+            num_herbivores += cell.num_herbivores
+            num_carnivores += cell.num_carnivores
+
+        num_animals_per_species["Herbivore"] = num_herbivores
+        num_animals_per_species["Carnivore"] = num_carnivores
+
+        return num_animals_per_species
 
     @staticmethod
-    def condition_for_island_map_string():
+    def condition_for_island_map_string(geography_island_string):
         """Method to check whether the string of the landscape type of island are rectangular.
         Checks if all lines have same length as the first (base) line.
         If conditions are met, the method returns a list of strings in map_list.
@@ -61,30 +91,7 @@ class CreateIsland:
 
         return map_list  # X: ['WWW', 'WLW', 'WWW']
 
-
-
-    def boundaries_all_water(self):
-        """Checks if all boundaries in the given multi-line- string is Water."""
-
-        map_list = self.condition_for_island_map_string()
-
-        first_line_north = map_list[0]
-        last_line_south = map_list[-1]
-        first_column_west = [line[0] for line in map_list]
-        last_column_east = [line[-1] for line in map_list]
-
-        for landscape_type in (first_line_north + last_line_south):
-            if not landscape_type == 'W':
-                raise ValueError("Cells in both north and south must consist of water!")
-
-        for landscape_type in (first_column_west + last_column_east):
-            if not landscape_type == 'W':
-                raise ValueError("Cells in west and east must consist of water!")
-
-        return map_list
-
-
-    def make_map(self):
+    def make_map(self, geography_island_string):
         """Create a dictionary from the multi- line string.
         Input is the multi- line string.
         Output is the island_map with;
@@ -92,8 +99,8 @@ class CreateIsland:
         Value: Coordinates in (x, y) tuple form. (1,1) is upper left corner
         Returns: dict where key: tuple, value: instance of landscape type
         """
-        # se mer på denne metoden
-        map_list = self.condition_for_island_map_string(self.geography_island_string)
+
+        map_list = self.condition_for_island_map_string(geography_island_string)
 
         island_map = {}
 
@@ -106,6 +113,27 @@ class CreateIsland:
             coord_x += 1
 
         return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
+
+
+    def add_population(self, population):
+        """Add population of both herbivores and carnivores to the island."""
+        for map_location in population:
+            loc = map_location['loc']  # Gets a coordinate X: (1, 1)
+            if loc not in self.map.keys():  # Checks if (1,1) is key in self.map
+                raise ValueError("Location does not exist")
+            if not self.map[loc].accessability:
+                raise ValueError("Animals not allowed to enter Water")
+
+            pop = map_location['pop']  # Takes out 'pop' as key and gets the value
+            self.map[loc].animals_allocate(pop)  # puts animal in location_cell in landscape.py file
+
+    def feed_animals(self):
+        """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat
+        and carn eat herb. """
+        for cell in self.map.values():
+            cell.eat()
+
+
 
 
 if __name__=='__main__':

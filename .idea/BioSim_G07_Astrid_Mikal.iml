@@ -2,18 +2,17 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 3.8 (inf200)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
+    <option name="format" value="NUMPY" />
     <option name="myDocStringFormat" value="NumPy" />
   </component>
   <component name="ReSTService">
-    <option name="workdir" value="C:\Users\mikal\Dropbox\BioSim_G07_Astrid_Mikal\docs" />
     <option name="DOC_DIR" value="C:\Users\mikal\Dropbox\BioSim_G07_Astrid_Mikal\docs" />
   </component>
   <component name="TestRunnerService">
-    <option name="projectConfiguration" value="pytest" />
     <option name="PROJECT_TEST_RUNNER" value="pytest" />
   </component>
 </module>
