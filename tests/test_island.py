@@ -1,4 +1,5 @@
 from biosim.island import *
+from biosim.landscape import *
 import pytest
 #\n
 
@@ -6,17 +7,6 @@ def test_string_line_length():
     map_list = ['abc', 'def']
     assert check_length_of_string(map_list) is True
 
-
-# def test_conditions_for_multiline_string1(geogr):
-#
-#     # geogr = """KWW\n WLW\n WWW"""
-#     # island = CreateIsland(geogr)
-#     # island.conditions_for_island_map_string(geogr)
-#     # with pytest.raises(ValueError):
-#     #     CreateIsland.conditions_for_island_map_string()
-#
-# def test_init():
-#     pass
 
 class TestCreateIsland:
 
@@ -29,16 +19,63 @@ class TestCreateIsland:
     def test_num_animals_per_species(self):
         pass
 
-    def test_conditions_for_multiline_string(self):
+    def test_conditions_for_multiline_string(self):  # ALL GOOD
         string = "WWW\nWWW\nWWW"
-        list_string = CreateIsland.conditions_for_island_map_string(string)
+        list_string = CreateIsland.condition_for_island_map_string(string)
         assert list_string == ['WWW', 'WWW', 'WWW']
 
+        string = "WWWW\nWLWW\nWHLW\nWDLW\nWLLW\nWWWW\nWWWW"
+        list_string = CreateIsland.condition_for_island_map_string(string)
+        assert list_string == ['WWWW', 'WLWW', 'WHLW','WDLW', 'WLLW', 'WWWW', 'WWWW']
+
+        string = "WWQ\nWWW\nWWW"
+        with pytest.raises(ValueError):
+            CreateIsland.condition_for_island_map_string(string)
+
+        string = "AWC\nDWF"
+        with pytest.raises(ValueError):
+            CreateIsland.condition_for_island_map_string(string)
+
+
+
+
     def test_make_map(self):
-        pass
+        multi_string = "WWW"
+        island = CreateIsland(multi_string)
+        assert isinstance(island.map[(1, 1)], Water)
+
+        multi_string = "WWW\nWLW\nWWW"
+        island = CreateIsland(multi_string)
+        assert isinstance(island.map[(2, 2)], Lowland)
+
+        multi_string = "WWWW\nWDDW\nWHLW\nWWWW"
+        island = CreateIsland(multi_string)
+        assert isinstance(island.map[(2, 3)], Desert)
+        assert isinstance(island.map[(3, 2)], Highland)
+        assert isinstance(island.map[(4, 4)], Water)
 
     def test_add_population(self):
-        pass
+        multi_string = "WWW\nWDW\nWWW"
+        test_island = CreateIsland(multi_string)
+        assert test_island.map[(2, 2)].num_animals == 0
+        test_island.add_population([{'loc': (2, 2),
+                  'pop': [{'species': 'Herbivore',
+                           'age': 5,
+                           'weight': 20}]}])
+        for herb in test_island.map[(1, 2)].present_herbivores:
+            assert herb.age == 5
+            assert herb.weight == 20
+
+        with pytest.raises(ValueError):
+            test_island.add_population([{'loc': (10, 10),
+                                     'pop': [{'species': 'Herbivore',
+                                              'age': 5,
+                                              'weight': 20}]}])
+
+        with pytest.raises(ValueError):
+            test_island.add_population([{'loc': (1, 1), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+
+
 
     def test_new_year_reset(self):
         pass

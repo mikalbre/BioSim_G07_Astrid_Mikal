@@ -74,18 +74,17 @@ class SingleCell:
             else:
                 raise TypeError("This animal is not a valid animal")
 
-    #
-    # @property
-    # def num_herbivores(self):
-    #     return len(self.present_herbivores)
-    #
-    # @property
-    # def num_carnivores(self):
-    #     return len(self.present_carnivores)
-    #
-    # @property
-    # def num_animals(self):
-    #     return self.num_herbivores + self.num_carnivores
+    @property
+    def num_herbivores(self):
+        return len(self.present_herbivores)
+
+    @property
+    def num_carnivores(self):
+        return len(self.present_carnivores)
+
+    @property
+    def num_animals(self):
+        return self.num_herbivores + self.num_carnivores
 
     def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on
