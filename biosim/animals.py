@@ -166,7 +166,7 @@ class Animals:
 
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
-            return 0  # la til 0
+            return
 
         if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
@@ -176,7 +176,7 @@ class Animals:
 
             return offspring
 
-        return 0  # la til return
+        return   # la til return
 
     def prob_migrate(self):
         """
