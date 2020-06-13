@@ -41,7 +41,7 @@ class SingleCell:
         #             raise ValueError("f_max cannot be negative")
         #     else:
         #         raise ValueError("This specific parameter not defined for this cell")
-        #
+
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
@@ -215,6 +215,7 @@ class Lowland(SingleCell):
     """
     params = {"f_max": 800}
 
+
     def __init__(self):
         super().__init__()
         self.available_fodder = self.params["f_max"]
@@ -239,6 +240,16 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
+
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
 
 
 class Water(SingleCell):
@@ -250,6 +261,16 @@ class Water(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
+
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
 
 
 if __name__ == "__main__":

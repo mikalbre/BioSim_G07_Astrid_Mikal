@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import random
 random.seed(1)
 
+
 listof = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(50)]
 listofcarns = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
 

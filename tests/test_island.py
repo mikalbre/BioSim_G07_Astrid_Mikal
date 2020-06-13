@@ -1,10 +1,24 @@
 from biosim.island import CreateIsland
+import pytest
+#\n
 
-def test_check_line_length():
-    pass
+def test_conditions_for_multiline_string():
+    string = '''WWW\nWWW\nWWW'''
+    list_string = CreateIsland.conditions_for_island_map_string(string)
+    assert list_string == ['WWW', 'WWW', 'WWW']
 
-def test_init():
-    pass
+
+
+# def test_conditions_for_multiline_string1(geogr):
+#
+#     # geogr = """KWW\n WLW\n WWW"""
+#     # island = CreateIsland(geogr)
+#     # island.conditions_for_island_map_string(geogr)
+#     # with pytest.raises(ValueError):
+#     #     CreateIsland.conditions_for_island_map_string()
+#
+# def test_init():
+#     pass
 
 class TestCreateIsland:
 
@@ -18,7 +32,9 @@ class TestCreateIsland:
         pass
 
     def test_conditions_for_multiline_string(self):
-        pass
+        string = "WWW\nWWW\nWWW"
+        list_string = CreateIsland.conditions_for_island_map_string(string)
+        assert list_string == ['WWW', 'WWW', 'WWW']
 
     def test_make_map(self):
         pass

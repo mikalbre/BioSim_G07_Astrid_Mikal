@@ -23,15 +23,15 @@ class TestSingleClass:
     def test_cell_parameters(self):
         test_input = 'f_max: 50.0'
         with pytest.raises(TypeError):
-            SingleCell.cell_parameter(test_input)
+            Lowland().cell_parameter(test_input)
 
         params = {'f_max': -10}  # ValueError
-        with pytest.raises(ValueError):  # TypeError not ValueError, gir ikke mening
+        with pytest.raises(ValueError):
             Lowland().cell_parameter(params)
 
-        params = {'Invalid parameter': 100}  # TypeError
-        with pytest.raises(TypeError):  # TypeError not ValueError
-            Highland().cell_parameter(params)
+        params = {'Invalid parameter': 100}
+        with pytest.raises(TypeError):
+            Lowland().cell_parameter(params)
 
     def test_init(self):
         cell = SingleCell()
@@ -163,9 +163,9 @@ class TestSingleClass:
 
 
         # NOT WORKING:
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 60},
-                                  {'species': 'Herbivore', 'age': 3, 'weight': 700},
-                                  {'species': 'Herbivore', 'age': 5, 'weight': 70},
+        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 50},
+                                  {'species': 'Herbivore', 'age': 3, 'weight': 60},
+                                  {'species': 'Herbivore', 'age': 5, 'weight': 60},
                                   {'species': 'Herbivore', 'age': 10, 'weight': 70}])
         num_herb = len(lowland.present_herbivores)  # 4
         print('\n')
