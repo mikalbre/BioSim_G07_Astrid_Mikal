@@ -132,32 +132,12 @@ class CreateIsland:
             pop = map_location['pop']  # Takes out 'pop' as key and gets the value
             self.map[loc].animals_allocate(pop)  # puts animal in location_cell in landscape.py file
 
-
-
-
-
-
-
-
-
-
+    def feed_animal(self):
+        for cell in self.map.values():
+            cell.eat()
 
     def migration_animals(self):
         pass
-
-
-
-
-
-
-
-
-
-
-
-    def death_animals(self):
-        for cell in self.map.values():
-            cell.animal_death()
 
     def procreation_animals(self):
         for cell in self.map.values():
@@ -176,7 +156,6 @@ class CreateIsland:
         self.procreation_animals()
         self.aging_animals()
         self.death_animals()
-
 
 
 if __name__=='__main__':
