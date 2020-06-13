@@ -52,6 +52,7 @@ class SingleCell:
                 cls.params[param] = parameter[param]
             else:
                 raise ValueError("This specific parameter not defined for this cell")
+        cls.params.update(parameter)
 
     def __init__(self):
         self.available_fodder = 0
@@ -119,40 +120,46 @@ class SingleCell:
                                          reverse=True)
 
         for carn in self.present_carnivores:
-
-            if len(self.present_herbivores) == 0:
-                break
-            else:
-                self.present_herbivores = list(set(self.present_herbivores) -
+            self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
+        return
 
-                self.present_herbivores = sorted(self.present_herbivores,
-                                                 key=lambda x: getattr(x, 'phi'))  # Men nye kan ikke dø første året?
+        # for carn in self.present_carnivores:
+        #     if len(self.present_herbivores) == 0:
+        #         break
+        #     else:
+        #         self.present_herbivores = list(set(self.present_herbivores) -
+        #                                        set(carn.hunt_herb(self.present_herbivores)))
+        #         self.present_herbivores = sorted(self.present_herbivores,
+        #                                          key=lambda x: getattr(x, 'phi'))  # Men nye kan ikke dø første året?
 
     def procreation(self):
         """
         Checks if there are at least two other animal of the same species in this cell.
         If it is, an offspring might happen."""
 
+        herb_newbord = []
         if len(self.present_herbivores) >= 2:
             for herbivores in self.present_herbivores:
                 offspring = herbivores.procreation(len(self.present_herbivores))
                 if not offspring:
                     continue
                 self.present_herbivores.append(offspring)
+                herb_newbord.append(offspring)
 
-            return self.present_herbivores
         #print(len(self.present_herbivores))
         #print(len(self.present_carnivores))
 
+        carn_newbord = []
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
                 offspring = carnivores.procreation(len(self.present_carnivores))
                 if not offspring:
                     continue
                 self.present_carnivores.append(offspring)
+                carn_newbord.append(carn_newbord)
 
-            return self.present_carnivores
+            return herb_newbord, carn_newbord
 
     def migrate(self):
         pass
@@ -170,7 +177,7 @@ class SingleCell:
         list of current animals."""
         self.present_herbivores = [herbivore for herbivore in self.present_herbivores if
                                    not herbivore.animal_dying()]
-        #print(len(self.present_carnivores))
+
         self.present_carnivores = [carnivore for carnivore in self.present_carnivores if
                                    not carnivore.animal_dying()]
 
@@ -189,7 +196,6 @@ class Highland(SingleCell):
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -233,16 +239,6 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
-    #     self.available_fodder = self.params["f_max"]  # ?
-    #
-    # def fodder_regrow(self):
-    #     """
-    #     Restores the amount of available fodder to f_max when this method is called
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     self.available_fodder = self.params["f_max"]
 
 
 class Water(SingleCell):
@@ -254,47 +250,37 @@ class Water(SingleCell):
 
     def __init__(self):
         super().__init__()
-    #     self.available_fodder = self.params["f_max"]
-    #
-    # def fodder_regrow(self):
-    #     """
-    #     Restores the amount of available fodder to f_max when this method is called
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     self.available_fodder = self.params["f_max"]
 
 
 if __name__ == "__main__":
     random.seed(1)
     c = Lowland()
-    # poph = [{'species': 'Herbivore',
-    #         'age': 5,
-    #         'weight': 20} for _ in range(50)
-    #         ]
-    # popc = [{'species': 'Carnivore',
-    #         'age': 5,
-    #          'weight': 20} for _ in range(20)
-    #         ]
-    #
-    #print(f"fodder: {c.get_fodder()}")
-    poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20},
-            {'species': 'Herbivore', 'age': 5, 'weight': 20},
-            {'species': 'Herbivore', 'age': 5, 'weight': 20}]
-    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
-            {'species': 'Carnivore', 'age': 5, 'weight': 20},
-            {'species': 'Carnivore', 'age': 5, 'weight': 20}]
+    poph = [{'species': 'Herbivore',
+            'age': 5,
+            'weight': 20} for _ in range(150)
+            ]
+    popc = [{'species': 'Carnivore',
+            'age': 5,
+             'weight': 20} for _ in range(40)
+            ]
+
+    print(f"fodder: {c.get_fodder()}")
+    # poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20},
+    #         {'species': 'Herbivore', 'age': 5, 'weight': 20},
+    #         {'species': 'Herbivore', 'age': 5, 'weight': 20}]
+    # popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
+    #         {'species': 'Carnivore', 'age': 5, 'weight': 20},
+    #         {'species': 'Carnivore', 'age': 5, 'weight': 20}]
 
     c.animals_allocate(poph)
     c.animals_allocate(popc)
-    # print(f"num_an herb: {len(c.present_herbivores)}")
-    # print(f"num_an carn: {len(c.present_carnivores)}")
+    print(f"num_an herb: {len(c.present_herbivores)}")
+    print(f"num_an carn: {len(c.present_carnivores)}")
     # print(c.present_herbivores)
     # print(c.present_carnivores)
 
-    for j in range(1):
-        for years in range(10):
+    for j in range(2):
+        for years in range(200):
             c.eat()
             c.procreation()  # carn not procreate, herb does
             c.aging()
@@ -304,6 +290,6 @@ if __name__ == "__main__":
             print(f'Carn: {len(c.present_carnivores)}')
 
 
-    print(c.present_herbivores)
-    print(c.present_carnivores)
+        print(c.present_herbivores)
+        print(c.present_carnivores)
 
