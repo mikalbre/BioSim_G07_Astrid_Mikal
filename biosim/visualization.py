@@ -35,7 +35,7 @@ plt.pause(0.001)
 count_herb = [len(l.present_herbivores)]
 count_carn = [len(l.present_carnivores)]
 
-for i in range(200):
+for i in range(100):
     l.fodder_regrow()
     l.eat()
     l.procreation()
