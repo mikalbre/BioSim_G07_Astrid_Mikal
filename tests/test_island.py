@@ -2,7 +2,7 @@ from biosim.island import CreateIsland
 import pytest
 #\n
 
-def test_conditions_for_multiline_string():
+def test_condition_for_island_map_string():
     string = '''WWW\nWWW\nWWW'''
     list_string = CreateIsland.conditions_for_island_map_string(string)
     assert list_string == ['WWW', 'WWW', 'WWW']
