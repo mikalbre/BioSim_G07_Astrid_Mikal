@@ -127,7 +127,7 @@ class CreateIsland:
             if loc not in self.map.keys():
                 raise ValueError("Given location does not exist")
 
-            if not self.map[loc].passable:
+            if not self.map[loc].passable:  # NEI
                 raise ValueError("The location is not passable")
 
             animals_dict = map_location["pop"]

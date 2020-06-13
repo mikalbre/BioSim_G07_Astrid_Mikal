@@ -1,4 +1,4 @@
-from .animals import Carnivore, Herbivore
+from biosim.animals import Carnivore, Herbivore
 import random
 
 class SingleCell:
@@ -30,15 +30,26 @@ class SingleCell:
 
         """
 
+        # if not isinstance(parameter, dict):
+        #     raise TypeError("Parameter must be type dict")
+        #
+        # #cls.params.update(parameter)  # Trenger?
+        #
+        # for iterators in parameter:
+        #     if iterators in cls.params:
+        #         if iterators == 'f_max' and parameter[iterators] < 0:
+        #             raise ValueError("f_max cannot be negative")
+        #     else:
+        #         raise ValueError("This specific parameter not defined for this cell")
+        #
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
-        #cls.params.update(parameter)  # Trenger?
-
-        for iterators in parameter:
-            if iterators in cls.params:
-                if iterators == 'f_max' and parameter[iterators] < 0:
+        for param in parameter:
+            if param in cls.params:
+                if param == 'f_max' and parameter[param] < 0:
                     raise ValueError("f_max cannot be negative")
+                cls.params[param] = parameter[param]
             else:
                 raise ValueError("This specific parameter not defined for this cell")
 
@@ -131,8 +142,8 @@ class SingleCell:
                 self.present_herbivores.append(offspring)
 
             return self.present_herbivores
-        print(len(self.present_herbivores))
-        print(len(self.present_carnivores))
+        #print(len(self.present_herbivores))
+        #print(len(self.present_carnivores))
 
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
@@ -268,9 +279,13 @@ if __name__ == "__main__":
     #         ]
     #
     #print(f"fodder: {c.get_fodder()}")
-    poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20}, {'species': 'Herbivore', 'age': 5, 'weight': 20}]
-    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20}, {'species': 'Carnivore', 'age': 5, 'weight': 20}]
-    #
+    poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20},
+            {'species': 'Herbivore', 'age': 5, 'weight': 20},
+            {'species': 'Herbivore', 'age': 5, 'weight': 20}]
+    popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
+            {'species': 'Carnivore', 'age': 5, 'weight': 20},
+            {'species': 'Carnivore', 'age': 5, 'weight': 20}]
+
     c.animals_allocate(poph)
     c.animals_allocate(popc)
     # print(f"num_an herb: {len(c.present_herbivores)}")
@@ -278,14 +293,12 @@ if __name__ == "__main__":
     # print(c.present_herbivores)
     # print(c.present_carnivores)
 
-
-
     for j in range(1):
         for years in range(10):
-            #c.eat()
+            c.eat()
             c.procreation()  # carn not procreate, herb does
-            #c.aging()
-            #c.animal_death()  # works for herb, carns has []
+            c.aging()
+            c.animal_death()  # works for herb, carns has []
             print("______ Etter syklus ______")
             print(f'Herb: {len(c.present_herbivores)}')
             print(f'Carn: {len(c.present_carnivores)}')
