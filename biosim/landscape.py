@@ -6,7 +6,6 @@ class SingleCell:
     A superclass for the properties of a single cell on an island.
     The different types of landscape inherits from this class.
 
-
     f_max: Max amount of available food in cell. Cannot be negative.
     alpha: Regrowth of fodder constant. Alpha is how much a cell is able to regrow each year.
 
@@ -34,7 +33,7 @@ class SingleCell:
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
-        cls.params.update(parameter)  # Trenger?
+        #cls.params.update(parameter)  # Trenger?
 
         for iterators in parameter:
             if iterators in cls.params:
@@ -64,17 +63,17 @@ class SingleCell:
                 raise TypeError("This animal is not a valid animal")
 
 
-    # @property
-    # def num_herbivores(self):
-    #     return len(self.present_herbivores)
-    #
-    # @property
-    # def num_carnivores(self):
-    #     return len(self.present_carnivores)
-    #
-    # @property
-    # def num_animals(self):
-    #     return self.num_herbivores + self.num_carnivores
+    @property
+    def num_herbivores(self):
+        return len(self.present_herbivores)
+
+    @property
+    def num_carnivores(self):
+        return len(self.present_carnivores)
+
+    @property
+    def num_animals(self):
+        return self.num_herbivores + self.num_carnivores
 
     def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on

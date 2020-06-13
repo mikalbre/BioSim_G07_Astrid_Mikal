@@ -48,6 +48,27 @@ class Animals:
             The weight of the animal
         """
 
+        # if age is None:  # La til denne
+        #     raise ValueError("Age of animal not given.")
+        # elif age < 0 or age is float:
+        #     raise ValueError("Age of animal must be positive and integer.")
+        # else:
+        #     self.age = age
+        # if weight is None or weight > 0:
+        #     if weight is None:
+        #         self.weight = self.get_initial_weight_offspring()
+        #     else:
+        #         self.weight = weight
+        # else:
+        #      raise ValueError("weight not allowed")
+
+        # if weight is None:
+        #     self.weight = self.get_initial_weight_offspring()
+        # elif weight < 0:  # La til denne
+        #   raise ValueError("Weight of animal must be positive")
+        # else:
+        #     self.weight = weight
+
         if age < 0 or age is float:
             raise ValueError("Age of animal must be positive and integer.")
         else:
@@ -57,6 +78,12 @@ class Animals:
             self.weight = self.get_initial_weight_offspring()
         else:
             self.weight = weight
+
+
+        # if weight is None:
+        #     self.weight = self.get_initial_weight_offspring()
+        # else:
+        #     self.weight = weight
 
         # sjekk
         self.alive = True
@@ -143,9 +170,10 @@ class Animals:
 
         if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
-            self.weight -= self.params["xi"] * offspring.weight
+            # offspring.weight = self.get_initial_weight_offspring()
+            self.weight -= self.params["xi"] * offspring.weight  # get_initial_weight_offspring
             self.fitness_calculation()
-            #print(offspring)
+
             return offspring
 
     def prob_migrate(self):
@@ -201,7 +229,7 @@ class Herbivore(Animals):
         'beta': 0.9,
         'eta': 0.05,
         'a_half': 40.0,
-        'phi_age': 0.2,
+        'phi_age': 0.6,
         'w_half': 10.0,
         'phi_weight': 0.1,
         'mu': 0.25,
@@ -280,7 +308,7 @@ class Carnivore(Animals):
 
             if random.random() <= kill_prob:
                 self.eaten += min(self.params["F"], herb.weight)
-                if self.eaten >= self.params["F"]:
+                if self.eaten > self.params["F"]:
                     break
                 self.weight += self.params["beta"] * self.eaten
                 herb.alive = False
