@@ -89,6 +89,9 @@ class TestCreateIsland:
     def test_feed_animals(self):
         multi_string = "WWW\nWLW\nWWW"
         test_island = CreateIsland(multi_string)
+        test_island.add_population([{'loc': (1, 1), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+        test_island.map[(2, 2)].present_herbivores[0].weight = 170
+        assert test_island.map[(2, 2)].present_herbivores[0].weight > 20
 
     def test_procreation_animals(self):
         pass
