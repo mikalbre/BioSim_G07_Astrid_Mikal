@@ -1,12 +1,10 @@
-from biosim.island import CreateIsland
+from biosim.island import *
 import pytest
 #\n
 
-def test_condition_for_island_map_string():
-    string = '''WWW\nWWW\nWWW'''
-    list_string = CreateIsland.conditions_for_island_map_string(string)
-    assert list_string == ['WWW', 'WWW', 'WWW']
-
+def test_string_line_length():
+    map_list = ['abc', 'def']
+    assert check_length_of_string(map_list) is True
 
 
 # def test_conditions_for_multiline_string1(geogr):
