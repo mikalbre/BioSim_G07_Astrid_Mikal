@@ -76,6 +76,12 @@ class TestSingleClass:
         assert herbivore_1.age == add_herbs_to_island[1]['age']
         assert herbivore_1.weight == add_herbs_to_island[1]['weight']
 
+        ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
+        with pytest.raises(TypeError):
+            lowland.animals_allocate(ini_animal)
+
+
+
     def test_eat(self):
         for herb in Lowland().present_herbivores:
             herb_weight = herb.weight

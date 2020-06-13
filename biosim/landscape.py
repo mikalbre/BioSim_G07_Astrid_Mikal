@@ -52,7 +52,7 @@ class SingleCell:
                 cls.params[param] = parameter[param]
             else:
                 raise TypeError("This specific parameter not defined for this cell")
-        #cls.params.update(parameter)
+        cls.params.update(parameter)
 
     def __init__(self):
         self.available_fodder = 0
@@ -74,24 +74,25 @@ class SingleCell:
             else:
                 raise TypeError("This animal is not a valid animal")
 
-    @property
-    def num_herbivores(self):
-        return len(self.present_herbivores)
-
-    @property
-    def num_carnivores(self):
-        return len(self.present_carnivores)
-
-    @property
-    def num_animals(self):
-        return self.num_herbivores + self.num_carnivores
+    #
+    # @property
+    # def num_herbivores(self):
+    #     return len(self.present_herbivores)
+    #
+    # @property
+    # def num_carnivores(self):
+    #     return len(self.present_carnivores)
+    #
+    # @property
+    # def num_animals(self):
+    #     return self.num_herbivores + self.num_carnivores
 
     def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on
         type of landscape. Thereafter the feed_herb- method is called and the herb
         gets to eat in random. Lastly, the carnivores get to eat the herbivores in a order
         decided by the animals of both species' fitness."""
-        self.fodder_regrow()
+        #self.fodder_regrow()
         self.feed_herb()
         self.feed_carn_with_herb()
 
@@ -122,8 +123,7 @@ class SingleCell:
             self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
             self.present_herbivores = sorted(self.present_herbivores,
-                                                      key=lambda x: getattr(x, 'phi'))  # Men nye kan ikke dø første året?
-
+                                             key=lambda x: getattr(x, 'phi'))
         return
 
         # for carn in self.present_carnivores:
@@ -197,14 +197,14 @@ class Highland(SingleCell):
         super().__init__()
         self.available_fodder = self.params["f_max"]
 
-    def fodder_regrow(self):
-        """
-        When called, the method restores the amount of available fodder to f_max
-        Returns
-        -------
-
-        """
-        self.available_fodder = self.params["f_max"]
+    # def fodder_regrow(self):
+    #     """
+    #     When called, the method restores the amount of available fodder to f_max
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     self.available_fodder = self.params["f_max"]
 
 
 class Lowland(SingleCell):

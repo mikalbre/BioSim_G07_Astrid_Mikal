@@ -26,9 +26,9 @@ class Animals:
         :return:
         """
 
-        animal_set_parameters = cls.params.update()
+        #animal_set_parameters = cls.params.update()
 
-        for parameter in animal_set_parameters:
+        for parameter in params:
             if parameter in cls.params:
                 if params[parameter] < 0:
                     raise ValueError(f"{parameter} cannot be negative.")

@@ -87,7 +87,7 @@ class CreateIsland:
         Returns: dict where key: tuple, value: instance of landscape type
         """
         # se mer på denne metoden
-        map_list = self.conditions_for_island_map_string(self.geography_island_string)
+        map_list = self.condition_for_island_map_string(self.geography_island_string)
 
         island_map = {}
 
