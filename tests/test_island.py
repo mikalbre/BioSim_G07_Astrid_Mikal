@@ -92,8 +92,9 @@ class TestCreateIsland:
         multi_string = "WWW\nWLW\nWWW"
         test_island = CreateIsland(multi_string)
         test_island.add_population([{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
-        test_island.map[(2, 2)].present_herbivores[0].weight = 50
-        assert test_island.map[(2, 2)].present_herbivores[0].weight > 19
+        test_island.feed_animals()
+        #test_island.map[(2, 2)].present_herbivores[0].weight = 50
+        assert test_island.map[(2, 2)].present_herbivores[0].weight > 20
 
     def test_procreation_animals(self):
         multi_string = "WWW\nWLW\nWWW"
@@ -117,7 +118,7 @@ class TestCreateIsland:
                                               'age': 7,
                                               'weight': 80}]}])
 
-        test_island.animals_aging()
+        test_island.aging_animals()
         for carn in test_island.map[(2, 2)].present_carnivores:
             assert carn.age == 8
 
