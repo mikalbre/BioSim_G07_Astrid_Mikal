@@ -147,9 +147,6 @@ class SingleCell:
                 self.present_herbivores.append(offspring)
                 herb_newbord.append(offspring)
 
-        #print(len(self.present_herbivores))
-        #print(len(self.present_carnivores))
-
         carn_newbord = []
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
@@ -257,11 +254,11 @@ if __name__ == "__main__":
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,
-            'weight': 20} for _ in range(150)
+            'weight': 20} for _ in range(50)
             ]
     popc = [{'species': 'Carnivore',
             'age': 5,
-             'weight': 20} for _ in range(40)
+             'weight': 20} for _ in range(20)
             ]
 
     print(f"fodder: {c.get_fodder()}")
@@ -273,33 +270,34 @@ if __name__ == "__main__":
     #         {'species': 'Carnivore', 'age': 5, 'weight': 20}]
 
     c.animals_allocate(poph)
-    c.animals_allocate(popc)
+    #c.animals_allocate(popc)
     print(f"num_an herb: {len(c.present_herbivores)}")
     print(f"num_an carn: {len(c.present_carnivores)}")
     # print(c.present_herbivores)
     # print(c.present_carnivores)
 
     for j in range(1):
-        for years in range(1):
+        for years in range(250):
+            if years == 50:
+                c.animals_allocate(popc)
             c.eat()
-            print(f"Fodder_after_eating: {c.available_fodder}")
-            print(f"num_herb: {len(c.present_herbivores)}")
-            print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
+            # print(f"Fodder_after_eating: {c.available_fodder}")
+            # print(f"num_herb: {len(c.present_herbivores)}")
+            # print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
 
             c.procreation()  # carn not procreate, herb does
-            print(f"num_herb_proc: {len(c.present_herbivores)}")
-            print(f"num_carn_proc: {len(c.present_carnivores)}")  # looks like carn can procreate
+            # print(f"num_herb_proc: {len(c.present_herbivores)}")
+            # print(f"num_carn_proc: {len(c.present_carnivores)}")  # looks like carn can procreate
 
             c.aging()
 
             c.animal_death()  # works for herb, carns has []
-            print(f"num_herb_d: {len(c.present_herbivores)}")
-            print(f"num_carn_d: {len(c.present_carnivores)}")  # looks like carn can procreate
+            # print(f"num_herb_d: {len(c.present_herbivores)}")
+            # print(f"num_carn_d: {len(c.present_carnivores)}")  # looks like carn can procreate
 
             print("______ Etter syklus ______")
             print(f'Herb: {len(c.present_herbivores)}')
             print(f'Carn: {len(c.present_carnivores)}')
-
 
         print(c.present_herbivores)
         print(c.present_carnivores)
