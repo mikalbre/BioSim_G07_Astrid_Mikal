@@ -1,12 +1,29 @@
-from animals import Herbivore
-import numpy as np
+from .island import CreateIsland
+from .landscape import Highland, Lowland, Desert, Water
+from .animals import Herbivore, Carnivore
 
+import random
 
-class Simulation():
+class Simulation:
+
+        default_map = """WWW
+                        WLW
+                        WWW
+                        """
+
+        default_population = [
+            {"loc": (2, 2),
+             "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(150)],
+             },
+            {"loc": (2, 2),
+             "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(40)],
+             }
+        ]
+
     def __init__(self,
-                 map_string,
-                 initial_population,
-                 seed,
+                 map_string=None,
+                 initial_population=None,
+                 seed=None,
                  ymax_animals=None,
                  cmax_animals=None,
                  hist_specs=None,
@@ -34,28 +51,37 @@ class Simulation():
             String with type for figures, e.g. 'png'
         """
 
-        if map_string is None:
-            geography_island_string = """WWW
-                                         WLW
-                                         WWW"""
+        if initial_population is None:
+            initial_population = self.default_population
 
+        if seed is not None:
+            random.seed(seed)
 
-
+    @staticmethod
     def set_animal_parameters(self, species, img_fmt):
-        pass
+        animal_species = {'Hervivore': Herbivore,
+                          'Carnivore': Carnivore}
+        animal_species[species].set_parameters(params)  # se mer på
 
-    def set_landscape_parameters(self, landscape, params):
-        pass
+    @staticmethod
+    def set_landscape_parameters(self)
+        map_params_dict = {"H": Highland,
+                            "L": Lowland,
+                            "D": Desert,
+                            "W": Water}
+        map_params_dict[lands
 
-    def simulate(self, num_years, vis_years=1, img_years=None):
-        pass
+    def simulate(self, num_years):
+        current_year = 1
+        while current_year <= num_years:
+            current_year += 1
 
     def add_population(self, population):
-        pass
+        self.Crea
 
     @property
     def year(self):
-        pass
+        return self.island.y
 
     @property
     def num_animals(self):

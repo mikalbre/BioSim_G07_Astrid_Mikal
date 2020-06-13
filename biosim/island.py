@@ -20,7 +20,7 @@ class CreateIsland:
         """
         self.len_map_x = None  # width of map
         self.len_map_y = None  # length of map
-        self.num_years = 0  # years simulates
+        self.year_num = 0  # years simulates
 
         # Makes the map based on the multi- line string passed in
         self.map = self.make_map(geography_island_string)  # simulation file
@@ -135,8 +135,12 @@ class CreateIsland:
 
     def new_year_reset(self):
         #remember that fodder gets regrown in feed_animals- method
-        for cell in self.map.values():
-            #mer
+        pass
+    @property
+    def year(self):
+        return self.year_num
+
+    # Trenger en setter for year???
 
     def feed_animals(self):
         """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat
@@ -166,10 +170,12 @@ class CreateIsland:
         """Simulate one year where we have an island consisting of different cells of
         four different landscape types, and use the methods above to simulate
         the ecosystem."""
+        self.new_year_reset()
         self.feed_animals()
         self.procreation_animals()
         self.aging_animals()
         self.death_animals()
+        self.year_num += 1
 
 
 

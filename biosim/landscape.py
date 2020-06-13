@@ -1,4 +1,4 @@
-from animals import Carnivore, Herbivore
+from .animals import Carnivore, Herbivore
 import random
 
 class SingleCell:
