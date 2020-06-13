@@ -115,12 +115,20 @@ class CreateIsland:
             loc = map_location['loc']  # Gets a coordinate X: (1, 1)
             if loc not in self.map.keys():  # Checks if (1,1) is key in self.map
                 raise ValueError("Location does not exist")
-            if loc in self.map.keys():  # Se mer på
-                if self.map[loc] is self.map_params_dict:
-                    raise ValueError("Animals not allowed to enter Water")
+            if not self.map[loc].accessability:
+                raise ValueError("Animals not allowed to enter Water")
 
             pop = map_location['pop']  # Takes out 'pop' as key and gets the value
             self.map[loc].animals_allocate(pop)  # puts animal in location_cell in landscape.py file
+
+    def feed_animals(self):
+        """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat
+        and carn eat herb. """
+        for cell in self.map.values():
+            cell.eat()
+
+
+
 
 if __name__=='__main__':
     geography_island_string = """WWW

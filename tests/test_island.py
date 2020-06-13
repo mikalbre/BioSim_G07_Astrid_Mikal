@@ -62,9 +62,10 @@ class TestCreateIsland:
                   'pop': [{'species': 'Herbivore',
                            'age': 5,
                            'weight': 20}]}])
-        for herb in test_island.map[(1, 2)].present_herbivores:
+        for herb in test_island.map[(2, 2)].present_herbivores:
             assert herb.age == 5
             assert herb.weight == 20
+        assert len(test_island.map[(2, 2)].present_herbivores) == 1
 
         with pytest.raises(ValueError):
             test_island.add_population([{'loc': (10, 10),
@@ -75,6 +76,8 @@ class TestCreateIsland:
         with pytest.raises(ValueError):
             test_island.add_population([{'loc': (1, 1), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
 
+        with pytest.raises(ValueError):
+            test_island.add_population([{'loc': (2, 3), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
 
 
     def test_new_year_reset(self):
@@ -84,7 +87,8 @@ class TestCreateIsland:
         pass
 
     def test_feed_animals(self):
-        pass
+        multi_string = "WWW\nWLW\nWWW"
+        test_island = CreateIsland(multi_string)
 
     def test_procreation_animals(self):
         pass

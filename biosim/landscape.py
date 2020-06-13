@@ -14,7 +14,7 @@ class SingleCell:
     params = None  # {}
 
     @classmethod
-    def cell_parameter(cls, parameter):
+    def cell_parameter(cls, parameter, accessability=None):
         """
         This method updates the values of available amount of fodder, f_max.
 
@@ -53,6 +53,15 @@ class SingleCell:
             else:
                 raise TypeError("This specific parameter not defined for this cell")
         cls.params.update(parameter)
+
+        accessability_boolean = False
+        if accessability:
+            if type(accessability) is bool:
+                accessability_boolean = True
+            else:
+                raise ValueError('The only argument for passable is bool.')
+        if accessability_boolean is True:
+            cls.params = accessability
 
     def __init__(self):
         self.available_fodder = 0
@@ -190,6 +199,7 @@ class Highland(SingleCell):
     Fodder in Highland is less than fodder in Lowland.
     Carnivores can prey on herbivores in Highland.
     """
+    accessability = True
     params = {"f_max": 300}
 
     def __init__(self):
@@ -212,6 +222,7 @@ class Lowland(SingleCell):
     Lowland has fodder.
     Carnivores can prey on herbivores in Highland.
     """
+    accessability = True
     params = {"f_max": 800}
 
 
@@ -235,6 +246,7 @@ class Desert(SingleCell):
     There is no fodder in Desert, so nothing to eat for herbivores.
     Carnivores can prey on herbivores in the Desert.
     """
+    accessability = True
     params = {"f_max": 0}
 
     def __init__(self):
@@ -256,6 +268,7 @@ class Water(SingleCell):
     The landscape type Water is a sub-class of the superclass Cell.
     Water are passive cell because the animals can not enter.
     """
+    accessability = False
     params = {"f_max": 0}
 
     def __init__(self):
