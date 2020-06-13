@@ -1,6 +1,7 @@
 
 from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
 
+
 class CreateIsland:
 
     map_params_dict = {"H": Highland,
@@ -9,57 +10,16 @@ class CreateIsland:
                        "W": Water}
 
     def __init__(self, geography_island_string):
-        """
 
-        Parameters
-        ----------
-        geography_island_string: str
-            Multilinestring of the geography_string of the map
-        initial_population: dict
-            key: Coordinates, Values: list of dict
-        """
-        #self.len_map_x = None  # width of map
-        #self.len_map_y = None  # length of map
         self.year_num = 0  # years simulates
+        self.geography_island_string = geography_island_string
 
         # Makes the map based on the multi- line string passed in
-        #self.map = self.make_map(geography_island_string)  # simulation file
+        self.map = self.make_map()  # simulation file
         # Passes in the population
-        #self.add_population(initial_population)  # simulation file
+        # self.add_population(initial_population)  # simulation file
 
-    @property
-    def num_animals(self):
-        """Returns total number of animals on island.
-        Returns: int of total number of animals.
-        """
-
-        num_animals = 0
-        for num_type in self.num_animals_per_species.values():
-            num_animals += num_type
-        return num_animals
-
-    @property
-    def num_animals_per_species(self):
-        """Returns number of herbivores and carnivores on island.
-        Iterates through each cell and count number of animals.
-        Returns: dict of number per species
-        """
-
-        num_animals_per_species = {}
-        num_herbivores = 0
-        num_carnivores = 0
-
-        for cell in self.map.values():
-            num_herbivores += cell.num_herbivores
-            num_carnivores += cell.num_carnivores
-
-        num_animals_per_species["Herbivore"] = num_herbivores
-        num_animals_per_species["Carnivore"] = num_carnivores
-
-        return num_animals_per_species
-
-    @staticmethod
-    def conditions_for_island_map_string(geography_island_string):
+    def condition_for_island_map_string(self):
         """Method to check whether the string of the landscape type of island are rectangular.
         Checks if all lines have same length as the first (base) line.
         If conditions are met, the method returns a list of strings in map_list.
@@ -68,15 +28,22 @@ class CreateIsland:
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
 
-        map_list = []  # Converts multilinestring into a list of strings
-        multi_line_string = geography_island_string.splitlines()
-        multi_line_string = multi_line_string.split('\n')
+        map_list = []
+        multi_line_string = self.geography_island_string.splitlines()
+        # multi_line_string = multi_line_string.split('\n')
 
         for row_num_string in multi_line_string:
-            if not len(row_num_string) == len(multi_line_string()[0]):
+            if not len(row_num_string) == len(multi_line_string[0]):
                 raise ValueError("The map of the island is not rectangular")
             else:
                 map_list.append(row_num_string)
+
+        return map_list  # X: ['WWW', 'WLW', 'WWW']
+
+    def boundaries_all_water(self):
+        """Checks if all boundaries in the given multi-line- string is Water."""
+
+        map_list = self.condition_for_island_map_string()
 
         first_line_north = map_list[0]
         last_line_south = map_list[-1]
@@ -91,9 +58,10 @@ class CreateIsland:
             if not landscape_type == 'W':
                 raise ValueError("Cells in west and east must consist of water!")
 
-        return map_list  # list of strings
+        return map_list
 
-    def make_map(self, geography_island_string):
+
+    def make_map(self):
         """Create a dictionary from the multi- line string.
         Input is the multi- line string.
         Output is the island_map with;
@@ -102,7 +70,7 @@ class CreateIsland:
         Returns: dict where key: tuple, value: instance of landscape type
         """
         # se mer på denne metoden
-        map_list = self.conditions_for_island_map_string(geography_island_string)
+        map_list = self.conditions_for_island_map_string(self.geography_island_string)
 
         island_map = {}
 
@@ -114,7 +82,8 @@ class CreateIsland:
                 coord_y += 1
             coord_x += 1
 
-        return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Landscape}
+        return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
+
 
 if __name__=='__main__':
     geography_island_string = """WWW
