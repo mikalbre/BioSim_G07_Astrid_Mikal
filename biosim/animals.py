@@ -79,12 +79,6 @@ class Animals:
         else:
             self.weight = weight
 
-
-        # if weight is None:
-        #     self.weight = self.get_initial_weight_offspring()
-        # else:
-        #     self.weight = weight
-
         # sjekk
         self.alive = True
         self.has_migrated = False
@@ -204,6 +198,7 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
+
         if self.weight == 0:
             return True
         elif random.random() < self.params["omega"] * (1 - self.phi):

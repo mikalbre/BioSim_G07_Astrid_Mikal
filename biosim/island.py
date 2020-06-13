@@ -8,7 +8,7 @@ class CreateIsland:
                        "D": Desert,
                        "W": Water}
 
-    def __init__(self, geography_island_string, initial_population):
+    def __init__(self, geography_island_string):
         """
 
         Parameters
@@ -18,14 +18,14 @@ class CreateIsland:
         initial_population: dict
             key: Coordinates, Values: list of dict
         """
-        self.len_map_x = None  # width of map
-        self.len_map_y = None  # length of map
+        #self.len_map_x = None  # width of map
+        #self.len_map_y = None  # length of map
         self.year_num = 0  # years simulates
 
         # Makes the map based on the multi- line string passed in
-        self.map = self.make_map(geography_island_string)  # simulation file
+        #self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
-        self.add_population(initial_population)  # simulation file
+        #self.add_population(initial_population)  # simulation file
 
     @property
     def num_animals(self):
@@ -68,11 +68,12 @@ class CreateIsland:
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
 
-        map_list = []  # Converts multilinestring into a list og strings
-        multilinesstring = geography_island_string.splitlines()
+        map_list = []  # Converts multilinestring into a list of strings
+        multi_line_string = geography_island_string.splitlines()
+        multi_line_string = multi_line_string.split('\n')
 
-        for row_num_string in multilinesstring:
-            if not len(row_num_string) == len(multilinesstring()[0]):
+        for row_num_string in multi_line_string:
+            if not len(row_num_string) == len(multi_line_string()[0]):
                 raise ValueError("The map of the island is not rectangular")
             else:
                 map_list.append(row_num_string)
@@ -115,74 +116,10 @@ class CreateIsland:
 
         return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Landscape}
 
-    def add_population(self, population):
-        """Population is dict.
-        Method feeds the dict to a cell by position.
-        """
-        #SingleCell.animals_allocate(population)
-
-        for map_location in population:  # map_location: dict with loc
-            loc = map_location["loc"]
-
-            if loc not in self.map.keys():
-                raise ValueError("Given location does not exist")
-
-            # if not self.map[loc].passable:  # NEI
-            #     raise ValueError("The location is not passable")
-
-            animals_dict = map_location["pop"]
-            self.map[loc].animal_allocate(animals_dict)
-
-    def new_year_reset(self):
-        #remember that fodder gets regrown in feed_animals- method
-        pass
-    @property
-    def year(self):
-        return self.year_num
-
-    # Trenger en setter for year???
-
-    def feed_animals(self):
-        """Iterate over each cell and use eat-method from landscape to make fodder grow, herb eat
-        and carn eat herb. """
-        for cell in self.map.values():
-            cell.eat()
-
-    def procreation_animals(self):
-        """Iterate over each cell and use procreation- method from landscape to make both herb
-        and carn procreate."""
-        for cell in self.map.values():
-            cell.procreation()
-
-    def aging_animals(self):
-        """Iterate over each cell and use aging method from landscape to increase age and decrease
-        weight of both herb and carn."""
-        for cell in self.map.values():
-            cell.aging()
-
-    def death_animals(self):
-        """Iterate over each cell and use death-method from landscape to kill those her and carn
-        who is suppose to die."""
-        for cell in self.map.values():
-            cell.animal_death()
-
-    def simulate_one_year(self):
-        """Simulate one year where we have an island consisting of different cells of
-        four different landscape types, and use the methods above to simulate
-        the ecosystem."""
-        self.new_year_reset()
-        self.feed_animals()
-        self.procreation_animals()
-        self.aging_animals()
-        self.death_animals()
-        self.year_num += 1
-
-
 if __name__=='__main__':
-    mls = """WWW
+    geography_island_string = """WWW
     WLW
     WWW"""
-    F = CreateIsland(mls)
+    F = CreateIsland(geography_island_string)
     F.conditions_for_island_map_string()
-    print(F)
 

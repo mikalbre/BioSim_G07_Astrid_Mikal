@@ -41,7 +41,7 @@ class SingleCell:
         #             raise ValueError("f_max cannot be negative")
         #     else:
         #         raise ValueError("This specific parameter not defined for this cell")
-        #
+
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
@@ -51,8 +51,8 @@ class SingleCell:
                     raise ValueError("f_max cannot be negative")
                 cls.params[param] = parameter[param]
             else:
-                raise ValueError("This specific parameter not defined for this cell")
-        cls.params.update(parameter)
+                raise TypeError("This specific parameter not defined for this cell")
+        #cls.params.update(parameter)
 
     def __init__(self):
         self.available_fodder = 0
@@ -73,7 +73,6 @@ class SingleCell:
                 self.present_carnivores.append(Carnivore(age, weight))
             else:
                 raise TypeError("This animal is not a valid animal")
-
 
     @property
     def num_herbivores(self):
@@ -122,6 +121,9 @@ class SingleCell:
         for carn in self.present_carnivores:
             self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
+            self.present_herbivores = sorted(self.present_herbivores,
+                                                      key=lambda x: getattr(x, 'phi'))  # Men nye kan ikke dø første året?
+
         return
 
         # for carn in self.present_carnivores:
@@ -193,6 +195,7 @@ class Highland(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
 
     def fodder_regrow(self):
         """
@@ -211,6 +214,7 @@ class Lowland(SingleCell):
     Carnivores can prey on herbivores in Highland.
     """
     params = {"f_max": 800}
+
 
     def __init__(self):
         super().__init__()
@@ -236,6 +240,17 @@ class Desert(SingleCell):
 
     def __init__(self):
         super().__init__()
+        self.available_fodder = self.params["f_max"]
+
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
+
 
 
 class Water(SingleCell):
@@ -247,6 +262,15 @@ class Water(SingleCell):
 
     def __init__(self):
         super().__init__()
+
+    def fodder_regrow(self):
+        """
+        Restores the amount of available fodder to f_max when this method is called
+        Returns
+        -------
+
+        """
+        self.available_fodder = self.params["f_max"]
 
 
 if __name__ == "__main__":
