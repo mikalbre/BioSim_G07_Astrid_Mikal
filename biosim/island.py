@@ -120,7 +120,6 @@ class CreateIsland:
 
         return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
 
-
     def add_population(self, population):
         """Add population of both herbivores and carnivores to the island."""
         for map_location in population:
@@ -160,8 +159,23 @@ class CreateIsland:
         for cell in self.map.values():
             cell.animal_death()
 
+    def procreation_animals(self):
+        for cell in self.map.values():
+            cell.eat()
 
+    def aging_animals(self):
+        for cell in self.map.values():
+            cell.aging()
 
+    def death_animals(self):
+        for cell in self.map.values():
+            cell.animal_death()
+
+    def simulate_one_year(self):
+        self.feed_animals()
+        self.procreation_animals()
+        self.aging_animals()
+        self.death_animals()
 
 
 

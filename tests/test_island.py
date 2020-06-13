@@ -96,10 +96,31 @@ class TestCreateIsland:
         assert test_island.map[(2, 2)].present_herbivores[0].weight > 19
 
     def test_procreation_animals(self):
-        pass
+        multi_string = "WWW\nWLW\nWWW"
+        test_island = CreateIsland(multi_string)
+        test_island.add_population([{'loc': (2, 2),
+                                     'pop': [{'species': 'Carnivore',
+                                              'age': 7,
+                                              'weight': 80} for _ in range(20)]}])
+        num_carns = test_island.num_animals_per_species["Carnivore"]
+        assert num_carns == 20
+        for _ in range(200):
+            test_island.procreation_animals()
+        num_carns_after = test_island.num_animals_per_species["Carnivore"]
+        assert num_carns < num_carns_after
 
     def test_aging_animals(self):
-        pass
+        multi_string = "WWW\nWLW\nWWW"
+        test_island = CreateIsland(multi_string)
+        test_island.add_population([{'loc': (2, 2),
+                                     'pop': [{'species': 'Carnivore',
+                                              'age': 7,
+                                              'weight': 80}]}])
+
+        test_island.animals_aging()
+        for carn in test_island.map[(2, 2)].present_carnivores:
+            assert carn.age == 8
+
 
     def test_death_animals(self):
         multi_string = "WWW\nWLW\nWWW"
