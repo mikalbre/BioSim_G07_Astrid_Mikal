@@ -224,6 +224,7 @@ class TestHighland:
         highland = Highland()
         assert type(highland.present_herbivores) is list
         assert type(highland.present_carnivores) is list
+        highland.fodder_regrow()
         assert highland.get_fodder() == 300
 
 
@@ -249,3 +250,5 @@ class TestWater:
         assert type(water.present_herbivores) is list
         assert type(water.present_carnivores) is list
         assert water.get_fodder() == 0
+
+# available fixtures: cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, doctest_namespace, mocker, module_mocker, monkeypatch, package_mocker, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, session_mocker, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
