@@ -1,5 +1,5 @@
 
-from .landscape import SingleCell, Highland, Lowland, Desert, Water
+from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
 
 class CreateIsland:
 
@@ -127,8 +127,8 @@ class CreateIsland:
             if loc not in self.map.keys():
                 raise ValueError("Given location does not exist")
 
-            if not self.map[loc].passable:  # NEI
-                raise ValueError("The location is not passable")
+            # if not self.map[loc].passable:  # NEI
+            #     raise ValueError("The location is not passable")
 
             animals_dict = map_location["pop"]
             self.map[loc].animal_allocate(animals_dict)
@@ -176,7 +176,6 @@ class CreateIsland:
         self.aging_animals()
         self.death_animals()
         self.year_num += 1
-
 
 
 if __name__=='__main__':
