@@ -26,12 +26,12 @@ class TestSingleClass:
             SingleCell.cell_parameter(test_input)
 
         params = {'f_max': -10}  # ValueError
-        with pytest.raises(TypeError):  # TypeError not ValueError, gir ikke mening
-            SingleCell.cell_parameter(params)
+        with pytest.raises(ValueError):  # TypeError not ValueError, gir ikke mening
+            Lowland().cell_parameter(params)
 
         params = {'Invalid parameter': 100}  # TypeError
         with pytest.raises(TypeError):  # TypeError not ValueError
-            SingleCell.cell_parameter(params)
+            Highland().cell_parameter(params)
 
     def test_init(self):
         cell = SingleCell()
@@ -75,6 +75,12 @@ class TestSingleClass:
         assert herbivore_0.weight == add_herbs_to_island[0]['weight']
         assert herbivore_1.age == add_herbs_to_island[1]['age']
         assert herbivore_1.weight == add_herbs_to_island[1]['weight']
+
+        ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
+        with pytest.raises(TypeError):
+            lowland.animals_allocate(ini_animal)
+
+
 
     def test_eat(self):
         for herb in Lowland().present_herbivores:
@@ -157,10 +163,10 @@ class TestSingleClass:
 
 
         # NOT WORKING:
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 30},
-                                  {'species': 'Herbivore', 'age': 3, 'weight': 30},
-                                  {'species': 'Herbivore', 'age': 5, 'weight': 30},
-                                  {'species': 'Herbivore', 'age': 10, 'weight': 30}])
+        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 60},
+                                  {'species': 'Herbivore', 'age': 3, 'weight': 700},
+                                  {'species': 'Herbivore', 'age': 5, 'weight': 70},
+                                  {'species': 'Herbivore', 'age': 10, 'weight': 70}])
         num_herb = len(lowland.present_herbivores)  # 4
         print('\n')
         print(lowland.present_herbivores)
