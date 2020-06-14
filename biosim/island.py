@@ -117,6 +117,7 @@ class CreateIsland:
 
     def add_population(self, population):
         """Add population of both herbivores and carnivores to the island."""
+
         for map_location in population:
             loc = map_location['loc']  # Gets a coordinate X: (1, 1)
             if loc not in self.map.keys():  # Checks if (1,1) is key in self.map

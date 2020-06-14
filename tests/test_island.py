@@ -6,7 +6,7 @@ import pytest
 
 def test_string_line_length():
     string = """abc\ndef\nghi"""
-    island = CreateIsland(string)
+    island = CreateIsland(string, pop)
     assert island.check_length_of_string(string) is True
 
 
@@ -15,10 +15,10 @@ class TestCreateIsland:
     def test_init(self):
         pass
 
-    def test_string_line_length(self):
-        string = """abc\ndef\nghi"""
-        island = CreateIsland(string)
-        assert island.check_length_of_string(string) is True
+    # def test_string_line_length(self):
+    #     string = """abc\ndef\nghi"""
+    #     island = CreateIsland(string)
+    #     assert island.check_length_of_string(string) is True
 
     def test_num_animals(self):
         pass
@@ -47,44 +47,48 @@ class TestCreateIsland:
 
 
     def test_make_map(self):
-        multi_string = "WWW"
-        island = CreateIsland(multi_string)
+        multi_string = "WWW\nWLW\nWWW"
+        pop = [{'loc': (2, 2),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        island = CreateIsland(multi_string, pop)
         assert isinstance(island.map[(1, 1)], Water)
 
         multi_string = "WWW\nWLW\nWWW"
-        island = CreateIsland(multi_string)
+        island = CreateIsland(multi_string, pop)
         assert isinstance(island.map[(2, 2)], Lowland)
 
         multi_string = "WWWW\nWDDW\nWHLW\nWWWW"
-        island = CreateIsland(multi_string)
+        island = CreateIsland(multi_string, pop)
         assert isinstance(island.map[(2, 3)], Desert)
         assert isinstance(island.map[(3, 2)], Highland)
         assert isinstance(island.map[(4, 4)], Water)
 
     def test_add_population(self):
         multi_string = "WWW\nWDW\nWWW"
-        test_island = CreateIsland(multi_string)
-        assert test_island.map[(2, 2)].num_animals == 0
-        test_island.add_population([{'loc': (2, 2),
-                  'pop': [{'species': 'Herbivore',
-                           'age': 5,
-                           'weight': 20}]}])
+        pop =[{'loc': (2, 2),
+               'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+
         for herb in test_island.map[(2, 2)].present_herbivores:
             assert herb.age == 5
             assert herb.weight == 20
         assert len(test_island.map[(2, 2)].present_herbivores) == 1
 
-        with pytest.raises(ValueError):
-            test_island.add_population([{'loc': (10, 10),
-                                     'pop': [{'species': 'Herbivore',
-                                              'age': 5,
-                                              'weight': 20}]}])
+        pop = [{'loc': (10, 10),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
 
         with pytest.raises(ValueError):
-            test_island.add_population([{'loc': (1, 1), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+            CreateIsland(multi_string, pop)
 
+        pop = [{'loc': (1, 1),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
         with pytest.raises(ValueError):
-            test_island.add_population([{'loc': (2, 3), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+            CreateIsland(multi_string, pop)
+
+        pop = [{'loc': (2, 3),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        with pytest.raises(ValueError):
+            CreateIsland(multi_string, pop)
 
 
     def test_new_year_reset(self):
@@ -95,18 +99,18 @@ class TestCreateIsland:
 
     def test_feed_animals(self):
         multi_string = "WWW\nWLW\nWWW"
-        test_island = CreateIsland(multi_string)
-        test_island.add_population([{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}])
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
         test_island.feed_animal()
         assert test_island.map[(2, 2)].present_herbivores[0].weight > 20
 
     def test_procreation_animals(self):
         multi_string = "WWW\nWLW\nWWW"
-        test_island = CreateIsland(multi_string)
-        test_island.add_population([{'loc': (2, 2),
-                                     'pop': [{'species': 'Carnivore',
-                                              'age': 7,
-                                              'weight': 80} for _ in range(20)]}])
+        pop = [{'loc': (2, 2),
+                'pop': [{'species': 'Carnivore', 'age': 7, 'weight': 80}
+                        for _ in range(20)]}]
+        test_island = CreateIsland(multi_string, pop)
+
         num_carns = test_island.num_animals_per_species["Carnivore"]
         assert num_carns == 20
         for _ in range(200):
@@ -116,11 +120,9 @@ class TestCreateIsland:
 
     def test_aging_animals(self):
         multi_string = "WWW\nWLW\nWWW"
-        test_island = CreateIsland(multi_string)
-        test_island.add_population([{'loc': (2, 2),
-                                     'pop': [{'species': 'Carnivore',
-                                              'age': 7,
-                                              'weight': 80}]}])
+        pop = [{'loc': (2, 2),
+               'pop': [{'species': 'Carnivore', 'age': 7, 'weight': 80}]}]
+        test_island = CreateIsland(multi_string, pop)
 
         test_island.aging_animals()
         for carn in test_island.map[(2, 2)].present_carnivores:
@@ -128,9 +130,11 @@ class TestCreateIsland:
 
     def test_death_animals(self):
         multi_string = "WWW\nWLW\nWWW"
-        test_island = CreateIsland(multi_string)
-        test_island.add_population([{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 2}
-                                                            for _ in range(50)]}])
+        pop = [{'loc': (2, 2),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 2}
+                                                            for _ in range(50)]}]
+        test_island = CreateIsland(multi_string, pop)
+
         num_animals_before = test_island.num_animals
         for _ in range(15):
             test_island.death_animals()
