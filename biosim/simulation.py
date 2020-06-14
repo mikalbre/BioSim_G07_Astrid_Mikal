@@ -7,10 +7,10 @@ import random
 
 class Simulation:
 
-        default_map = """WWW
-                        WLW
-                        WWW
-                        """
+        # default_map = """WWW
+        #                 WLW
+        #                 WWW
+        #                 """
 
         # default_population = [
         #     {"loc": (2, 2),
@@ -32,15 +32,14 @@ class Simulation:
         random.seed(seed)
         self.island_map = CreateIsland.make_map(island_map_str)
         self.ini_pop = CreateIsland.add_population(ini_pop)
-        self.year = 0
 
         if ymax_animals is None:
-            """ """
-            self.ymax_animals = 10000  # ??
+            """Number specifying y-axis limit for graph showing animal numbers"""
+            self.ymax_animals = 15000  # ??
 
         if cmax_animals is None:
-            """ """
-            self.cmax_animals = {'Herbivore': 100, 'Carnivore': 50}  # ??
+            """Dict specifying color-code limits for animal densities """
+            self.cmax_animals = {'Herbivore': 150, 'Carnivore': 40}  # ??
 
 
 

@@ -15,14 +15,14 @@ class CreateIsland:
                        "D": Desert,
                        "W": Water}
 
-    def __init__(self, geography_island_string):
+    def __init__(self, geography_island_string, initial_population):
 
         self.year_num = 0  # years simulated
 
         # Makes the map based on the multi- line string passed in
         self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
-        #self.add_population(initial_population)  # simulation file
+        self.add_population(initial_population)  # simulation file
 
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
