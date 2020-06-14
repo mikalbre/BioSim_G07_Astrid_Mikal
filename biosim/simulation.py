@@ -1,8 +1,12 @@
 from biosim.island import CreateIsland
 from .landscape import Highland, Lowland, Desert, Water
 from .animals import Herbivore, Carnivore
+from biosim import animals
+from biosim import landscape as Landscape
+from biosim import island as Island
 
 import random
+import os
 
 
 class Simulation:
@@ -26,7 +30,10 @@ class Simulation:
                  ini_pop,
                  seed,
                  ymax_animals=None,
-                 cmax_animals=None
+                 cmax_animals=None,
+                 hist_specs=None,
+                 img_base=None,
+                 img_fmt='png'
                  ):
 
         random.seed(seed)
@@ -36,34 +43,82 @@ class Simulation:
         if ymax_animals is None:
             """Number specifying y-axis limit for graph showing animal numbers"""
             self.ymax_animals = 15000  # ??
+        else:
+            self.ymax_animals = ymax_animals
 
         if cmax_animals is None:
             """Dict specifying color-code limits for animal densities """
-            self.cmax_animals = {'Herbivore': 150, 'Carnivore': 40}  # ??
+            self.cmax_animals = {'Herbivore': 50, 'Carnivore': 20}  # ??
+        else:
+            self.cmax_animals = cmax_animals
+
+        if  not 'fitness' or 'age' or 'weight' in hist_spec:
+                raise ValueError('Does not accept this input!')
+                # Riktig?
+
+        self.img_ctr = 0
+        self.final_year = None
+        self.img_fmt = img_fmt
+
+        if img_base is None:
+            self.img_base = os.path.join('..', 'BioSim')
+        else:
+            self.img_base = img_base
+
+
+    @staticmethod
+    def set_animal_parameters(species, params):
+        if species is 'Herbivore':
+            animals.Herbivore.set_parameters(params)
+        elif species is 'Carnviore':
+            animals.Carnivore.set_parameters(params)
+
+    @staticmethod
+    def set_landscape_parameters(landscape, params):
+        # if landscape is 'W':
+        #     Landscape.Water.cell_parameter(params, accessability=False)
+        # elif landscape is 'D':
+        #     Landscape.Desert.cell_parameter(params, accessabiliy=True)
+        if landscape is 'H':
+            Landscape.Highland.cell_parameter(params,accessability=True)
+        elif landscape is 'L':
+            Landscape.Lowland.cell_parameter(params, accessability=True)
+
+    @property
+    def year(self):
+        return self.year()
+
+    def add_population(self, population):
+        Island.CreateIsland.add_population(population)
+
+    def simulate(self):
+        # sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
 
 
 
-        self.ymax_animals = ymax_animals
-        self.cmax_animals = cmax_animals
 
-        sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
-                     seed=123456,
-                     hist_specs={'fitness': {'max': 1.0, 'delta': 0.05},
-                                 'age': {'max': 60.0, 'delta': 2},
-                                 'weight': {'max': 60, 'delta': 2}},
-                     )
 
-        sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
-        sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
-                                                'omega': 0.3, 'F': 65,
-                                                'DeltaPhiMax': 9.})
-        sim.set_landscape_parameters('L', {'f_max': 700})
 
-        sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
-        sim.add_population(population=ini_carns)
-        sim.simulate(num_years=100, vis_years=1, img_years=2000)
+
+    sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
+                 seed=123456,
+                 hist_specs={'fitness': {'max': 1.0, 'delta': 0.05},
+                             'age': {'max': 60.0, 'delta': 2},
+                             'weight': {'max': 60, 'delta': 2}},
+                 )
+
+    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
+    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
+                                            'omega': 0.3, 'F': 65,
+                                            'DeltaPhiMax': 9.})
+    sim.set_landscape_parameters('L', {'f_max': 700})
+
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+
+    sim.add_population(population=ini_carns)
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
 
 
@@ -89,7 +144,7 @@ class Simulation:
             current_year += 1
 
     def add_population(self, population):
-        self.Crea
+        self.Island.CreateIsland(population)
 
     @property
     def year(self):
