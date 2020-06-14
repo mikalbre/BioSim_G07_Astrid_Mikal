@@ -103,13 +103,11 @@ class Test_Animals:
         # offspring = herb.procreation(2)
         # assert offspring["Type"] == "Herbivore"
 
-
-
     def test_migrate(self):
-        herb = Herbivore(0, 5)
-        phi = herb.fitness_calculation()
-        prob_migrate = herb.prob_migrate()
-        assert prob_migrate == approx(0.0943851)
+        pass
+
+    def test_has_moved(self):  # riktig?
+        pass
 
     def test_growing_older(self):
         herbivore = Herbivore(3, 12)

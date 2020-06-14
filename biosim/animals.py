@@ -166,19 +166,17 @@ class Animals:
 
     def prob_migrate(self):
         """
-        Calculates the probability for the animal to migrate
+        Calculates the probability for the animal to migrate to new cell.
         :return:
         """
-        if not self.has_migrated:
+        if self.has_migrated is False:
             return bool(random.random() < self.params["mu"] * self.phi)
         return False
 
-    def set_migration_flag_True(self):
-        pass
+    def set_migration_true(self):
         self.has_migrated = True
 
-    def set_migration_flag_False(self):
-        pass
+    def set_migration_false(self):
         self.has_migrated = False
 
     def growing_older(self):
