@@ -43,9 +43,6 @@ class TestCreateIsland:
         with pytest.raises(ValueError):
             CreateIsland.condition_for_island_map_string(string)
 
-
-
-
     def test_make_map(self):
         multi_string = "WWW\nWLW\nWWW"
         pop = [{'loc': (2, 2),
@@ -89,7 +86,6 @@ class TestCreateIsland:
                 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
         with pytest.raises(ValueError):
             CreateIsland(multi_string, pop)
-
 
     def test_new_year_reset(self):
         pass
