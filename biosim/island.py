@@ -15,22 +15,17 @@ class CreateIsland:
                        "D": Desert,
                        "W": Water}
 
-    def __init__(self, geography_island_string):
+    def __init__(self, geography_island_string, initial_population):
 
         self.year_num = 0  # years simulates
 
         # Makes the map based on the multi- line string passed in
         self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
-        # self.add_population(initial_population)  # simulation file
+        self.add_population(initial_population)  # simulation file
 
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
-
-    def check_length_of_string(self, map_list):
-        if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
-            return False
-        return True
 
     @property
     def num_animals(self):
@@ -73,11 +68,11 @@ class CreateIsland:
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
         #map_list = []
-        geography_island_string_map = geography_island_string.strip().split('\n')
         #geography_island_string_map = [i.strip('[]') for i in geography_island_string]
         #map_list = geography_island_string_map.split('\n')
-        map_list = geography_island_string_map
 
+        geography_island_string_map = geography_island_string.strip().split('\n')
+        map_list = geography_island_string_map
 
         if not check_length_of_string(map_list):
             raise ValueError("Multi line string must have equal length, must be a rectangle.")
@@ -141,7 +136,12 @@ class CreateIsland:
 
     def procreation_animals(self):
         for cell in self.map.values():
-            cell.eat()
+            cell.procreation()
+        #for pos, cell in self.map.items():
+        #   herb_birth, carn_birth = cell.procreation()
+        #   if self.store_stats:
+        #       self.stats[self.year]['Herbivore']['birth'][pos] = herb_birth
+        #       self.stats[self.year]['Carnivore']['birth'][pos] = carn_birth
 
     def aging_animals(self):
         for cell in self.map.values():
@@ -150,9 +150,22 @@ class CreateIsland:
     def death_animals(self):
         for cell in self.map.values():
             cell.animal_death()
+        #for pos, cell in self.map.items():
+        #   herb_death, carn_death = cell.animal_death()
+        #   if self.store_stats:
+        #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
+        #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
+
+    @property
+    def year(self):
+        return self.year_num
+
+    @year.setter
+    def year(self, new_year_value):
+        self.year_num = new_year_value
 
     def simulate_one_year(self):
-        self.feed_animals()
+        self.feed_animal()
         self.procreation_animals()
         self.aging_animals()
         self.death_animals()

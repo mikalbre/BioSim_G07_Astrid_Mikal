@@ -15,6 +15,11 @@ class TestCreateIsland:
     def test_init(self):
         pass
 
+    def test_string_line_length(self):
+        string = """abc\ndef\nghi"""
+        island = CreateIsland(string)
+        assert island.check_length_of_string(string) is True
+
     def test_num_animals(self):
         pass
 

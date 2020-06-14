@@ -247,7 +247,7 @@ class Desert(SingleCell):
     Carnivores can prey on herbivores in the Desert.
     """
     accessability = True
-    params = {"f_max": 0}
+    params = {"f_max": 0}  # fjerne denne og de under
 
     def __init__(self):
         super().__init__()
@@ -269,7 +269,7 @@ class Water(SingleCell):
     Water are passive cell because the animals can not enter.
     """
     accessability = False
-    params = {"f_max": 0}
+    params = {"f_max": 0}  # fjerne denne og de under
 
     def __init__(self):
         super().__init__()

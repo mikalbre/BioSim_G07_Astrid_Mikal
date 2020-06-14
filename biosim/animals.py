@@ -87,14 +87,6 @@ class Animals:
         self.phi = 0
         self.fitness_calculation()
 
-    def set_migration_flag_true(self):
-        pass
-        #self.has_migrated = True
-
-    def set_migration_flag_False(self):
-        pass
-        #self.has_migrated = False
-
     def __repr__(self):
         string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
         return string
@@ -177,8 +169,17 @@ class Animals:
         Calculates the probability for the animal to migrate
         :return:
         """
+        if not self.has_migrated:
+            return bool(random.random() < self.params["mu"] * self.phi)
+        return False
 
-        return self.params["mu"] * self.phi
+    def set_migration_flag_True(self):
+        pass
+        self.has_migrated = True
+
+    def set_migration_flag_False(self):
+        pass
+        self.has_migrated = False
 
     def growing_older(self):
         """
