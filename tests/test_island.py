@@ -114,6 +114,49 @@ class TestCreateIsland:
         num_carns_after = test_island.num_animals_per_species["Carnivore"]
         assert num_carns < num_carns_after
 
+    def test_add_migrated_herb_to_new_cell(self):
+        multi_string = "WWW\nWLW\nWWW"
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+        loc = (2, 2)
+        assert test_island.map[loc].num_herbivores == 1
+        test_island.add_migrated_herb_to_new_cell(loc, Herbivore())
+        assert test_island.map[loc].num_herbivores == 2
+        test_island.add_migrated_herb_to_new_cell(loc, Herbivore())
+        assert test_island.map[loc].num_herbivores == 3
+
+    def test_add_migrated_carn_to_new_cell(self):
+        multi_string = "WWW\nWLW\nWWW"
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Carnivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+        loc = (2, 2)
+        assert test_island.map[loc].num_carnivores == 1
+        test_island.add_migrated_carn_to_new_cell(loc, Carnivore())
+        assert test_island.map[loc].num_carnivores == 2
+        test_island.add_migrated_carn_to_new_cell(loc, Carnivore())
+        assert test_island.map[loc].num_carnivores == 3
+
+    def test_migration_neighboring_cells(self):
+        multi_string = "WWWW\nWLHW\nWWWW"
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+        loc = (2, 2)
+        accessible_neighbor_cells = test_island.migration_neighboring_cells(loc)
+        assert accessible_neighbor_cells == [((2, 3), Highland)]  # ??
+
+    def test_migration_animals(self):
+        multi_string = "WWWW\nWLHW\nWWWW"
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+        loc = (2, 2)
+        assert test_island.map[loc].num_animals == 1
+        assert test_island.map[(1, 1)].num_animals == 0
+        pop1 = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(15)]}]
+        test_island = CreateIsland(multi_string, pop1)
+        loc = (2, 2)
+        test_island.simulate_one_year()
+        assert test_island.map[loc].num_animals == 1
+
     def test_aging_animals(self):
         multi_string = "WWW\nWLW\nWWW"
         pop = [{'loc': (2, 2),

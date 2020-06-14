@@ -83,18 +83,6 @@ class SingleCell:
             else:
                 raise TypeError("This animal is not a valid animal")
 
-    @property
-    def num_herbivores(self):
-        return len(self.present_herbivores)
-
-    @property
-    def num_carnivores(self):
-        return len(self.present_carnivores)
-
-    @property
-    def num_animals(self):
-        return self.num_herbivores + self.num_carnivores
-
     def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on
         type of landscape. Thereafter the feed_herb- method is called and the herb
@@ -168,8 +156,44 @@ class SingleCell:
 
             return herb_newbord, carn_newbord
 
-    def migrate(self):
+    def choose_new_cell(self, prob_list):
         pass
+
+    def migrate(self, new_loc):
+        migrated_herb = []
+        migrated_carn = []
+
+        for herb in self.present_herbivores:
+            if herb.prob_migrate():
+                migrated_herb.append((new_loc, herb))
+
+        for carn in self.present_carnivores:
+            if carn.prob_migrate():
+                migrated_carn.append((new_loc, carn))
+
+        for loc, herb in migrated_herb:
+            self.remove_herb_migrated(herb)
+
+        for loc, carn in migrated_carn:
+            self.remove_carn_migrated(carn)
+
+        return migrated_herb, migrated_carn
+
+    def add_herb_migrated(self, herb):
+        """Adds migrated herbs to the list of herbivores in this cell. Herb migrated to this cell."""
+        self.present_herbivores.append(herb)
+
+    def remove_herb_migrated(self, herb):
+        """Removes migrated herbs from the list of herbivores in this cell. Herb migrated from this cell to another."""
+        self.present_herbivores.remove(herb)
+
+    def add_carn_migrated(self, carn):
+        """Adds migrated carns to the list of carnivores in this cell. Carn migrated to this cell."""
+        self.present_carnivores.append(carn)
+
+    def remove_carn_migrated(self, carn):
+        """Removes migrated carns from the list of carnivores in this cell. Carn migrated from this cell to another."""
+        self.present_carnivores.remove(carn)
 
     def aging(self):
         """Method to increment age by 1 and decrease weight for every animal."""
@@ -191,6 +215,18 @@ class SingleCell:
     def get_fodder(self):
         return self.available_fodder
 
+    @property
+    def num_herbivores(self):
+        return len(self.present_herbivores)
+
+    @property
+    def num_carnivores(self):
+        return len(self.present_carnivores)
+
+    @property
+    def num_animals(self):
+        return self.num_herbivores + self.num_carnivores
+
 
 class Highland(SingleCell):
     """
@@ -205,6 +241,10 @@ class Highland(SingleCell):
     def __init__(self):
         super().__init__()
         self.available_fodder = self.params["f_max"]
+
+    # def __repr__(self):
+    #     string = f'{type(self).__name__}'
+    #     return string
 
     def fodder_regrow(self):
         """
@@ -225,10 +265,13 @@ class Lowland(SingleCell):
     accessability = True
     params = {"f_max": 800}
 
-
     def __init__(self):
         super().__init__()
         self.available_fodder = self.params["f_max"]
+
+    def __repr__(self):
+        string = f'{type(self).__name__}'
+        return string
 
     def fodder_regrow(self):
         """
@@ -253,6 +296,10 @@ class Desert(SingleCell):
         super().__init__()
         self.available_fodder = self.params["f_max"]
 
+    def __repr__(self):
+        string = f'{type(self).__name__}'
+        return string
+
     def fodder_regrow(self):
         """
         Restores the amount of available fodder to f_max when this method is called
@@ -274,6 +321,10 @@ class Water(SingleCell):
     def __init__(self):
         super().__init__()
         self.available_fodder = self.params["f_max"]
+
+    def __repr__(self):
+        string = f'{type(self).__name__}'
+        return string
 
     def fodder_regrow(self):
         """
