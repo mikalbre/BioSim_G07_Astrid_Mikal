@@ -23,6 +23,7 @@ class CreateIsland:
         self.map = self.make_map(geography_island_string)  # simulation file
         # Passes in the population
         self.add_population(initial_population)  # simulation file
+        # self.island = {}
 
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
@@ -157,13 +158,13 @@ class CreateIsland:
         #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
 
-    @property
+
     def year(self):
         return self.year_num
 
-    @year.setter
-    def year(self, new_year_value):
-        self.year_num = new_year_value
+    # @year.setter
+    # def year(self, new_year_value):
+    #     self.year_num = new_year_value
 
     def simulate_one_year(self):
         self.feed_animal()
