@@ -7,7 +7,7 @@ __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 from math import exp
 import random
-import numpy as np
+random.seed(1)
 
 
 class Animals:
@@ -16,19 +16,19 @@ class Animals:
     It represents a single animal, and does not specify the type of animal.
     It contains methods, variables and properties that are common for both carnivore and herbivore.
     """
-    params = None  # instead of setting all parameters equal to None
+    params = None  # instead of setting all parameter equal to None
 
     @classmethod
     def set_parameters(cls, params):
         """
-        Takes a dictionary of parameters as input.
+        Takes a dictionary of parameter as input.
         :param params:
         :return:
         """
 
-        animal_set_parameters = cls.params.update()
+        #animal_set_parameters = cls.params.update()
 
-        for parameter in animal_set_parameters:
+        for parameter in params:
             if parameter in cls.params:
                 if params[parameter] < 0:
                     raise ValueError(f"{parameter} cannot be negative.")
@@ -48,6 +48,27 @@ class Animals:
             The weight of the animal
         """
 
+        # if age is None:  # La til denne
+        #     raise ValueError("Age of animal not given.")
+        # elif age < 0 or age is float:
+        #     raise ValueError("Age of animal must be positive and integer.")
+        # else:
+        #     self.age = age
+        # if weight is None or weight > 0:
+        #     if weight is None:
+        #         self.weight = self.get_initial_weight_offspring()
+        #     else:
+        #         self.weight = weight
+        # else:
+        #      raise ValueError("weight not allowed")
+
+        # if weight is None:
+        #     self.weight = self.get_initial_weight_offspring()
+        # elif weight < 0:  # La til denne
+        #   raise ValueError("Weight of animal must be positive")
+        # else:
+        #     self.weight = weight
+
         if age < 0 or age is float:
             raise ValueError("Age of animal must be positive and integer.")
         else:
@@ -58,7 +79,7 @@ class Animals:
         else:
             self.weight = weight
 
-        # sjekk dette
+        # sjekk
         self.alive = True
         self.has_migrated = False
         self.eaten = 0
@@ -67,7 +88,7 @@ class Animals:
         self.fitness_calculation()
 
     def __repr__(self):
-        string = f'Type:{type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
+        string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
         return string
 
     def get_initial_weight_offspring(self):
@@ -131,24 +152,32 @@ class Animals:
 
         if (self.weight < self.params["zeta"] *
                 (self.params["w_birth"] + self.params["sigma_birth"])):
-            return 0
+            return 0  # La til 0
 
-        if (random.random()
-                <= np.minimum(1, self.params["gamma"] * self.phi * (num_same_species - 1))):
+        if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
-            self.weight -= self.params["xi"] * offspring.weight
+            # offspring.weight = self.get_initial_weight_offspring()
+            self.weight -= self.params["xi"] * offspring.weight  # get_initial_weight_offspring
             self.fitness_calculation()
+
             return offspring
 
-        return 0
+        return 0  # la til return
 
     def prob_migrate(self):
         """
-        Calculates the probability for the animal to migrate
+        Calculates the probability for the animal to migrate to new cell.
         :return:
         """
+        if self.has_migrated is False:
+            return bool(random.random() < self.params["mu"] * self.phi)
+        return False
 
-        return self.params["mu"] * self.phi
+    def set_migration_true(self):
+        self.has_migrated = True
+
+    def set_migration_false(self):
+        self.has_migrated = False
 
     def growing_older(self):
         """
@@ -168,6 +197,7 @@ class Animals:
         Calculate the probability of the animal dying
         :return:
         """
+
         if self.weight == 0:
             return True
         elif random.random() < self.params["omega"] * (1 - self.phi):
@@ -195,7 +225,7 @@ class Herbivore(Animals):
         'beta': 0.9,
         'eta': 0.05,
         'a_half': 40.0,
-        'phi_age': 0.2,
+        'phi_age': 0.6,
         'w_half': 10.0,
         'phi_weight': 0.1,
         'mu': 0.25,
@@ -230,7 +260,7 @@ class Herbivore(Animals):
         if available_food < 0:
             self.eaten = 0
         else:
-            self.eaten = np.minimum(self.params["F"], available_food)
+            self.eaten = min(self.params["F"], available_food)
 
         self.weight += self.params["beta"] * self.eaten
         self.fitness_calculation()
@@ -261,26 +291,25 @@ class Carnivore(Animals):
         super().__init__(age, weight)
 
     def hunt_herb(self, herbi_phi_sorted_list):
-
+        self.eaten = 0
         del_herb = []
-        eaten_amount = 0
         for herb in herbi_phi_sorted_list:
 
             if self.phi <= herb.phi:
                 kill_prob = 0
-            elif self.phi - herb.phi < self.params["DeltaPhiMax"]:
+            elif (self.phi - herb.phi) < self.params["DeltaPhiMax"]:
                 kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten = np.minimum(self.params["F"], herb.weight)
+                self.eaten += min(self.params["F"], herb.weight)
+                if self.eaten > self.params["F"]:
+                    break
                 self.weight += self.params["beta"] * self.eaten
-                eaten_amount += herb.weight
                 herb.alive = False
                 del_herb.append(herb)
+                # print('appending herb', del_herb)
                 self.fitness_calculation()
-                if eaten_amount >= self.params["F"]:
-                    break
 
         return del_herb
