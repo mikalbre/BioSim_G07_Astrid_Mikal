@@ -291,7 +291,7 @@ class Carnivore(Animals):
         super().__init__(age, weight)
 
     def hunt_herb(self, herbi_phi_sorted_list):
-
+        self.eaten = 0
         del_herb = []
         for herb in herbi_phi_sorted_list:
 
@@ -309,6 +309,7 @@ class Carnivore(Animals):
                 self.weight += self.params["beta"] * self.eaten
                 herb.alive = False
                 del_herb.append(herb)
+                # print('appending herb', del_herb)
                 self.fitness_calculation()
 
         return del_herb

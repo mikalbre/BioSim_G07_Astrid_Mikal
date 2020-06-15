@@ -114,13 +114,21 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
+        # print(f"num_before: {len(self.present_herbivores)}")
 
         for carn in self.present_carnivores:
         #     if len(self.present_herbivores) == 0:
-            self.present_herbivores = list(set(self.present_herbivores) -
-                                               set(carn.hunt_herb(self.present_herbivores)))
+            del_herbs = carn.hunt_herb(self.present_herbivores)
+            # print('del herbs)',del_herbs)
+            self.present_herbivores = list(set(self.present_herbivores) - set(del_herbs))
+
             self.present_herbivores = sorted(self.present_herbivores,
                                              key=lambda x: getattr(x, 'phi'))
+
+            # print( [anim.phi for anim in self.present_herbivores])
+
+        # print(f"num_after: {len(self.present_herbivores)}")
+
         return
 
         # for carn in self.present_carnivores:
@@ -146,6 +154,7 @@ class SingleCell:
                 #self.present_herbivores.append(offspring)
                 herb_newbord.append(offspring)
             self.present_herbivores.extend(herb_newbord)
+
 
         carn_newbord = []
         if len(self.present_carnivores) >= 2:
@@ -359,7 +368,7 @@ class Water(SingleCell):
 
 
 if __name__ == "__main__":
-    random.seed(1)
+    random.seed(2)
     c = Lowland()
     poph = [{'species': 'Herbivore',
             'age': 5,
@@ -373,14 +382,16 @@ if __name__ == "__main__":
     print(f"fodder: {c.get_fodder()}")
     c.animals_allocate(poph)
     # c.animals_allocate(popc)
-    print(f"num_an herb: {len(c.present_herbivores)}")
-    print(f"num_an carn: {len(c.present_carnivores)}")
+    # print(f"num_an herb: {len(c.present_herbivores)}")
+    # print(f"num_an carn: {len(c.present_carnivores)}")
+
+    # if years == 50:
+    c.animals_allocate(popc)
 
 
     for j in range(10):
         for years in range(200):
-            if years == 50:
-                c.animals_allocate(popc)
+
             #print(f"fodder before: {c.get_fodder()}")
             c.eat()
             #print(f"Fodder_after_eating: {c.available_fodder}")
