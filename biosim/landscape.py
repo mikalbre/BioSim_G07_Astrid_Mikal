@@ -88,7 +88,7 @@ class SingleCell:
         type of landscape. Thereafter the feed_herb- method is called and the herb
         gets to eat in random. Lastly, the carnivores get to eat the herbivores in a order
         decided by the animals of both species' fitness."""
-        #self.fodder_regrow()
+        self.fodder_regrow()
         self.feed_herb()
         self.feed_carn_with_herb()
 
@@ -142,8 +142,8 @@ class SingleCell:
                 offspring = herbivores.procreation(len(self.present_herbivores))
                 if not offspring:
                     continue
-                self.present_herbivores.append(offspring)
                 herb_newbord.append(offspring)
+            self.present_herbivores.extend(herb_newbord)
 
         carn_newbord = []
         if len(self.present_carnivores) >= 2:
@@ -151,8 +151,8 @@ class SingleCell:
                 offspring = carnivores.procreation(len(self.present_carnivores))
                 if not offspring:
                     continue
-                self.present_carnivores.append(offspring)
-                carn_newbord.append(carn_newbord)
+                carn_newbord.append(offspring)
+            self.present_carnivores.extend(carn_newbord)
 
             return herb_newbord, carn_newbord
 
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     #         {'species': 'Carnivore', 'age': 5, 'weight': 20}]
 
     c.animals_allocate(poph)
-    #c.animals_allocate(popc)
+    # c.animals_allocate(popc)
     print(f"num_an herb: {len(c.present_herbivores)}")
     print(f"num_an carn: {len(c.present_carnivores)}")
     # print(c.present_herbivores)
@@ -394,12 +394,12 @@ if __name__ == "__main__":
             # print(f"num_herb_proc: {len(c.present_herbivores)}")
             # print(f"num_carn_proc: {len(c.present_carnivores)}")  # looks like carn can procreate
 
-            c.aging()
+
 
             c.animal_death()  # works for herb, carns has []
             # print(f"num_herb_d: {len(c.present_herbivores)}")
             # print(f"num_carn_d: {len(c.present_carnivores)}")  # looks like carn can procreate
-
+            c.aging()
             print("______ Etter syklus ______")
             print(f'Herb: {len(c.present_herbivores)}')
             print(f'Carn: {len(c.present_carnivores)}')
