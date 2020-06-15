@@ -88,11 +88,11 @@ class CreateIsland:
 
         for landscape_type in (first_line_north + last_line_south):
             if not landscape_type == 'W':
-                raise ValueError("Cells in both north and south must consist of water!")
+                raise ValueError("Cells in north and south of island must consist of water!")
 
         for landscape_type in (first_column_west + last_column_east):
             if not landscape_type == 'W':
-                raise ValueError("Cells in west and east must consist of water!")
+                raise ValueError("Cells in west and east of island must consist of water!")
 
         return map_list  # X: ['WWW', 'WLW', 'WWW']
 
@@ -144,7 +144,7 @@ class CreateIsland:
             cell.procreation()
 
     def add_migrated_herb_to_new_cell(self, new_loc, herbivore):  # Works
-        self.map[new_loc].add_herb_migrated(herbivore)
+        self.map[new_loc].add_herb_migrated(herbivore)  # ?
 
     def add_migrated_carn_to_new_cell(self, new_loc, carnivore):  # Works
         self.map[new_loc].add_carn_migrated(carnivore)
@@ -153,13 +153,11 @@ class CreateIsland:
         """Finds the location/cell North, East, West and South from current cell."""
 
         coord_x, coord_y = loc  # (2, 2)
-
         # Gets the location of the cell with coordinates
         cell_1 = (coord_x - 1, coord_y)  # North cell (1,2)
         cell_2 = (coord_x + 1, coord_y)  # South cell (3,2)
         cell_3 = (coord_x, coord_y - 1)  # West cell  (2,1)
         cell_4 = (coord_x, coord_y + 1)  # East cell  (2,3)
-
 
         # Checks the landscape type
         type_1 = self.map[cell_1]
@@ -179,14 +177,18 @@ class CreateIsland:
     def migration_animals(self):
         """Iterates through each cell """
         for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
+            #print(f"num_herb_before: {cell.num_herbivores}")
 
             if cell.accessability is True:  # cell is Lowland, Highland, Desert, Water
                 neighboring_cells = self.migration_neighboring_cells(loc)
 
                 if len(neighboring_cells) > 0:
                     migrated_herb, migrated_carn = cell.migrate(neighboring_cells)  # takes in new cell
-
+                    #print(migrated_carn)
+                    #print(migrated_herb)
+                    #print(f"num_herb_after: {cell.num_herbivores}")
                     for new_loc, herb in migrated_herb:
+                        # if new_loc == self.map_params_dict["W"]: # Mulig?
                         self.add_migrated_herb_to_new_cell(new_loc, herb)
                     for new_loc, carn in migrated_carn:
                         self.add_migrated_carn_to_new_cell(new_loc, carn)
@@ -213,12 +215,13 @@ class CreateIsland:
         #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
 
+    @property
     def year(self):
         return self.year_num + 1
 
-    # @year.setter
-    # def year(self, new_year_value):
-    #     self.year_num = new_year_value
+    @year.setter
+    def year(self, new_year_value):
+        self.year_num = new_year_value
 
     def simulate_one_year(self):
         self.new_year_reset()
@@ -226,21 +229,27 @@ class CreateIsland:
         self.procreation_animals()
         #self.migration_animals()
         self.aging_animals()
-        self.death_animals()
-        self.year()
+        #self.death_animals()
+        self.year_num += 1
 
         return self.num_animals_per_species
 
+if __name__ =='__main__':
 
-if __name__ == '__main__':
-    geography_island_string = """WWW
-    WLW
-    WWW"""
-    F = CreateIsland(geography_island_string)
-    F.conditions_for_island_map_string()
+    default_map = """WWWW\nWLHW\nWLWW\nWWWW"""
+
+    default_population = [{"loc": (2, 2), "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
+                                                  for _ in range(150)]}]
+    CreateIsland(default_map, default_population).simulate_one_year()
 
 # for pos, cell in self.map.items():
 #   herb_birth, carn_birth = cell.procreation()
 #   if self.store_stats:
 #       self.stats[self.year]['Herbivore']['birth'][pos] = herb_birth
 #       self.stats[self.year]['Carnivore']['birth'][pos] = carn_birth
+
+
+    # default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
+    #                                               for _ in range(150)]},
+    #                        {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
+    #                                                for _ in range(40)]}]
