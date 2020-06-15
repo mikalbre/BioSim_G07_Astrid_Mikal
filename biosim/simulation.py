@@ -90,7 +90,10 @@ class BioSim:
         self.ax_heat_h = None
         self.herb_denisty = None
 
-
+        self.x_len = len(
+            CreateIsland.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW""")[0])
+        self.y_len = len(
+            CreateIsland.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW"""))
         #self.x_len = island.CreateIsland.num_animals_per_species
         # self.y_len
 
@@ -142,7 +145,7 @@ class BioSim:
         herbs = []
         #carns = []
 
-        for coord, cell in self.map.make_map(geography_island_string=default_map).items():
+        for coord, cell in self.island.make_map(geography_island_string=default_map).items():
             herbs.append(cell.present_herbivores)
             #carns.append(cell.present_herbivores)
             rows.append(coord[0])
@@ -211,15 +214,14 @@ if __name__ == "__main__":
                              'age': {'max': 60.0, 'delta': 2},
                              'weight': {'max': 60, 'delta': 2}},
                  )
-    sim.sim_ez(200)
-    #
-    # sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
-    # sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
-    #                                         'omega': 0.3, 'F': 65,
-    #                                         'DeltaPhiMax': 9.})
-    # sim.set_landscape_parameters('L', {'f_max': 700})
-    # # print(sim.heat_map_herbivore())
-    # sim.simulate(num_years=100, vis_years=1, img_years=2000)
+
+    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
+    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
+                                            'omega': 0.3, 'F': 65,
+                                            'DeltaPhiMax': 9.})
+    sim.set_landscape_parameters('L', {'f_max': 700})
+    # print(sim.heat_map_herbivore())
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
     # sim.add_population(population=ini_carns)
     # sim.simulate(num_years=100, vis_years=1, img_years=2000)
