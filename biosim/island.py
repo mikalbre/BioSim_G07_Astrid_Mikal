@@ -214,7 +214,7 @@ class CreateIsland:
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
 
     def year(self):
-        return self.year_num
+        return self.year_num + 1
 
     # @year.setter
     # def year(self, new_year_value):
@@ -224,10 +224,12 @@ class CreateIsland:
         self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
-        self.migration_animals()
+        #self.migration_animals()
         self.aging_animals()
         self.death_animals()
-        self.year += 1
+        self.year()
+
+        return self.num_animals_per_species
 
 
 if __name__ == '__main__':
