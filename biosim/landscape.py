@@ -372,7 +372,7 @@ if __name__ == "__main__":
 
     print(f"fodder: {c.get_fodder()}")
     c.animals_allocate(poph)
-    #c.animals_allocate(popc)
+    # c.animals_allocate(popc)
     print(f"num_an herb: {len(c.present_herbivores)}")
     print(f"num_an carn: {len(c.present_carnivores)}")
 

@@ -16,13 +16,13 @@ import subprocess
 class BioSim:
 
     default_map = """WWW\nWLW\nWWW"""
-
-    default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
-                                                  for _ in range(150)]},
-                           {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
-                                                   for _ in range(40)]}]
+    #
+    # default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
+    #                                               for _ in range(150)]},
+    #                        {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
+    #                                                for _ in range(40)]}]
     def __init__(self,
-                 island_map_str=None,
+                 island_map=None,
                  ini_pop=None,
                  seed=None,
                  ymax_animals=None,
@@ -35,19 +35,21 @@ class BioSim:
         if seed is not None:
             random.seed(seed)
 
+        self.island_map = island_map
+        self.map = CreateIsland(island_map, ini_pop)
 
-        if island_map_str is None:
+        if island_map is None:
             self.island = CreateIsland(self.default_map, ini_pop)
-        else:
-            self.island = CreateIsland(island_map_str, ini_pop)
+
+        #     self.island = CreateIsland(island_map_str, ini_pop)
         #     self.island_map_str = self.default_map
         # else:
         #     self.island_map_str = island_map_str
 
-        if ini_pop is None:
-            self.ini_pop = self.default_population
-        else:
-            self.ini_pop = ini_pop
+        # if ini_pop is None:
+        #     self.ini_pop = self.default_population
+        # else:
+        #     self.ini_pop = ini_pop
 
 
 
@@ -108,7 +110,7 @@ class BioSim:
         if landscape == 'H':
             Landscape.Highland.cell_parameter(params, accessability=True)
         elif landscape == 'L':
-            Landscape.Lowland.cell_parameter(params, accessability=True)
+            Landscape.Lowland.cell_parameter(params)
 
 
 
@@ -134,7 +136,7 @@ class BioSim:
         herbs = []
         #carns = []
 
-        for coord, cell in self.island.map.items():
+        for coord, cell in self.map.make_map(geography_island_string=default_map).items():
             herbs.append(cell.present_herbivores)
             #carns.append(cell.present_herbivores)
             rows.append(coord[0])
@@ -145,11 +147,15 @@ class BioSim:
         #data['Carnivore'] = carns
         return pd.DataFrame(data)
 
+    def herb_dist(self):
+        row_num = np.shape()
+
 
     def heat_map_herbivore(self):
         # herb_cell = self.animal_dist.pivot('Row', 'Col', 'Herbivore')
         # herb_cell(np.reshape(self.animal_dist['Herbivore'].values), newshape=(3, 3))
-        self.herb_denisty = self.ax_heat_h.imshow(np.reshape(self.animal_dist['Herbivore'].values, newshape=(3, 3)),
+        self.herb_denisty = self.ax_heat_h.imshow(np.reshape(self.animal_dist['Herbivore'].values,
+                                                             newshape=(3, 3)),
                                                   vmax=self.cmax_animals['Herbivore']
                                                   )
         self.ax_heat_h.set_title('Test HERB DENS')
@@ -175,7 +181,7 @@ class BioSim:
             img_years = vis_years
 
         self.set_up_grafics()
-        self.final_year = 101
+        self.final_year = 1 + num_years
 
         while self.year < self.final_year:
             if self.year % vis_years == 0:
@@ -193,7 +199,7 @@ if __name__ == "__main__":
                            'weight': 20}
                           for _ in range(150)]}]
 
-    sim = BioSim(island_map_str=default_map, ini_pop=ini_herbs,
+    sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
                  seed=123456,
                  hist_specs={'fitness': {'max': 1.0, 'delta': 0.05},
                              'age': {'max': 60.0, 'delta': 2},
@@ -206,9 +212,7 @@ if __name__ == "__main__":
                                             'DeltaPhiMax': 9.})
     sim.set_landscape_parameters('L', {'f_max': 700})
     # print(sim.heat_map_herbivore())
-    # sim.simulate(num_years=100, vis_years=1, img_years=2000)
-    num_herb = island.CreateIsland.func_num_animals_per_species()
-    print(num_herb['Herbivore'])
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
     # sim.add_population(population=ini_carns)
     # sim.simulate(num_years=100, vis_years=1, img_years=2000)
