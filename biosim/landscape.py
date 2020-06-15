@@ -88,7 +88,7 @@ class SingleCell:
         type of landscape. Thereafter the feed_herb- method is called and the herb
         gets to eat in random. Lastly, the carnivores get to eat the herbivores in a order
         decided by the animals of both species' fitness."""
-        #self.fodder_regrow()
+        self.fodder_regrow()
         self.feed_herb()
         self.feed_carn_with_herb()
 
@@ -116,6 +116,7 @@ class SingleCell:
                                          reverse=True)
 
         for carn in self.present_carnivores:
+        #     if len(self.present_herbivores) == 0:
             self.present_herbivores = list(set(self.present_herbivores) -
                                                set(carn.hunt_herb(self.present_herbivores)))
             self.present_herbivores = sorted(self.present_herbivores,
@@ -142,8 +143,9 @@ class SingleCell:
                 offspring = herbivores.procreation(len(self.present_herbivores))
                 if not offspring:
                     continue
-                self.present_herbivores.append(offspring)
+                #self.present_herbivores.append(offspring)
                 herb_newbord.append(offspring)
+            self.present_herbivores.extend(herb_newbord)
 
         carn_newbord = []
         if len(self.present_carnivores) >= 2:
@@ -151,57 +153,58 @@ class SingleCell:
                 offspring = carnivores.procreation(len(self.present_carnivores))
                 if not offspring:
                     continue
-                self.present_carnivores.append(offspring)
-                carn_newbord.append(carn_newbord)
+                #self.present_carnivores.append(offspring)
+                carn_newbord.append(offspring)
+            self.present_carnivores.extend(carn_newbord)
 
-            return herb_newbord, carn_newbord
+        return herb_newbord, carn_newbord
 
-    def choose_new_cell(self, prob_list):
-        pass
-
-    def migrate(self, neighboring_cells):
-        migrated_herb = []
-        migrated_carn = []
-
-        for herb in self.present_herbivores:
-            if herb.prob_migrate() is True:  # If it migrates
-                chosen_cell = random.choice(neighboring_cells)
-                new_loc = chosen_cell[0][0]
-                if chosen_cell[0][1] is Water:
-                    continue
-                else:
-                    migrated_herb.append((new_loc, herb))
-                    self.present_herbivores.remove(herb)  # in stead of a method doing it
-                    herb.set_migration_true()  # Updates that animal has moved
-
-        for carn in self.present_carnivores:
-            if carn.prob_migrate() is True:
-                chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
-                new_loc = chosen_cell[0][0]
-                if chosen_cell[0][1] is Water:
-                    continue
-                else:
-                    migrated_carn.append((new_loc, carn))
-                    self.present_carnivores.remove(carn)
-                    carn.set_migration_true()  # Updates that animal has moved
-
-        return migrated_herb, migrated_carn
-
-        # for loc, herb in migrated_herb:
-        #     self.remove_herb_migrated(herb)
-        #
-        # for loc, carn in migrated_carn:
-        #     self.remove_carn_migrated(carn)
-
-    def add_herb_migrated(self, herb):
-        """Adds migrated herbs to the list of herbivores in this cell.
-        Herb migrated to this cell."""
-        self.present_herbivores.append(herb)
-
-    def add_carn_migrated(self, carn):
-        """Adds migrated carns to the list of carnivores in this cell.
-        Carn migrated to this cell."""
-        self.present_carnivores.append(carn)
+    # def choose_new_cell(self, prob_list):
+    #     pass
+    #
+    # def migrate(self, neighboring_cells):
+    #     migrated_herb = []
+    #     migrated_carn = []
+    #
+    #     for herb in self.present_herbivores:
+    #         if herb.prob_migrate() is True:  # If it migrates
+    #             chosen_cell = random.choice(neighboring_cells)
+    #             new_loc = chosen_cell[0][0]
+    #             if chosen_cell[0][1] is Water:
+    #                 continue
+    #             else:
+    #                 migrated_herb.append((new_loc, herb))
+    #                 self.present_herbivores.remove(herb)  # in stead of a method doing it
+    #                 herb.set_migration_true()  # Updates that animal has moved
+    #
+    #     for carn in self.present_carnivores:
+    #         if carn.prob_migrate() is True:
+    #             chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
+    #             new_loc = chosen_cell[0][0]
+    #             if chosen_cell[0][1] is Water:
+    #                 continue
+    #             else:
+    #                 migrated_carn.append((new_loc, carn))
+    #                 self.present_carnivores.remove(carn)
+    #                 carn.set_migration_true()  # Updates that animal has moved
+    #
+    #     return migrated_herb, migrated_carn
+    #
+    #     # for loc, herb in migrated_herb:
+    #     #     self.remove_herb_migrated(herb)
+    #     #
+    #     # for loc, carn in migrated_carn:
+    #     #     self.remove_carn_migrated(carn)
+    #
+    # def add_herb_migrated(self, herb):
+    #     """Adds migrated herbs to the list of herbivores in this cell.
+    #     Herb migrated to this cell."""
+    #     self.present_herbivores.append(herb)
+    #
+    # def add_carn_migrated(self, carn):
+    #     """Adds migrated carns to the list of carnivores in this cell.
+    #     Carn migrated to this cell."""
+    #     self.present_carnivores.append(carn)
 
     # def remove_herb_migrated(self, herb):
     #     """Removes migrated herbs from the list of herbivores in this cell.
@@ -215,6 +218,7 @@ class SingleCell:
 
     def aging(self):
         """Method to increment age by 1 and decrease weight for every animal."""
+
         for herbivore in self.present_herbivores:
             herbivore.growing_older()
 
@@ -367,43 +371,32 @@ if __name__ == "__main__":
             ]
 
     print(f"fodder: {c.get_fodder()}")
-    # poph = [{'species': 'Herbivore', 'age': 5, 'weight': 20},
-    #         {'species': 'Herbivore', 'age': 5, 'weight': 20},
-    #         {'species': 'Herbivore', 'age': 5, 'weight': 20}]
-    # popc = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
-    #         {'species': 'Carnivore', 'age': 5, 'weight': 20},
-    #         {'species': 'Carnivore', 'age': 5, 'weight': 20}]
-
     c.animals_allocate(poph)
     #c.animals_allocate(popc)
     print(f"num_an herb: {len(c.present_herbivores)}")
     print(f"num_an carn: {len(c.present_carnivores)}")
-    # print(c.present_herbivores)
-    # print(c.present_carnivores)
 
-    for j in range(1):
-        for years in range(250):
+
+    for j in range(10):
+        for years in range(200):
             if years == 50:
                 c.animals_allocate(popc)
+            #print(f"fodder before: {c.get_fodder()}")
             c.eat()
-            # print(f"Fodder_after_eating: {c.available_fodder}")
-            # print(f"num_herb: {len(c.present_herbivores)}")
-            # print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
-
-            c.procreation()  # carn not procreate, herb does
-            # print(f"num_herb_proc: {len(c.present_herbivores)}")
-            # print(f"num_carn_proc: {len(c.present_carnivores)}")  # looks like carn can procreate
-
+            #print(f"Fodder_after_eating: {c.available_fodder}")
+            #print(f"num_herb: {len(c.present_herbivores)}")
+            #print(f"num_carn: {len(c.present_carnivores)}")  # looks like carn can procreate
+            c.procreation()
+            #print(f"num_herb_proc: {len(c.present_herbivores)}")
+            #print(f"num_carn_proc: {len(c.present_carnivores)}")  # looks like carn can procreate
             c.aging()
+            c.animal_death()
+            #print(f"num_herb_d: {len(c.present_herbivores)}")
+            #print(f"num_carn_d: {len(c.present_carnivores)}")  # looks like carn can procreate
 
-            c.animal_death()  # works for herb, carns has []
-            # print(f"num_herb_d: {len(c.present_herbivores)}")
-            # print(f"num_carn_d: {len(c.present_carnivores)}")  # looks like carn can procreate
+        print("______ Etter syklus ______")
+        print(f'Herb num: {len(c.present_herbivores)}')
+        print(f'Carn num: {len(c.present_carnivores)}')
 
-            print("______ Etter syklus ______")
-            print(f'Herb: {len(c.present_herbivores)}')
-            print(f'Carn: {len(c.present_carnivores)}')
-
-        print(c.present_herbivores)
-        print(c.present_carnivores)
-
+        #print(c.present_herbivores)
+        #print(c.present_carnivores)

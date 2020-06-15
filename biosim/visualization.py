@@ -31,7 +31,7 @@ fig = plt.figure(figsize=(8, 6.4))
 plt.plot(0, len(l.present_herbivores),  '*-', color='g', lw=0.5)
 plt.plot(0, len(l.present_carnivores),  '*-', color='r', lw=0.5)
 plt.draw()
-plt.pause(0.001)
+plt.pause(0.01)
 
 count_herb = [len(l.present_herbivores)]
 count_carn = [len(l.present_carnivores)]
