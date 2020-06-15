@@ -62,7 +62,7 @@ class TestCreateIsland:
 
     def test_add_population(self):
         multi_string = "WWW\nWDW\nWWW"
-        pop =[{'loc': (2, 2),
+        pop = [{'loc': (2, 2),
                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
         test_island = CreateIsland(multi_string, pop)
 
@@ -136,21 +136,21 @@ class TestCreateIsland:
         test_island.add_migrated_carn_to_new_cell(loc, Carnivore())
         assert test_island.map[loc].num_carnivores == 3
 
-    def test_migration_neighboring_cells(self):
-        multi_string = "WWWW\nWLHW\nWWWW"
+    def test_migration_neighboring_cells(self):  # BUG
+        multi_string = "WWWW\nWLWW\nWWWW"
         pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
         test_island = CreateIsland(multi_string, pop)
         loc = (2, 2)
         accessible_neighbor_cells = test_island.migration_neighboring_cells(loc)
-        assert accessible_neighbor_cells == [((2, 3), Highland)]  # ??
+        assert accessible_neighbor_cells == [((1, 2), Water()), ((3, 2), Water()), ((2, 1), Water()), ((2, 3), Water())]
 
     def test_migration_animals(self):
         multi_string = "WWWW\nWLHW\nWWWW"
         pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
         test_island = CreateIsland(multi_string, pop)
         loc = (2, 2)
-        assert test_island.map[loc].num_animals == 1
-        assert test_island.map[(1, 1)].num_animals == 0
+        assert test_island.map[loc].num_animals == 1  # PASSES
+        assert test_island.map[(1, 1)].num_animals == 0  # PASSES
         pop1 = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(15)]}]
         test_island = CreateIsland(multi_string, pop1)
         loc = (2, 2)

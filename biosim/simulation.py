@@ -183,7 +183,6 @@ class BioSim:
             self.island.simulate_one_year()
 
 
-
 if __name__ == "__main__":
     plt.ion()
     default_map = """WWW\nWLW\nWWW"""

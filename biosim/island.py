@@ -149,10 +149,11 @@ class CreateIsland:
         coord_x, coord_y = loc  # (2, 2)
 
         # Gets the location of the cell with coordinates
-        cell_1 = (coord_x + 1, coord_y)  # South cell (3,2)
-        cell_2 = (coord_x - 1, coord_y)  # North cell (1,2)
-        cell_3 = (coord_x, coord_y + 1)  # East cell  (2,3)
-        cell_4 = (coord_x, coord_y - 1)  # West cell  (2,1)
+        cell_1 = (coord_x - 1, coord_y)  # North cell (1,2)
+        cell_2 = (coord_x + 1, coord_y)  # South cell (3,2)
+        cell_3 = (coord_x, coord_y - 1)  # West cell  (2,1)
+        cell_4 = (coord_x, coord_y + 1)  # East cell  (2,3)
+
 
         # Checks the landscape type
         type_1 = self.map[cell_1]
@@ -163,9 +164,9 @@ class CreateIsland:
         # X: [((2,2), Lowland), ((3,3), Highland),((3,1), Water), ((4,2),Lowland)]
         neighbor_cells = [(cell_1, type_1), (cell_2, type_2), (cell_3, type_3), (cell_4, type_4)]
 
-        return [cell for cell in neighbor_cells if cell[1] is not Water]
+        return neighbor_cells
 
-        #return neighbor_cells
+        #return [cell for cell in neighbor_cells if cell[1] is not Water]
         #accessible_neighbor_cells = [cell for cell in neighbor_cells if cell[1] is not Water]
         #return accessible_neighbor_cells  # X: [((2,2), Lowland), ((3,3), Highland), ((4,2),Lowland)]
 
@@ -174,13 +175,10 @@ class CreateIsland:
         for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
 
             if cell.accessability is True:  # cell is Lowland, Highland, Desert, Water
-                accessible_neighboring_cells = self.migration_neighboring_cells(loc)
+                neighboring_cells = self.migration_neighboring_cells(loc)
 
-                if len(accessible_neighboring_cells) > 0:
-                    chosen_cell = random.choice(accessible_neighboring_cells)
-                    new_loc = chosen_cell[0][0]  # Gets the coordinate(x,y) from the chosen cell
-                    # new_cell = chosen_cell[0][1]  # Gets the cell type of the chosen cell
-                    migrated_herb, migrated_carn = cell.migrate(new_loc)  # takes in new cell
+                if len(neighboring_cells) > 0:
+                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)  # takes in new cell
 
                     for new_loc, herb in migrated_herb:
                         self.add_migrated_herb_to_new_cell(new_loc, herb)
@@ -196,6 +194,7 @@ class CreateIsland:
                 carnivore.set_migration_false()
 
     def aging_animals(self):
+        """Increments age by one and reduces weight of each animal annually."""
         for cell in self.map.values():
             cell.aging()
 
@@ -207,7 +206,6 @@ class CreateIsland:
         #   if self.store_stats:
         #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
-
 
     def year(self):
         return self.year_num
