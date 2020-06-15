@@ -230,7 +230,7 @@ class CreateIsland:
         self.year += 1
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     geography_island_string = """WWW
     WLW
     WWW"""
