@@ -23,8 +23,8 @@ l.animals_allocate(listofcarns)
 #for i in l.herb_list:
  #   print(type(i))
 #
-# print(0, " Year End Herb numbers :-", len(l.herb_list))
-# print(0, " Year End Carn numbers :-", len(l.carn_list))
+print(0, " Year End Herb numbers :-", len(l.present_herbivores))
+print(0, " Year End Carn numbers :-", len(l.present_carnivores))
 #
 #Making figure
 fig = plt.figure(figsize=(8, 6.4))
