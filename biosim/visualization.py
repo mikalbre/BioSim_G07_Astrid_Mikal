@@ -24,8 +24,8 @@ class Visual:
                  ):
 
         self.img_num = 0
-        self.x_len = island.len_map_x
-        self.y_len = island.len_map_y
+        self.x_len = len(island.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW""")[0])
+        self.y_len = len(island.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW"""))
         self.num_years_sim = num_years_sim
 
         self.num_years_fig = island.year() + num_years_sim
@@ -69,9 +69,9 @@ class Visual:
 
     def empty_nested_list(self):
         empty_nested_list = []
-        for y in range(3):
+        for y in range(self.y_len):
             empty_nested_list.append([])
-            for x in range(3):
+            for x in range(self.x_len):
                 empty_nested_list[y].append(None)
         return empty_nested_list
 
