@@ -10,6 +10,8 @@ import random
 random.seed(1)
 
 
+
+
 class Animals:
     """
     Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
@@ -311,5 +313,6 @@ class Carnivore(Animals):
                 del_herb.append(herb)
                 # print('appending herb', del_herb)
                 self.fitness_calculation()
+
 
         return del_herb
