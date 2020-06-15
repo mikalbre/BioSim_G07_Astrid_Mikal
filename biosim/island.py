@@ -19,7 +19,7 @@ class CreateIsland:
 
     def __init__(self, geography_island_string, initial_population):
 
-        self.year_num = 0  # years simulated
+        self._year = 0  # years simulated
 
         self.map = self.make_map(geography_island_string)  # simulation file
         self.add_population(initial_population)  # simulation file
@@ -178,10 +178,10 @@ class CreateIsland:
                 neighboring_cells = self.migration_neighboring_cells(loc)
 
                 if len(neighboring_cells) > 0:
-                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)  # takes in new cell
+                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)
 
                     for new_loc, herb in migrated_herb:
-                        self.add_migrated_herb_to_new_cell(new_loc, herb)
+                        self.add_migrated_herb_to_new_cell(new_loc, herb)  # STOPS HERE
                     for new_loc, carn in migrated_carn:
                         self.add_migrated_carn_to_new_cell(new_loc, carn)
 
@@ -207,29 +207,33 @@ class CreateIsland:
         #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
 
+    @property
     def year(self):
-        return self.year_num
+        return self._year
 
-    # @year.setter
-    # def year(self, new_year_value):
-    #     self.year_num = new_year_value
+    @year.setter
+    def year(self, new_value):
+        self._year = new_value
 
     def simulate_one_year(self):
         self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
-        self.migration_animals()
+        #self.migration_animals()
         self.aging_animals()
         self.death_animals()
         self.year += 1
 
 
 if __name__=='__main__':
-    geography_island_string = """WWW
-    WLW
-    WWW"""
-    F = CreateIsland(geography_island_string)
-    F.conditions_for_island_map_string()
+    default_map = """WWW\nWLW\nWWW"""
+
+    default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
+                                                  for _ in range(150)]},
+                           {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
+                                                   for _ in range(40)]}]
+    CreateIsland(default_map, default_population).simulate_one_year()
+
 
 # for pos, cell in self.map.items():
 #   herb_birth, carn_birth = cell.procreation()
