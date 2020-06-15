@@ -3,8 +3,10 @@
 __author__ = 'Astrid Sedal, Mikal Breiteig'
 __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
+from biosim.island import CreateIsland
 
 
+import matplotlib.pyplot as plt
 
 class Visual:
 
@@ -20,9 +22,104 @@ class Visual:
                  img_fmt='png'
                  ):
 
-        selg.img_num
+        self.img_num = 0
+        self.x_len = CreateIsland.len_map_x
+        self.y_len = CreateIsland.len_map_y
+        self.num_years_sim = num_years_sim
+
+        self.num_years_fig = self.CreateIsland.year() + num_years_sim
 
 
+        self.ymax_animals = ymax_animals
+        self.cmax_animals = cmax_animals
+
+        if ymax_animals is None:
+            """Number specifying y-axis limit for graph showing animal numbers"""
+            self.ymax_animals = 20000  # ??
+        else:
+            self.ymax_animals = ymax_animals
+
+        if cmax_animals is None:
+            """Dict specifying color-code limits for animal densities """
+            self.cmax_animals = {'Herbivore': 50, 'Carnivore': 20}  # ??
+        else:
+            self.cmax_animals = cmax_animals
+
+        self.img_fmt = img_fmt
+        self.img_base = img_base
+
+        if img_base is None:
+            self.img_base = os.path.join('..', 'BioSim')
+        else:
+            self.img_base = img_base
+
+
+        self.figure = None
+        self.grid = None
+
+
+        self.heat_map_herbivores_ax = None
+        self.heat_map_herb_img_ax = None
+        self.colorbar_herb_ax = None
+
+    def empty_nested_list(self):
+        empty_nested_list = []
+        for y in range(self.y_len):
+            for x in range(self.x_len):
+                empty_nested_list[y].append(None)
+        return empty_nested_list
+
+    def set_up_graphics(self, island):
+        if self.figure is None:
+            self.figure = plt.figure(constrained_layout=True, figsize=(16, 9))
+            self.grid = self.figure.add_gridspec(2, 24)
+
+        if self.heat_map_herbivores_ax is None:
+            self.heat_map_herbivores_ax = self.figure.add_subplot(self.grid[1, :11])
+            self.heat_map_herb_img_ax = None
+
+        if self.colorbar_herb_ax is None:
+            self.colorbar_herb_ax = self.figure.add_subplot(self.grid[1, 11])
+
+    def get_data_heat_map(self, CreateIsland, data_type):
+        heat_map = self.empty_nested_list()
+        for pos, cell in CreateIsland.map.items():
+            y, x = pos
+            heat_map[y][x] = getattr(cell, data_type)
+        return heat_map
+
+    def draw_heat_map_herbivore(self, heat_map):
+        self.heat_map_herbivores_ax.axis('off')
+        self.heat_map_herbivores_ax.set_title('Tetste Herb')
+        self.heat_map_herb_img_ax = self.heat_map_herbivores_ax.imshow(heat_map,
+                                                                       cmap='inferno',
+                                                                       vmax=self.cmax_animals['Herbivore'])
+        plt.colorbar(self.heat_map_herb_img_ax, cax=self.colorbar_herb_ax)
+
+
+    def updated_heat_maps(self, CreateIsland):
+        heat_map_herb = self.get_data_heat_map(CreateIsland, 'num_herbivores')
+        self.heat_map_herb_img_ax.set_data(heat_map_herb)
+
+    def update_fig(self, CreateIsland):
+        self.updated_heat_maps(CreateIsland)
+        plt.pause(1e-10)
+
+
+if __name__ == '__main__':
+    default_map = """WWW\nWLW\nWWW"""
+
+    ini_herbs = [{'loc': (2, 2),
+                  'pop': [{'species': 'Herbivore',
+                           'age': 5,
+                           'weight': 20}
+                          for _ in range(150)]}]
+
+    island = CreateIsland(geography_island_string="""WWW\nWLW\nWWW""", initial_population=ini_herbs)
+    vis = Visual(island, 50)
+
+    for _ in range(50):
+        island.simulate_one_year()
 
 
 

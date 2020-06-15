@@ -25,6 +25,9 @@ class CreateIsland:
         self.add_population(initial_population)  # simulation file
         # self.island = {}
 
+        self.len_map_x = None
+        self.len_map_y = None
+
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
 
@@ -105,6 +108,9 @@ class CreateIsland:
         map_list = self.condition_for_island_map_string(geography_island_string)
 
         island_map = {}
+
+        self.len_map_x = len(map_list[0])
+        self.len_map_y = len(map_list)
 
         coord_x = 1
         for line in map_list:
