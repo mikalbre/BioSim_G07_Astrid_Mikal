@@ -36,10 +36,11 @@ class BioSim:
             random.seed(seed)
 
         self.island_map = island_map
-        self.map = CreateIsland(island_map, ini_pop)
 
         if island_map is None:
             self.island = CreateIsland(self.default_map, ini_pop)
+        else:
+            self.island = CreateIsland(island_map, ini_pop)
 
         #     self.island = CreateIsland(island_map_str, ini_pop)
         #     self.island_map_str = self.default_map
@@ -112,7 +113,12 @@ class BioSim:
         elif landscape == 'L':
             Landscape.Lowland.cell_parameter(params)
 
-
+    def sim_ez(self, num_years):
+        index = 1
+        while index <= num_years:
+            CreateIsland.simulate_one_year()
+            # self.Cr.simulate_one_year()
+            index +=1
 
     def add_population(self, population):
         return self.island.add_population(population)
@@ -205,14 +211,15 @@ if __name__ == "__main__":
                              'age': {'max': 60.0, 'delta': 2},
                              'weight': {'max': 60, 'delta': 2}},
                  )
-
-    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
-    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
-                                            'omega': 0.3, 'F': 65,
-                                            'DeltaPhiMax': 9.})
-    sim.set_landscape_parameters('L', {'f_max': 700})
-    # print(sim.heat_map_herbivore())
-    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+    sim.sim_ez(200)
+    #
+    # sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
+    # sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
+    #                                         'omega': 0.3, 'F': 65,
+    #                                         'DeltaPhiMax': 9.})
+    # sim.set_landscape_parameters('L', {'f_max': 700})
+    # # print(sim.heat_map_herbivore())
+    # sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
     # sim.add_population(population=ini_carns)
     # sim.simulate(num_years=100, vis_years=1, img_years=2000)
