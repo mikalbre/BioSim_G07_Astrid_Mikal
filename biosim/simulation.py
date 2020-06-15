@@ -32,7 +32,7 @@ class BioSim:
                  img_fmt='png'
                  ):
 
-        if seed is not None:
+        if seed is None:
             random.seed(seed)
 
         self.island_map = island_map
@@ -118,7 +118,7 @@ class BioSim:
         while index <= num_years:
             CreateIsland.simulate_one_year()
             # self.Cr.simulate_one_year()
-            index +=1
+            index += 1
 
     def add_population(self, population):
         return self.island.add_population(population)

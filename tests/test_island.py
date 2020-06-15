@@ -1,7 +1,7 @@
 from biosim.island import *
 from biosim.landscape import *
 import pytest
-#\n
+
 
 
 def test_string_line_length():
@@ -124,6 +124,8 @@ class TestCreateIsland:
         assert test_island.map[loc].num_herbivores == 2
         test_island.add_migrated_herb_to_new_cell(loc, Herbivore())
         assert test_island.map[loc].num_herbivores == 3
+        test_island.add_migrated_herb_to_new_cell((2, 3), Herbivore())
+        assert test_island.map[(2, 3)].num_herbivores == 1
 
     def test_add_migrated_carn_to_new_cell(self):
         multi_string = "WWW\nWLW\nWWW"
@@ -142,20 +144,27 @@ class TestCreateIsland:
         test_island = CreateIsland(multi_string, pop)
         loc = (2, 2)
         accessible_neighbor_cells = test_island.migration_neighboring_cells(loc)
-        assert accessible_neighbor_cells == [((1, 2), Water()), ((3, 2), Water()), ((2, 1), Water()), ((2, 3), Water())]
+        assert accessible_neighbor_cells is [((1, 2), Water()), ((3, 2),
+                                            Water()), ((2, 1), Water()), ((2, 3), Water())]
 
-    def test_migration_animals(self):
-        multi_string = "WWWW\nWLHW\nWWWW"
-        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+    def test_migrate_animals(self):
+        multi_string = "WWWW\nWLHW\nWHWW\nWWWW"
+        pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}
+                                       for _ in range(30)]}]
         test_island = CreateIsland(multi_string, pop)
-        loc = (2, 2)
-        assert test_island.map[loc].num_animals == 1  # PASSES
-        assert test_island.map[(1, 1)].num_animals == 0  # PASSES
-        pop1 = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(15)]}]
-        test_island = CreateIsland(multi_string, pop1)
-        loc = (2, 2)
+        assert test_island.map[(2, 2)].num_animals == 30  # Center- Lowland
+        assert test_island.map[(2, 3)].num_animals == 0  # East - Water
+        assert test_island.map[(3, 2)].num_animals == 0  # South - Lowland
+        assert test_island.map[(1, 2)].num_animals == 0  # North - Water
+        assert test_island.map[(2, 1)].num_animals == 0  # West - Water
+
         test_island.simulate_one_year()
-        assert test_island.map[loc].num_animals == 1
+
+        assert test_island.map[(2, 2)].num_animals < 30  # Center- Lowland
+        assert test_island.map[(2, 3)].num_animals > 0  # East - Water
+        assert test_island.map[(3, 2)].num_animals == 0  # South - Lowland
+        assert test_island.map[(1, 2)].num_animals == 0  # North - Water
+        assert test_island.map[(2, 1)].num_animals == 0  # West - Water
 
     def test_aging_animals(self):
         multi_string = "WWW\nWLW\nWWW"

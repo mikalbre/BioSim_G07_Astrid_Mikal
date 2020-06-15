@@ -168,62 +168,65 @@ class SingleCell:
 
         return herb_newbord, carn_newbord
 
-    # def choose_new_cell(self, prob_list):
-    #     pass
-    #
-    # def migrate(self, neighboring_cells):
-    #     migrated_herb = []
-    #     migrated_carn = []
-    #
-    #     for herb in self.present_herbivores:
-    #         if herb.prob_migrate() is True:  # If it migrates
-    #             chosen_cell = random.choice(neighboring_cells)
-    #             new_loc = chosen_cell[0][0]
-    #             if chosen_cell[0][1] is Water:
-    #                 continue
-    #             else:
-    #                 migrated_herb.append((new_loc, herb))
-    #                 self.present_herbivores.remove(herb)  # in stead of a method doing it
-    #                 herb.set_migration_true()  # Updates that animal has moved
-    #
-    #     for carn in self.present_carnivores:
-    #         if carn.prob_migrate() is True:
-    #             chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
-    #             new_loc = chosen_cell[0][0]
-    #             if chosen_cell[0][1] is Water:
-    #                 continue
-    #             else:
-    #                 migrated_carn.append((new_loc, carn))
-    #                 self.present_carnivores.remove(carn)
-    #                 carn.set_migration_true()  # Updates that animal has moved
-    #
-    #     return migrated_herb, migrated_carn
-    #
-    #     # for loc, herb in migrated_herb:
-    #     #     self.remove_herb_migrated(herb)
-    #     #
-    #     # for loc, carn in migrated_carn:
-    #     #     self.remove_carn_migrated(carn)
-    #
-    # def add_herb_migrated(self, herb):
-    #     """Adds migrated herbs to the list of herbivores in this cell.
-    #     Herb migrated to this cell."""
-    #     self.present_herbivores.append(herb)
-    #
-    # def add_carn_migrated(self, carn):
-    #     """Adds migrated carns to the list of carnivores in this cell.
-    #     Carn migrated to this cell."""
-    #     self.present_carnivores.append(carn)
+    def migrate(self, neighboring_cells):
+        migrated_herb = []
+        migrated_carn = []
 
-    # def remove_herb_migrated(self, herb):
-    #     """Removes migrated herbs from the list of herbivores in this cell.
-    #     Herb migrated from this cell to another."""
-    #     self.present_herbivores.remove(herb)
+        for herb in self.present_herbivores:
+            if herb.prob_migrate() is True:  # If it migrates
+                chosen_cell = random.choice(neighboring_cells)  # ((2,1), Water)
+                #print(chosen_cell)
+                new_loc = chosen_cell[0]
+                landscape_type = chosen_cell[1]
+                #print(landscape_type)
+                #print(hex(id(landscape_type)))
+                if isinstance(landscape_type, Water):  # So, Water != Water? NOT IN HERE
+                    print(f"WATERRRRR: {landscape_type}")
+                    continue
+                else:
+                    print(f"ACCESSIBLE- migrate")
+                    migrated_herb.append((new_loc, herb))
+                    self.present_herbivores.remove(herb)
+                    herb.set_migration_true()  # Updates that animal has move
 
-    # def remove_carn_migrated(self, carn):
-    #     """Removes migrated carns from the list of carnivores in this cell.
-    #     Carn migrated from this cell to another."""
-    #     self.present_carnivores.remove(carn)
+        for carn in self.present_carnivores:
+            if carn.prob_migrate() is True:
+                chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
+                new_loc = chosen_cell[0]
+                if chosen_cell[1] is Water:
+                    continue
+                else:
+                    migrated_carn.append((new_loc, carn))
+                    self.present_carnivores.remove(carn)
+                    carn.set_migration_true()  # Updates that animal has moved
+
+        return migrated_herb, migrated_carn
+
+        # for loc, herb in migrated_herb:
+        #     self.remove_herb_migrated(herb)
+        #
+        # for loc, carn in migrated_carn:
+        #     self.remove_carn_migrated(carn)
+
+    def add_herb_migrated(self, herb):
+        """Adds migrated herbs to the list of herbivores in this cell.
+        Herb migrated to this cell."""
+        self.present_herbivores.append(herb)
+
+    def add_carn_migrated(self, carn):
+        """Adds migrated carns to the list of carnivores in this cell.
+        Carn migrated to this cell."""
+        self.present_carnivores.append(carn)
+
+    def remove_herb_migrated(self, herb):
+        """Removes migrated herbs from the list of herbivores in this cell.
+        Herb migrated from this cell to another."""
+        self.present_herbivores.remove(herb)
+
+    def remove_carn_migrated(self, carn):
+        """Removes migrated carns from the list of carnivores in this cell.
+        Carn migrated from this cell to another."""
+        self.present_carnivores.remove(carn)
 
     def aging(self):
         """Method to increment age by 1 and decrease weight for every animal."""
@@ -273,9 +276,9 @@ class Highland(SingleCell):
         super().__init__()
         self.available_fodder = self.params["f_max"]
 
-    # def __repr__(self):
-    #     string = f'{type(self).__name__}'
-    #     return string
+    def __repr__(self):
+        string = f'{type(self).__name__}'
+        return string
 
     def fodder_regrow(self):
         """
@@ -356,6 +359,9 @@ class Water(SingleCell):
     def __repr__(self):
         string = f'{type(self).__name__}'
         return string
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
     def fodder_regrow(self):
         """
