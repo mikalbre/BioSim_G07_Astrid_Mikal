@@ -72,7 +72,7 @@ class BioSim:
             self.cmax_animals = cmax_animals
 
         if not 'fitness' and 'age' and 'weight' in hist_specs:
-                raise ValueError('Does not accept this input!')
+            raise ValueError('Does not accept this input!')
                 # Riktig?
 
         self.img_ctr = 0
