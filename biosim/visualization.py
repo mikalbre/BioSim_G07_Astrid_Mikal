@@ -7,6 +7,7 @@ from biosim.island import CreateIsland
 
 
 import matplotlib.pyplot as plt
+import os
 
 class Visual:
 
@@ -23,11 +24,11 @@ class Visual:
                  ):
 
         self.img_num = 0
-        self.x_len = CreateIsland.len_map_x
-        self.y_len = CreateIsland.len_map_y
+        self.x_len = island.len_map_x
+        self.y_len = island.len_map_y
         self.num_years_sim = num_years_sim
 
-        self.num_years_fig = self.CreateIsland.year() + num_years_sim
+        self.num_years_fig = island.year() + num_years_sim
 
 
         self.ymax_animals = ymax_animals
@@ -62,10 +63,15 @@ class Visual:
         self.heat_map_herb_img_ax = None
         self.colorbar_herb_ax = None
 
+
+        self.set_up_graphics(island)
+        self.draw_heat_map_herbivore(self.get_data_heat_map(island, 'num_herbivores'))
+
     def empty_nested_list(self):
         empty_nested_list = []
-        for y in range(self.y_len):
-            for x in range(self.x_len):
+        for y in range(3):
+            empty_nested_list.append([])
+            for x in range(3):
                 empty_nested_list[y].append(None)
         return empty_nested_list
 
@@ -81,9 +87,9 @@ class Visual:
         if self.colorbar_herb_ax is None:
             self.colorbar_herb_ax = self.figure.add_subplot(self.grid[1, 11])
 
-    def get_data_heat_map(self, CreateIsland, data_type):
+    def get_data_heat_map(self, island, data_type):
         heat_map = self.empty_nested_list()
-        for pos, cell in CreateIsland.map.items():
+        for pos, cell in island.map.items():
             y, x = pos
             heat_map[y][x] = getattr(cell, data_type)
         return heat_map
@@ -97,12 +103,12 @@ class Visual:
         plt.colorbar(self.heat_map_herb_img_ax, cax=self.colorbar_herb_ax)
 
 
-    def updated_heat_maps(self, CreateIsland):
-        heat_map_herb = self.get_data_heat_map(CreateIsland, 'num_herbivores')
+    def updated_heat_maps(self, island):
+        heat_map_herb = self.get_data_heat_map(island, 'num_herbivores')
         self.heat_map_herb_img_ax.set_data(heat_map_herb)
 
-    def update_fig(self, CreateIsland):
-        self.updated_heat_maps(CreateIsland)
+    def update_fig(self, island):
+        self.updated_heat_maps(island)
         plt.pause(1e-10)
 
 
