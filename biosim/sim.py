@@ -10,6 +10,7 @@ from biosim import animals
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 class BioSim:
 
     density_heatmap ={'Herbivore': 200,
@@ -235,6 +236,8 @@ class BioSim:
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals['Herbivore'])
             plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
+        else:
+            self._herb_heat_axis.set_data(herbivore_array)
 
 
         if self._carn_heat_axis is None:
@@ -247,6 +250,12 @@ class BioSim:
             self._carn_heat_axis.set_data(carnivore_array)
 
     def update_graphics(self):
+        # fig = plt.figure()
+        # ax = fig.add_subplot(1, 1, 1)
+        # ax.set_xlim(0, n_steps)
+        # ax.set_ylim(0, 1)
+        # line = ax.plot(np.arrange(n_steps), np.full(n_steps, np.nan), 'b-'[0])
+
         self.plot_population_graph()
         self.update_heatmap()
         plt.pause(0.001)
