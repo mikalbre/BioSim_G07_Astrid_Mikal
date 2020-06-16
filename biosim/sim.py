@@ -36,6 +36,7 @@ class BioSim:
         self.img_base = img_base
         self.img_fmt = img_fmt
         self._img_ctr = 0
+        self.max_year = None
 
         self._fig = None
         self._map_ax = None
@@ -168,13 +169,26 @@ class BioSim:
             axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
 
     def plot_population_graph(self):
+        if self.carnivore_line is None:
+            carn_line =  self._pop_ax.plot(np.arange(0, self.max_year), np.full(self.max_year, np.nan))
+            self.carnivore_line = carn_line[0]
+        else:
+            x_data, y_data = self.carnivore_line.get_data()
+            xnew = np.arange(x_data[-1] + 1, self.max_year)
+            ynew = np.full(xnew.shape, np.nan)
+
+
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))], self.herbivore_list, 'g-')
             self._pop_ax.plot([i for i in range(len(self.carnivore_list))], self.carnivore_list,
                               'g-')
             self._pop_ax.legend(['Herbivores', 'Carnivores'], loc='upper left')
+        else:
 
-    def plot_heatmap(self):
+    def update_population_graph(self):
+        pass # Bruker get_data først, også bruker du set_data
+
+    def update_heatmap(self):
         df = self.animal_distribution
 
         herbivore_array = df.pivot_table(columns='Col', index='Row', values='Herbivore')
@@ -184,13 +198,14 @@ class BioSim:
             self.cmax_animals = 100
 
         if self._herb_heat_axis is None:
+            self._herb_heat_axis.set_data(herbivore_array)
+        else:
             self._herb_heat_axis = self._herb_heat_ax.imshow(herbivore_array,
                                                              cmap='BuGn',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-        #     plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
-        # else:
-        #     self._herb_heat_axis.set_data(herbivore_array)
+            plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
+
 
         if self._carn_heat_axis is None:
             self._carn_heat_axis = self._carn_heat_ax.imshow(carnivore_array,

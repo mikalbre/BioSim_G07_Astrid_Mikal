@@ -148,7 +148,7 @@ class TestCreateIsland:
                                             Water()), ((2, 1), Water()), ((2, 3), Water())]
 
     def test_migrate_animals(self):
-        multi_string = "WWWW\nWLHW\nWHWW\nWWWW"
+        multi_string = "WWWW\nWLHW\nWWWW\nWWWW"
         pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                        for _ in range(30)]}]
         test_island = CreateIsland(multi_string, pop)
@@ -169,8 +169,6 @@ class TestCreateIsland:
         assert test_island.map[(3, 3)].num_animals == 0  # South- east
         assert test_island.map[(3, 1)].num_animals == 0  # South-
         assert test_island.map[(1, 1)].num_animals == 0  # North-west
-
-
 
 
     def test_aging_animals(self):
