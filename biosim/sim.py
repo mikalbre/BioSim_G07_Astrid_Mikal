@@ -137,7 +137,8 @@ class BioSim:
             self._carn_heat_ax = self._fig.add_subplot(2, 2, 4)
 
     def plot_island_map(self):
-        kart = """WWW\nWLW\nWWW"""
+        #kart = """WWW\nWLW\nWWW"""
+        kart = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
         #                   R    G    B
         rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
@@ -187,7 +188,7 @@ class BioSim:
                                                              cmap='BuGn',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-            #plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
+        #     plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
         # else:
         #     self._herb_heat_axis.set_data(herbivore_array)
 

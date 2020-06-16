@@ -181,10 +181,8 @@ class SingleCell:
                 #print(landscape_type)
                 #print(hex(id(landscape_type)))
                 if isinstance(landscape_type, Water):  # So, Water != Water? NOT IN HERE
-                    print(f"WATERRRRR: {landscape_type}")
                     continue
                 else:
-                    print(f"ACCESSIBLE- migrate")
                     migrated_herb.append((new_loc, herb))
                     self.present_herbivores.remove(herb)
                     herb.set_migration_true()  # Updates that animal has move

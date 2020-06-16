@@ -165,6 +165,13 @@ class TestCreateIsland:
         assert test_island.map[(3, 2)].num_animals == 0  # South - Lowland
         assert test_island.map[(1, 2)].num_animals == 0  # North - Water
         assert test_island.map[(2, 1)].num_animals == 0  # West - Water
+        assert test_island.map[(1, 3)].num_animals == 0  # North-east
+        assert test_island.map[(3, 3)].num_animals == 0  # South- east
+        assert test_island.map[(3, 1)].num_animals == 0  # South-
+        assert test_island.map[(1, 1)].num_animals == 0  # North-west
+
+
+
 
     def test_aging_animals(self):
         multi_string = "WWW\nWLW\nWWW"

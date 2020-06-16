@@ -249,9 +249,9 @@ class CreateIsland:
         self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
-        #self.migration_animals()
+        self.migration_animals()
         self.aging_animals()
-        self.death_animals()
+        #self.death_animals()
         self.year_num += 1
 
         return self.num_animals_per_species
