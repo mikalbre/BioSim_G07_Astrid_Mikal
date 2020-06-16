@@ -78,7 +78,7 @@ class BioSim:
             if num_years % vis_years == 0:
                 self.update_graphics()
 
-            if num_years% img_years == 0:
+            if num_years % img_years == 0:
                 self.save_graphics()
 
             self.last_year_simulated += 1
@@ -102,7 +102,7 @@ class BioSim:
         return animal_dict
 
     @property
-    def animal_distribution(self):
+    def animal_distribution(self):  # BUG
         data = {}
         rows = []
         col = []

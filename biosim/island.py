@@ -2,6 +2,7 @@
 from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
 from biosim.animals import *
 import random
+import numpy
 
 
 def check_length_of_string(map_list):
@@ -23,10 +24,14 @@ class CreateIsland:
 
         self.map = self.make_map(geography_island_string)  # simulation file
         self.add_population(initial_population)  # simulation file
-        # self.island = {}
 
         self.len_map_x = None
         self.len_map_y = None
+
+        self.pop_each_cell = []
+
+        self.total_data_herb = []
+        self.total_data_carn = []
 
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
@@ -59,8 +64,25 @@ class CreateIsland:
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
+        self.total_data_herb.append(num_animals_per_species["Herbivore"])
+        self.total_data_carn.append(num_animals_per_species["Carnivore"])
 
         return num_animals_per_species
+
+    def population_in_each_cell(self):  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
+        number_of_herbivores = []
+        number_of_carnivores = []
+        row_position = []
+        column_position = []
+
+        for loc, cell in self.map.items():
+            row_position.append(loc[0])
+            column_position.append(loc[1])
+            number_of_herbivores.append(len(cell.num_herbivores))
+            number_of_carnivores.append((len(cell.num_carnivores)))
+
+        return numpy.column_stack(row_position,
+                                  column_position, number_of_herbivores, number_of_carnivores)
 
     @staticmethod
     def condition_for_island_map_string(geography_island_string):
@@ -229,7 +251,7 @@ class CreateIsland:
         self.procreation_animals()
         #self.migration_animals()
         self.aging_animals()
-        #self.death_animals()
+        self.death_animals()
         self.year_num += 1
 
         return self.num_animals_per_species
@@ -241,6 +263,7 @@ if __name__ =='__main__':
     default_population = [{"loc": (2, 2), "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                                   for _ in range(150)]}]
     CreateIsland(default_map, default_population).simulate_one_year()
+
 
 # for pos, cell in self.map.items():
 #   herb_birth, carn_birth = cell.procreation()
