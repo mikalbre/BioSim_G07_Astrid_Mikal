@@ -5,7 +5,8 @@ import subprocess
 import numpy as np
 from biosim import island as island
 from biosim import landscape as Landscape
-from biosim import animals
+from biosim.animals import Animals, Herbivore, Carnivore
+from biosim.visualization import Visualization
 
 from matplotlib.ticker import TickHelper
 
@@ -35,6 +36,7 @@ class BioSim:
         self.ini_pop = ini_pop
         self.island = island.CreateIsland(geography_island_string=island_map,
                                           initial_population=ini_pop)
+        self.object = self.island.make_map(geography_island_string=island_map)
         self.herbivore_list = [self.island.num_animals_per_species['Herbivore']]
         self.carnivore_list = [self.island.num_animals_per_species['Carnivore']]
         self.ymax_animals = ymax_animals
@@ -43,7 +45,6 @@ class BioSim:
         self.img_base = img_base
         self.img_fmt = img_fmt
         self._img_ctr = 0
-        #self.max_year = None
         self.num_years = None
 
         self.herbivore_line = None
@@ -60,11 +61,19 @@ class BioSim:
         self._carn_heat_ax = None
         self._carn_heat_axis = None
 
+        self._fit_ax = None
+        self._fit_axis = None
+        self._age_ax = None
+        self._age_axis = None
+        self.weight_ax = None
+        self.weight_axis = None
+
+
     def set_animal_parameters(self, species, params):
         if species == 'Herbivore':
-            animals.Herbivore.set_parameters(params)
+            Herbivore.set_parameters(params)
         elif species == 'Carnviore':
-            animals.Carnivore.set_parameters(params)
+            Carnivore.set_parameters(params)
 
     def set_landscape_parameters(self, landscape, params):
         if landscape == 'W':
@@ -84,11 +93,19 @@ class BioSim:
         self.plot_island_map()
         self.num_years = num_years  # ??
 
-
         for _ in range(num_years):
             new_island_population = self.island.simulate_one_year()
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
+
+            if self._fit_ax is not None:
+                self._fit_ax.clear()
+                self._fit_ax = self._fig.add_subplot(3, 2, 5)
+                self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step",
+                                  color="g")
+                self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step",
+                                  color="r")
+                self._fit_ax.title.set_text("Historgram of fitness")
 
             if num_years % vis_years == 0:
                 self.update_graphics()
@@ -103,18 +120,15 @@ class BioSim:
 
     @property
     def year(self):
-        return self.last_year_simulated
+        return self.island.year
 
     @property
     def num_animals(self):
-        return self.herbivore_list[-1] + self.carnivore_list[-1]
+        return self.island.num_animals
 
     @property
     def num_animals_per_species(self):
-        animal_dict = {'Herbivore': self.island.num_animals_per_species['Herbivore'],
-                       'Carnivore': self.island.num_animals_per_species['Carnviore']}
-
-        return animal_dict
+        return self.island.num_animals_per_species
 
     @property
     def animal_distribution(self):
@@ -131,48 +145,73 @@ class BioSim:
     def make_movie(self, movie_fmt):
         pass
 
-    def set_up_graphics(self):
+    # @property
+    # def fitness_list(self):
+    #     herb_lt = [Animals.get_fitness() for cell in np.asarray(self.island.map.values()).flatten()
+    #                for herbs in cell.present_herbivores]
+    #     carn_lt = [Animals.phi for cell in np.asarray(self.object).flatten()
+    #                for Animals in cell.num_carnivores]
+    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
+    #
+    # @property
+    # def age_list(self):
+    #     herb_lt = [Animals.get_age() for cell in np.asarray(self.object).flatten()
+    #                for Animals in cell.num_herbivores]
+    #     carn_lt = [Animals.age for cell in np.asarray(self.object).flatten()
+    #                for Animals in cell.num_carnivores]
+    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
+    #
+    # @property
+    # def weight_list(self):
+    #     herb_lt = [Animals.get_weight() for cell in np.asarray(self.object).flatten()
+    #                for Animals in cell.num_herbivores]
+    #     carn_lt = [Animals.get_weight() for cell in np.asarray(self.object).flatten()
+    #                for Animals in cell.num_carnivores]
+    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
 
+    # def update_plot_hist(self, fit_list=None):
+    #     self._fit_ax = self._fig.add_subplot(6, 3, 16)
+    #     self._fit_ax.title.set_text("Hist FIT")
+    #     self._fit_ax.hist(self.fitness_list()["Herbivore"], bins=10, histtype="step")
+    #
+    # def update_hist(self):
+    #     pass
+
+    def set_up_graphics(self):
         if self._fig is None:
-            self._fig = plt.figure(figsize=(12, 6))
-            self.grid = self._fig.add_gridspec(2, 12)
+            self._fig = plt.figure(figsize=(16, 9))
+            self._fig.suptitle("Rossumøya", fontweight="bold")
+
+        # if self._fit_ax is None:
+        #     self.update_plot_hist(fit_list=self.fitness_list)
 
         if self._map is None:  # MAP
             self.plot_island_map()
-            self.grid[0, :10]
-
-            self._map.set_title("Rossumøya")
+            self._map.set_title("Landscape of Rossumøya")
 
         if self._pop_ax is None:
-            self._pop_ax = self._fig.add_subplot(2, 2, 2)
+            self._pop_ax = self._fig.add_subplot(3, 2, 2)
             if self.ymax_animals is not None:
                 self._pop_ax.set_ylim(0, self.ymax_animals)
 
-            self._pop_ax.set_title("Ecosystem on Rossumøya")
+            self._pop_ax.set_title("Ecosystem on Rossumøya", y=0.98)
 
         if self._herb_heat_ax is None:
-            self._herb_heat_ax = self._fig.add_subplot(2, 2, 3)
-
-            self._herb_heat_ax.set_title("Herbivore movement on Rossumøya")
+            self._herb_heat_ax = self._fig.add_subplot(3, 2, 3)
+            self._herb_heat_ax.set_title("Herbivore movement on Rossumøya", y=0.98)
 
         if self._carn_heat_ax is None:
-            self._carn_heat_ax = self._fig.add_subplot(2, 2, 4)
+            self._carn_heat_ax = self._fig.add_subplot(3, 2, 4)
 
             self._carn_heat_ax.set_title("Carnivore movement on Rossumøya")
 
-        # axt = self._fig.add_axes([0.4, 0.8, 0.2, 0.2])
-        # axt.axis('off')
-        # template = 'Count: {:5}'
-        # txt = axt.text(0.5, 0.5, template.format(0),
-        #                horizontalalignment='center',
-        #                verticalalignment='center',
-        #                transform=axt.transAxes)
-        # plt.pause(1e-6)
-        # input("Press ENTER to begin counting")
-        #
-        # for k in range(40):
-        #     txt.set_text(template.format(k))
-        #     plt.pause(0.1)
+        if self._fit_axis is None:
+
+            self._fit_ax = self._fig.add_subplot(3, 2, 5)
+            # self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step", color="g")
+            # self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step", color="r")
+            # self._fit_ax.title.set_text("Historgram of fitness")
+        #     self._fit_ax = self._fig.add_subplot(3, 2, 5)
 
 
     def plot_island_map(self):
@@ -191,10 +230,9 @@ class BioSim:
                     for row in string_map.splitlines()]
 
         #fig = plt.figure()
-        self._map = self._fig.add_subplot(2, 2, 1)
+        self._map = self._fig.add_subplot(3, 2, 1)
 
         self._map.imshow(kart_rgb)
-        #self._map.set_xticks(range(len(kart_rgb[0])))
         self._map.set_xticks(np.arange(0, len(kart_rgb[0]), 2))  # sets the location
         self._map.set_xticklabels(np.arange(1, 1 + len(kart_rgb[0]), 2))  # sets the displayed txt
         self._map.set_yticks(np.arange(0, len(kart_rgb), 2))
@@ -208,7 +246,6 @@ class BioSim:
                                          edgecolor='none',
                                          facecolor=rgb_value[name[0]]))
             axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
-
 
     def plot_population_graph(self):
 
@@ -291,6 +328,10 @@ class BioSim:
         else:
             self._carn_heat_axis.set_data(carnivore_array)
 
+    # def up_hist(self, num_years):
+    #     if self._fit_ax is not None:
+
+
     def update_graphics(self):
         # fig = plt.figure()
         # ax = fig.add_subplot(1, 1, 1)
@@ -300,7 +341,7 @@ class BioSim:
 
         self.plot_population_graph()
         self.update_heatmap()
-        plt.pause(0.001)
+        plt.pause(0.1)
 
     def save_graphics(self):
         pass

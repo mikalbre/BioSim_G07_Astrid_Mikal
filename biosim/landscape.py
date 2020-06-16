@@ -83,6 +83,7 @@ class SingleCell:
             else:
                 raise TypeError("This animal is not a valid animal")
 
+
     def eat(self):
         """First calls the fodder_regrow- method to make fodder available, depends on
         type of landscape. Thereafter the feed_herb- method is called and the herb

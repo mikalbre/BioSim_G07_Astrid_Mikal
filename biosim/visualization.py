@@ -3,136 +3,164 @@
 __author__ = 'Astrid Sedal, Mikal Breiteig'
 __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
-from biosim.island import CreateIsland
-
+from biosim.island import CreateIsland as island
+from biosim import landscape as Landscape
+from biosim.animals import Animals, Carnivore, Herbivore
+from biosim import island
+import textwrap
 
 import matplotlib.pyplot as plt
-import os
-
-class Visual:
-
-    density_heatmap = {'Herbivore': 275,
-                       'Carnivore': 150}
-
-    def __init__(self,
-                 island,
-                 num_years_sim,
-                 ymax_animals=None,
-                 cmax_animals=None,
-                 img_base=None,
-                 img_fmt='png'
-                 ):
-
-        self.img_num = 0
-        self.x_len = len(island.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW""")[0])
-        self.y_len = len(island.condition_for_island_map_string(geography_island_string="""WWW\nWLW\nWWW"""))
-        self.num_years_sim = num_years_sim
-
-        self.num_years_fig = island.year() + num_years_sim
 
 
-        self.ymax_animals = ymax_animals
-        self.cmax_animals = cmax_animals
+class Visualization:
+    def __init__(self,island_map,
+                 ini_pop,
+                 seed):
 
-        if ymax_animals is None:
-            """Number specifying y-axis limit for graph showing animal numbers"""
-            self.ymax_animals = 20000  # ??
-        else:
-            self.ymax_animals = ymax_animals
+        self.island_map = island_map
+        self.ini_pop = ini_pop
+        self.island = island.CreateIsland(geography_island_string=island_map,
+                                          initial_population=ini_pop)
 
-        if cmax_animals is None:
-            """Dict specifying color-code limits for animal densities """
-            self.cmax_animals = {'Herbivore': 50, 'Carnivore': 20}  # ??
-        else:
-            self.cmax_animals = cmax_animals
+        self._fig = None
+        self._map = None
+        self._map_axis = None
+        self._pop_ax = None
+        self._pop_axis = None
+        self._herb_heat_ax = None
+        self._herb_heat_axis = None
+        self._carn_heat_ax = None
+        self._carn_heat_axis = None
 
-        self.img_fmt = img_fmt
-        self.img_base = img_base
+        self._fit_ax = None
+        self._fit_axis = None
+        self._age_ax = None
+        self._age_axis = None
+        self._weight_ax = None
+        self._weight_axis = None
 
-        if img_base is None:
-            self.img_base = os.path.join('..', 'BioSim')
-        else:
-            self.img_base = img_base
+        # self.img_base = img_base
+        # self.img_fmt = img_fmt
+        self._img_ctr = 0
+        self.num_years = None
+        self.last_year_simulated = 0
+
+    def set_animal_parameters(self, species, params):
+        if species == 'Herbivore':
+            Herbivore.set_parameters(params)
+        elif species == 'Carnviore':
+            Carnivore.set_parameters(params)
+
+    def set_landscape_parameters(self, landscape, params):
+        if landscape == 'W':
+            Landscape.Water.cell_parameter(params)
+        elif landscape == 'D':
+            Landscape.Desert.cell_parameter(params)
+        if landscape == 'H':
+            Landscape.Highland.cell_parameter(params)
+        elif landscape == 'L':
+            Landscape.Lowland.cell_parameter(params)
+
+    def add_population(self, population):
+        self.island.add_population(population)
+
+    def set_up_graphics(self):
+        if self._fig is None:
+            self._fig = plt.figure(figsize=(16, 9))
+            self._fig.suptitle("Rossumøya", fontweight="bold")
+
+        if self._fit_ax is None:
+            self.update_histogram_fitness()
+
+        # if self._age_ax is None:
+        #     self.update_histogram_age(age_list_carn=, age_list_herb=)
+        #
+        # if self._weight_ax is None:
+        #     self.update_histogram_weight(weight_list_carn=, weight_list_herb=)
+
+    def update_histogram_fitness(self, phi_list_herb=None, phi_list_carn=None):
+        # self._fit_ax.clear()
+        # self._fig = plt.figure(figsize=(16, 9))
+        # self._fit_ax = self._fig.add_subplot(3, 2, 5)
+        self._fit_ax.hist(phi_list_herb, bins=10, histtype="step", color="g")
+        self._fit_ax.hist(phi_list_carn, bins=10, histtype="step", color="r")
+        self._fit_ax.title.set_text("Historgram of fitness")
+
+    def update_histogram_age(self, age_list_herb=None, age_list_carn=None):
+        # self._age_ax.clear()
+        self._age_ax.title.set_text("Historgram of age")
+        self._age_ax.hist(age_list_herb, bins=10, histtype="step", color="g")
+        self._age_ax.hist(age_list_carn, bins=10, histtype="step", color="r")
+
+    def update_histogram_weight(self, weight_list_herb=None, weight_list_carn=None):
+        # self._weight_ax.clear()
+        self._weight_ax.title.set_text("Historgram of weight")
+        self._weight_ax.hist(weight_list_herb, bins=10, histtype="step", color="g")
+        self._weight_ax.hist(weight_list_carn, bins=10, histtype="step", color="r")
+
+    def simulate(self, num_years, vis_years=1, img_years=None):
+        if img_years is None:
+            img_years = vis_years
+
+        self.set_up_graphics()
+        # self.plot_island_map()
+        self.num_years = num_years  # ??
+
+        for _ in range(num_years):
+            if self._fit_ax is None:
+                self.update_histogram_fitness(self.island.fitness_list()[0],
+                                              self.island.fitness_list()[1])
+
+            # if self._age_ax is None:
+            #     self.update_histogram_age(age_list_carn=, age_list_herb=)
+            #
+            # if self._weight_ax is None:
+            #     self.update_histogram_weight(weight_list_carn=, weight_list_herb=)
+            #
+            # new_island_population = self.island.simulate_one_year()
+            # self.herbivore_list.append(new_island_population['Herbivore'])
+            # self.carnivore_list.append(new_island_population['Carnivore'])
+
+            # if num_years % vis_years == 0:
+            #     self.update_graphics()
+            #
+            # if num_years % img_years == 0:
+            #     self.save_graphics()
+
+            self.last_year_simulated += 1
 
 
-        self.figure = None
-        self.grid = None
 
-
-        self.heat_map_herbivores_ax = None
-        self.heat_map_herb_img_ax = None
-        self.colorbar_herb_ax = None
-
-
-        self.set_up_graphics(island)
-        self.draw_heat_map_herbivore(self.get_data_heat_map(island, 'num_herbivores'))
-
-    def empty_nested_list(self):
-        empty_nested_list = []
-        for y in range(self.y_len):
-            empty_nested_list.append([])
-            for x in range(self.x_len):
-                empty_nested_list[y].append(None)
-        return empty_nested_list
-
-    def set_up_graphics(self, island):
-        if self.figure is None:
-            self.figure = plt.figure(constrained_layout=True, figsize=(16, 9))
-            self.grid = self.figure.add_gridspec(2, 24)
-
-        if self.heat_map_herbivores_ax is None:
-            self.heat_map_herbivores_ax = self.figure.add_subplot(self.grid[1, :11])
-            self.heat_map_herb_img_ax = None
-
-        if self.colorbar_herb_ax is None:
-            self.colorbar_herb_ax = self.figure.add_subplot(self.grid[1, 11])
-
-    def get_data_heat_map(self, island, data_type):
-        heat_map = self.empty_nested_list()
-        for pos, cell in island.map.items():
-            y, x = pos
-            heat_map[y][x] = getattr(cell, data_type)
-        return heat_map
-
-    def draw_heat_map_herbivore(self, heat_map):
-        self.heat_map_herbivores_ax.axis('off')
-        self.heat_map_herbivores_ax.set_title('Tetste Herb')
-        self.heat_map_herb_img_ax = self.heat_map_herbivores_ax.imshow(heat_map,
-                                                                       cmap='inferno',
-                                                                       vmax=self.cmax_animals['Herbivore'])
-        plt.colorbar(self.heat_map_herb_img_ax, cax=self.colorbar_herb_ax)
-
-
-    def updated_heat_maps(self, island):
-        heat_map_herb = self.get_data_heat_map(island, 'num_herbivores')
-        self.heat_map_herb_img_ax.set_data(heat_map_herb)
-
-    def update_fig(self, island):
-        self.updated_heat_maps(island)
-        plt.pause(1e-10)
 
 
 if __name__ == '__main__':
-    default_map = """WWW\nWLW\nWWW"""
+    plt.ion()
+    default_map = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWHHHHHHHHHWWLLLLLLWWW\nWHHHHHLLLLLLLLLLLLWWW\nWHHHHHLLLDDLLLHLLLWWW\nWHHLLLLLDDDLLLHHHHWWW\nWWHHHHLLLDDLLLHWWWWWW\nWHHHLLLLLDDLLLLLLLWWW\nWHHHHLLLLDDLLLLWWWWWW\nWWHHHHLLLLLLLLWWWWWWW\nWWWHHHHLLLLLLLWWWWWWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
-    ini_herbs = [{'loc': (2, 2),
+    ini_herbs = [{'loc': (10, 10),
                   'pop': [{'species': 'Herbivore',
                            'age': 5,
                            'weight': 20}
                           for _ in range(150)]}]
+    ini_carns = [{'loc': (10, 10),
+                  'pop': [{'species': 'Carnivore',
+                           'age': 5,
+                           'weight': 20}
+                          for _ in range(40)]}]
 
-    island = CreateIsland(geography_island_string="""WWW\nWLW\nWWW""", initial_population=ini_herbs)
-    vis = Visual(island, 50)
+    sim = Visualization(island_map=default_map, ini_pop=ini_herbs,
+                 seed=123456,
+                 )
 
-    for _ in range(50):
-        island.simulate_one_year()
-
-
-
-
-
-
-
+    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
+    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
+                                            'omega': 0.3, 'F': 65,
+                                            'DeltaPhiMax': 9.})
+    sim.set_landscape_parameters('L', {'f_max': 700})
+    # print(sim.heat_map_herbivore())
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+    sim.add_population(population=ini_carns)
+    sim.simulate(num_years=300, vis_years=1, img_years=2000)
 
 
 

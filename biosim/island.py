@@ -3,7 +3,7 @@ from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
 from biosim.animals import *
 import random
 import numpy
-
+import statistics
 
 def check_length_of_string(map_list):
     if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
@@ -64,8 +64,8 @@ class CreateIsland:
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
-        self.total_data_herb.append(num_animals_per_species["Herbivore"])
-        self.total_data_carn.append(num_animals_per_species["Carnivore"])
+        # self.total_data_herb.append(num_animals_per_species["Herbivore"])
+        # self.total_data_carn.append(num_animals_per_species["Carnivore"])
 
         return num_animals_per_species
 
@@ -131,8 +131,8 @@ class CreateIsland:
 
         island_map = {}
 
-        self.len_map_x = len(map_list[0])
-        self.len_map_y = len(map_list)
+        # self.len_map_x = len(map_list[0])
+        # self.len_map_y = len(map_list) # BRUKES DISSE?
 
         coord_x = 1
         for line in map_list:
@@ -237,9 +237,51 @@ class CreateIsland:
         #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
         #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
 
+    def fitness_list(self):
+        phi_list_herb = []
+
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                phi_list_herb.append(herb.phi)
+
+        phi_list_carn = []
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                phi_list_carn.append(carn.phi)
+
+        return phi_list_herb, phi_list_carn
+
+    def age_list(self):
+        age_list_herb = []
+
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                age_list_herb.append(herb.age)
+
+        age_list_carn = []
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                age_list_carn.append(carn.age)
+
+        return age_list_herb, age_list_carn
+
+    def weight_list(self):
+        weight_list_herb = []
+
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                weight_list_herb.append(herb.weight)
+
+        weight_list_carn = []
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                weight_list_carn.append(carn.weight)
+
+        return weight_list_herb, weight_list_carn
+
     @property
     def year(self):
-        return self.year_num + 1
+        return self.year_num
 
     @year.setter
     def year(self, new_year_value):
@@ -252,7 +294,7 @@ class CreateIsland:
         self.migration_animals()
         self.aging_animals()
         self.death_animals()
-        self.year_num += 1
+        self.year += 1
 
         return self.num_animals_per_species
 

@@ -9,9 +9,6 @@ from math import exp
 import random
 random.seed(1)
 
-
-
-
 class Animals:
     """
     Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
