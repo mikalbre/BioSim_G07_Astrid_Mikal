@@ -9,6 +9,7 @@ from biosim import animals
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import textwrap
 
 
 class BioSim:
@@ -148,7 +149,10 @@ class BioSim:
 
     def plot_island_map(self):
         #kart = """WWW\nWLW\nWWW"""
-        kart = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWWWWWWWWWWWWWWWWWWWWW"""
+        island_string = self.island_map
+        string_map = textwrap.dedent(island_string)
+        string_map.replace('\n', ' ')
+        #kart = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
         #                   R    G    B
         rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
@@ -157,7 +161,7 @@ class BioSim:
                      'D': (1.0, 1.0, 0.5)}  # light yellow
 
         kart_rgb = [[rgb_value[column] for column in row]
-                    for row in kart.splitlines()]
+                    for row in string_map.splitlines()]
 
         #fig = plt.figure()
         self._map = self._fig.add_subplot(2, 2, 1)
@@ -168,7 +172,7 @@ class BioSim:
         self._map.set_yticks(range(len(kart_rgb)))
         self._map.set_yticklabels(range(1, 1 + len(kart_rgb)))
 
-        axlg = self._fig.add_axes([0.85, 0.1, 0.1, 0.8])  # llx, lly, w, h
+        axlg = self._fig.add_axes([0.03, 0.525, 0.1, 0.4])  # llx, lly, w, h
         axlg.axis('off')
         for ix, name in enumerate(('Water', 'Lowland',
                                    'Highland', 'Desert')):
@@ -208,7 +212,7 @@ class BioSim:
             x_data, y_data = self.herbivore_line.get_data()
             xnew = np.arange(x_data[-1] + 1, self.num_years)
             ynew = np.full(xnew.shape, np.nan)
-            self.herbivore_line.set_data((np.hstack(x_data, y_data), np.hstack(y_data, x_data)))
+            self.herbivore_line.set_data((np.hstack((x_data, xnew)), np.hstack((y_data, ynew))))
 
 
         if self._pop_axis is None:
@@ -246,8 +250,7 @@ class BioSim:
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals['Herbivore'])
             plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
-        # else:
-        #     self._herb_heat_axis.set_data(herbivore_array)
+
 
 
         if self._carn_heat_axis is None:
