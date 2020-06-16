@@ -201,6 +201,16 @@ class BioSim:
             self.herbivore_line.set_data(np.hstack((x_data, xnew)),
                                          np.hstack((y_data, ynew)))
 
+        if self.herbivore_line is None:
+            herb_line = self._pop_ax.plot(np.arange(0, self.num_years), np.full(self.num_years, np.nan))
+            self.herbivore_line = herb_line[0]
+        else:
+            x_data, y_data = self.herbivore_line.get_data()
+            xnew = np.arange(x_data[-1] + 1, self.num_years)
+            ynew = np.full(xnew.shape, np.nan)
+            self.herbivore_line.set_data((np.hstack(x_data, y_data), np.hstack(y_data, x_data)))
+
+
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))],
                               self.herbivore_list, 'g-')
@@ -236,8 +246,8 @@ class BioSim:
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals['Herbivore'])
             plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
-        else:
-            self._herb_heat_axis.set_data(herbivore_array)
+        # else:
+        #     self._herb_heat_axis.set_data(herbivore_array)
 
 
         if self._carn_heat_axis is None:
