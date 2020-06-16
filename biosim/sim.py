@@ -152,7 +152,6 @@ class BioSim:
         island_string = self.island_map
         string_map = textwrap.dedent(island_string)
         string_map.replace('\n', ' ')
-        #kart = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
         #                   R    G    B
         rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
