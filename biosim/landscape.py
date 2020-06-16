@@ -181,14 +181,12 @@ class SingleCell:
                 #print(landscape_type)
                 #print(hex(id(landscape_type)))
                 if isinstance(landscape_type, Water):  # So, Water != Water? NOT IN HERE
-                    # print(f"WATERRRRR: {landscape_type}")
                     continue
                 else:
-                    # print(f"ACCESSIBLE- migrate")
                     migrated_herb.append((new_loc, herb))
                     self.present_herbivores.remove(herb)
                     herb.set_migration_true()  # Updates that animal has move
-
+        #self.present_herbivores = [herb for herb in self.present_herbivores if herb not in migrated_herb]
         for carn in self.present_carnivores:
             if carn.prob_migrate() is True:
                 chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
