@@ -7,6 +7,8 @@ from biosim import island as island
 from biosim import landscape as Landscape
 from biosim import animals
 
+from matplotlib.ticker import TickHelper
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import textwrap
@@ -47,6 +49,7 @@ class BioSim:
         self.herbivore_line = None
         self.carnivore_line = None
 
+        self.grid = None  # Trenger?
         self._fig = None
         self._map = None
         self._map_axis = None
@@ -132,20 +135,45 @@ class BioSim:
 
         if self._fig is None:
             self._fig = plt.figure(figsize=(12, 6))
+            self.grid = self._fig.add_gridspec(2, 12)
 
         if self._map is None:  # MAP
             self.plot_island_map()
+            self.grid[0, :10]
+
+            self._map.set_title("Rossumøya")
 
         if self._pop_ax is None:
             self._pop_ax = self._fig.add_subplot(2, 2, 2)
             if self.ymax_animals is not None:
                 self._pop_ax.set_ylim(0, self.ymax_animals)
 
+            self._pop_ax.set_title("Ecosystem on Rossumøya")
+
         if self._herb_heat_ax is None:
             self._herb_heat_ax = self._fig.add_subplot(2, 2, 3)
 
+            self._herb_heat_ax.set_title("Herbivore movement on Rossumøya")
+
         if self._carn_heat_ax is None:
             self._carn_heat_ax = self._fig.add_subplot(2, 2, 4)
+
+            self._carn_heat_ax.set_title("Carnivore movement on Rossumøya")
+
+        # axt = self._fig.add_axes([0.4, 0.8, 0.2, 0.2])
+        # axt.axis('off')
+        # template = 'Count: {:5}'
+        # txt = axt.text(0.5, 0.5, template.format(0),
+        #                horizontalalignment='center',
+        #                verticalalignment='center',
+        #                transform=axt.transAxes)
+        # plt.pause(1e-6)
+        # input("Press ENTER to begin counting")
+        #
+        # for k in range(40):
+        #     txt.set_text(template.format(k))
+        #     plt.pause(0.1)
+
 
     def plot_island_map(self):
         #kart = """WWW\nWLW\nWWW"""
@@ -166,12 +194,13 @@ class BioSim:
         self._map = self._fig.add_subplot(2, 2, 1)
 
         self._map.imshow(kart_rgb)
-        self._map.set_xticks(range(len(kart_rgb[0])))
-        self._map.set_xticklabels(range(1, 1 + len(kart_rgb[0])))
-        self._map.set_yticks(range(len(kart_rgb)))
-        self._map.set_yticklabels(range(1, 1 + len(kart_rgb)))
+        #self._map.set_xticks(range(len(kart_rgb[0])))
+        self._map.set_xticks(np.arange(0, len(kart_rgb[0]), 2))  # sets the location
+        self._map.set_xticklabels(np.arange(1, 1 + len(kart_rgb[0]), 2))  # sets the displayed txt
+        self._map.set_yticks(np.arange(0, len(kart_rgb), 2))
+        self._map.set_yticklabels(np.arange(1, 1 + len(kart_rgb), 2))
 
-        axlg = self._fig.add_axes([0.03, 0.525, 0.1, 0.4])  # llx, lly, w, h
+        axlg = self._fig.add_axes([0.03, 0.525, 0.05, 0.35])  # llx, lly, w, h
         axlg.axis('off')
         for ix, name in enumerate(('Water', 'Lowland',
                                    'Highland', 'Desert')):
@@ -179,6 +208,7 @@ class BioSim:
                                          edgecolor='none',
                                          facecolor=rgb_value[name[0]]))
             axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
+
 
     def plot_population_graph(self):
 
