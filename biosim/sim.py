@@ -102,24 +102,16 @@ class BioSim:
         return animal_dict
 
     @property
-    def animal_distribution(self):  # BUG
-        data = {}
-        rows = []
-        col = []
-        herbs = []
-        carns = []
-
-        for coord, cell in self.island.map.items():
-            herbs.append(cell.present_herbivores)
-            carns.append(cell.present_carnivores)
-            rows.append(coord[0])
-            col.append(coord[1])
-            # Se på disse []
-        data['Row'] = rows
-        data['Col'] = col
-        data['Herbivore'] = herbs
-        data['Carnivore'] = carns
-        return pd.DataFrame(data)
+    def animal_distribution(self):
+        dict_for_df = {'Row': [], 'Col': [], 'Herbivore': [], 'Carnivore': []}
+        for pos, cell in self.island.map.items():
+            row, col = pos
+            dict_for_df['Row'].append(row)
+            dict_for_df['Col'].append(col)
+            dict_for_df['Herbivore'].append(cell.num_herbivores)
+            dict_for_df['Carnivore'].append(cell.num_carnivores)
+        df_sim = pd.DataFrame.from_dict(dict_for_df)
+        return df_sim
 
     def make_movie(self, movie_fmt):
         pass
@@ -195,18 +187,18 @@ class BioSim:
                                                              cmap='BuGn',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-            plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
-        else:
-            self._herb_heat_axis.set_data(herbivore_array)
+            #plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
+        # else:
+        #     self._herb_heat_axis.set_data(herbivore_array)
 
         if self._carn_heat_axis is None:
             self._carn_heat_axis = self._carn_heat_ax.imshow(carnivore_array,
                                                              cmap='OrRd',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-            plt.colorbar(self._carn_heat_ax, ax=self._carn_heat_ax)
-        else:
-            self._carn_heat_axis.set_data(carnivore_array)
+        #     plt.colorbar(self._carn_heat_ax, ax=self._carn_heat_ax)
+        # else:
+        #     self._carn_heat_axis.set_data(carnivore_array)
 
     def update_graphics(self):
         self.plot_population_graph()
@@ -218,13 +210,18 @@ class BioSim:
 
 if __name__ == '__main__':
     plt.ion()
-    default_map = """WWW\nWLW\nWWW"""
+    default_map = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWHHHHHHHHHWWLLLLLLWWW\nWHHHHHLLLLLLLLLLLLWWW\nWHHHHHLLLDDLLLHLLLWWW\nWHHLLLLLDDDLLLHHHHWWW\nWWHHHHLLLDDLLLHWWWWWW\nWHHHLLLLLDDLLLLLLLWWW\nWHHHHLLLLDDLLLLWWWWWW\nWWHHHHLLLLLLLLWWWWWWW\nWWWHHHHLLLLLLLWWWWWWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
-    ini_herbs = [{'loc': (2, 2),
+    ini_herbs = [{'loc': (10, 10),
                   'pop': [{'species': 'Herbivore',
                            'age': 5,
                            'weight': 20}
                           for _ in range(150)]}]
+    ini_carns = [{'loc': (10, 10),
+                  'pop': [{'species': 'Carnivore',
+                           'age': 5,
+                           'weight': 20}
+                          for _ in range(40)]}]
 
     sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
                  seed=123456,
@@ -236,6 +233,8 @@ if __name__ == '__main__':
                                             'DeltaPhiMax': 9.})
     sim.set_landscape_parameters('L', {'f_max': 700})
     # print(sim.heat_map_herbivore())
+    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+    sim.add_population(population=ini_carns)
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
 

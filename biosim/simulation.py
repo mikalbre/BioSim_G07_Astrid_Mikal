@@ -139,22 +139,13 @@ class BioSim:
 
     @property
     def animal_dist(self):
-        data = {}
-        rows = []
-        col = []
-        herbs = []
-        #carns = []
-
-        for coord, cell in self.island.make_map(geography_island_string=default_map).items():
-            herbs.append(cell.present_herbivores)
-            #carns.append(cell.present_herbivores)
-            rows.append(coord[0])
-            col.append(coord[1])
-        data['Row'] = rows
-        data['Col'] = col
-        data['Herbivore'] = herbs
-        #data['Carnivore'] = carns
-        return pd.DataFrame(data)
+        dict_for_df = {'Row': [], 'Col': [], 'Herbivore': [], 'Carnivore': []}
+        for pos, cell in self.island.map.items():
+            row, col = pos
+            dict_for_df['Row'].append(row)
+            dict_for_df['Col'].append(col)
+            dict_for_df['Herbivore'].append(cell.num_herbivores)
+            dict_for_df['Carnivore'].append(cell.num_carnivores)
 
     def herb_dist(self):
         row_num = np.shape()
