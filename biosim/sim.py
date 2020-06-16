@@ -12,6 +12,9 @@ import matplotlib.pyplot as plt
 
 class BioSim:
 
+    density_heatmap ={'Herbivore': 200,
+                      'Carnivore': 50}
+
     def __init__(self,
                  island_map,
                  ini_pop,
@@ -36,10 +39,14 @@ class BioSim:
         self.img_base = img_base
         self.img_fmt = img_fmt
         self._img_ctr = 0
-        self.max_year = None
+        #self.max_year = None
+        self.num_years = None
+
+        self.herbivore_line = None
+        self.carnivore_line = None
 
         self._fig = None
-        self._map_ax = None
+        self._map = None
         self._map_axis = None
         self._pop_ax = None
         self._pop_axis = None
@@ -70,6 +77,8 @@ class BioSim:
 
         self.set_up_graphics()
         self.plot_island_map()
+        self.num_years = num_years  # ??
+
 
         for _ in range(num_years):
             new_island_population = self.island.simulate_one_year()
@@ -122,9 +131,8 @@ class BioSim:
         if self._fig is None:
             self._fig = plt.figure(figsize=(12, 6))
 
-        if self._map_ax is None:
-            self._map_ax = self._fig.add_subplot(2, 2, 1)
-            self._map_axis = None
+        if self._map is None:  # MAP
+            self.plot_island_map()
 
         if self._pop_ax is None:
             self._pop_ax = self._fig.add_subplot(2, 2, 2)
@@ -150,16 +158,16 @@ class BioSim:
         kart_rgb = [[rgb_value[column] for column in row]
                     for row in kart.splitlines()]
 
-        fig = plt.figure()
+        #fig = plt.figure()
+        self._map = self._fig.add_subplot(2, 2, 1)
 
-        axim = fig.add_axes([0.1, 0.1, 0.7, 0.8])  # llx, lly, w, h
-        axim.imshow(kart_rgb)
-        axim.set_xticks(range(len(kart_rgb[0])))
-        axim.set_xticklabels(range(1, 1 + len(kart_rgb[0])))
-        axim.set_yticks(range(len(kart_rgb)))
-        axim.set_yticklabels(range(1, 1 + len(kart_rgb)))
+        self._map.imshow(kart_rgb)
+        self._map.set_xticks(range(len(kart_rgb[0])))
+        self._map.set_xticklabels(range(1, 1 + len(kart_rgb[0])))
+        self._map.set_yticks(range(len(kart_rgb)))
+        self._map.set_yticklabels(range(1, 1 + len(kart_rgb)))
 
-        axlg = fig.add_axes([0.85, 0.1, 0.1, 0.8])  # llx, lly, w, h
+        axlg = self._fig.add_axes([0.85, 0.1, 0.1, 0.8])  # llx, lly, w, h
         axlg.axis('off')
         for ix, name in enumerate(('Water', 'Lowland',
                                    'Highland', 'Desert')):
@@ -169,24 +177,46 @@ class BioSim:
             axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
 
     def plot_population_graph(self):
+
         if self.carnivore_line is None:
-            carn_line =  self._pop_ax.plot(np.arange(0, self.max_year), np.full(self.max_year, np.nan))
+            carn_line = self._pop_ax.plot(np.arange(0, self.num_years),
+                                          np.full(self.num_years, np.nan))
             self.carnivore_line = carn_line[0]
         else:
             x_data, y_data = self.carnivore_line.get_data()
-            xnew = np.arange(x_data[-1] + 1, self.max_year)
+            xnew = np.arange(x_data[-1] + 1, self.num_years)
             ynew = np.full(xnew.shape, np.nan)
+            self.carnivore_line.set_data(np.hstack((x_data, xnew)),
+                                         np.hstack((y_data, ynew)))
 
+        if self.herbivore_line is None:
+            herb_line = self._pop_ax.plot(np.arange(0, self.num_years),
+                                          np.full(self.num_years, np.nan))
+            self.herbivore_line = herb_line[0]
+        else:
+            x_data, y_data = self.herbivore_line.get_data()
+            xnew = np.arange(x_data[-1] + 1, self.num_years)
+            ynew = np.full(xnew.shape, np.nan)
+            self.herbivore_line.set_data(np.hstack((x_data, xnew)),
+                                         np.hstack((y_data, ynew)))
 
         if self._pop_axis is None:
-            self._pop_ax.plot([i for i in range(len(self.herbivore_list))], self.herbivore_list, 'g-')
-            self._pop_ax.plot([i for i in range(len(self.carnivore_list))], self.carnivore_list,
-                              'g-')
+            self._pop_ax.plot([i for i in range(len(self.herbivore_list))],
+                              self.herbivore_list, 'g-')
+            self._pop_ax.plot([i for i in range(len(self.carnivore_list))],
+                              self.carnivore_list, 'r-')
             self._pop_ax.legend(['Herbivores', 'Carnivores'], loc='upper left')
-        else:
+        #else:
 
-    def update_population_graph(self):
-        pass # Bruker get_data først, også bruker du set_data
+    def update_population_graph(self, population):
+        # Bruker get_data først, deretter set_data'
+        ydata = self.carnivore_line.get_data()
+        ydata[self.num_years] = population
+        self.carnivore_line.set_data(ydata)
+
+        ydata = self.herbivore_line.get_data()
+        ydata[self.num_years] = population
+        self.carnivore_line.set_data(ydata)
 
     def update_heatmap(self):
         df = self.animal_distribution
@@ -195,15 +225,15 @@ class BioSim:
         carnivore_array = df.pivot_table(columns='Col', index='Row', values='Carnivore')
 
         if self.cmax_animals is None:
-            self.cmax_animals = 100
+            self.cmax_animals = self.density_heatmap
 
-        if self._herb_heat_axis is None:
+        if self._herb_heat_axis is not None:
             self._herb_heat_axis.set_data(herbivore_array)
         else:
             self._herb_heat_axis = self._herb_heat_ax.imshow(herbivore_array,
                                                              cmap='BuGn',
                                                              interpolation='nearest',
-                                                             vmax=self.cmax_animals)
+                                                             vmax=self.cmax_animals['Herbivore'])
             plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
 
 
@@ -211,14 +241,14 @@ class BioSim:
             self._carn_heat_axis = self._carn_heat_ax.imshow(carnivore_array,
                                                              cmap='OrRd',
                                                              interpolation='nearest',
-                                                             vmax=self.cmax_animals)
-        #     plt.colorbar(self._carn_heat_ax, ax=self._carn_heat_ax)
-        # else:
-        #     self._carn_heat_axis.set_data(carnivore_array)
+                                                             vmax=self.cmax_animals['Carnivore'])
+            plt.colorbar(self._carn_heat_axis, ax=self._carn_heat_ax)
+        else:
+            self._carn_heat_axis.set_data(carnivore_array)
 
     def update_graphics(self):
         self.plot_population_graph()
-        self.plot_heatmap()
+        self.update_heatmap()
         plt.pause(0.001)
 
     def save_graphics(self):
@@ -251,6 +281,6 @@ if __name__ == '__main__':
     # print(sim.heat_map_herbivore())
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
     sim.add_population(population=ini_carns)
-    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+    sim.simulate(num_years=300, vis_years=1, img_years=2000)
 
 

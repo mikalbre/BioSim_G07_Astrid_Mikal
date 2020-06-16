@@ -175,28 +175,31 @@ class SingleCell:
         for herb in self.present_herbivores:
             if herb.prob_migrate() is True:  # If it migrates
                 chosen_cell = random.choice(neighboring_cells)  # ((2,1), Water)
-                #print(chosen_cell)
                 new_loc = chosen_cell[0]
                 landscape_type = chosen_cell[1]
-                #print(landscape_type)
                 #print(hex(id(landscape_type)))
                 if isinstance(landscape_type, Water):  # So, Water != Water? NOT IN HERE
                     continue
                 else:
                     migrated_herb.append((new_loc, herb))
-                    self.present_herbivores.remove(herb)
+                    #self.present_herbivores.remove(herb)
                     herb.set_migration_true()  # Updates that animal has move
-        #self.present_herbivores = [herb for herb in self.present_herbivores if herb not in migrated_herb]
+        self.present_herbivores = [herb for herb in self.present_herbivores
+                                   if herb not in migrated_herb]
+
         for carn in self.present_carnivores:
             if carn.prob_migrate() is True:
                 chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
                 new_loc = chosen_cell[0]
-                if chosen_cell[1] is Water:
+                landscape_type = chosen_cell[1]
+                if isinstance(landscape_type, Water):
                     continue
                 else:
                     migrated_carn.append((new_loc, carn))
-                    self.present_carnivores.remove(carn)
+                    #self.present_carnivores.remove(carn)
                     carn.set_migration_true()  # Updates that animal has moved
+        self.present_carnivores = [carn for carn in self.present_carnivores
+                                   if carn not in migrated_carn]
 
         return migrated_herb, migrated_carn
 
