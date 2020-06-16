@@ -10,6 +10,7 @@ from biosim import animals
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 class BioSim:
 
     def __init__(self,
@@ -170,8 +171,14 @@ class BioSim:
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))], self.herbivore_list, 'g-')
             self._pop_ax.plot([i for i in range(len(self.carnivore_list))], self.carnivore_list,
-                              'g-')
+                              'b-')
             self._pop_ax.legend(['Herbivores', 'Carnivores'], loc='upper left')
+
+            # p_ax.plot([i for i in range(len(self.herbivore_list))], self.herbivore_list, 'g-') np.arrange(nonenan
+
+            # set_y
+            # antall herbivores og carn
+            # to linjer, herb og carn, get_y(data)
 
     def plot_heatmap(self):
         df = self.animal_distribution
@@ -187,20 +194,26 @@ class BioSim:
                                                              cmap='BuGn',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-            #plt.colorbar(self._herb_heat_ax, ax=self._herb_heat_ax)
-        # else:
-        #     self._herb_heat_axis.set_data(herbivore_array)
+            plt.colorbar(self._herb_heat_axis, ax=self._herb_heat_ax)
+        else:
+            self._herb_heat_axis.set_data(herbivore_array)
 
         if self._carn_heat_axis is None:
             self._carn_heat_axis = self._carn_heat_ax.imshow(carnivore_array,
                                                              cmap='OrRd',
                                                              interpolation='nearest',
                                                              vmax=self.cmax_animals)
-        #     plt.colorbar(self._carn_heat_ax, ax=self._carn_heat_ax)
-        # else:
-        #     self._carn_heat_axis.set_data(carnivore_array)
+            plt.colorbar(self._carn_heat_axis, ax=self._carn_heat_ax)
+        else:
+            self._carn_heat_axis.set_data(carnivore_array)
 
     def update_graphics(self):
+        # fig = plt.figure()
+        # ax = fig.add_subplot(1, 1, 1)
+        # ax.set_xlim(0, n_steps)
+        # ax.set_ylim(0, 1)
+        # line = ax.plot(np.arrange(n_steps), np.full(n_steps, np.nan), 'b-'[0])
+
         self.plot_population_graph()
         self.plot_heatmap()
         plt.pause(0.001)
