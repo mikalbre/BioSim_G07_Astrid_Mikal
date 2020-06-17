@@ -207,16 +207,22 @@ class CreateIsland:
         """Iterates through each cell """
         for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
 
+
             if cell.accessability is True:
                 neighboring_cells = self.migration_neighboring_cells(loc)
+
 
                 if len(neighboring_cells) > 0:
                     migrated_herb, migrated_carn = cell.migrate(neighboring_cells)
 
                     for new_loc, herb in migrated_herb:
                         self.add_migrated_herb_to_new_cell(new_loc, herb)
+                        cell.remove_herb_migrated(herb)
                     for new_loc, carn in migrated_carn:
                         self.add_migrated_carn_to_new_cell(new_loc, carn)
+                        cell.remove_carn_migrated(carn)
+
+
 
     def new_year_reset(self):
         """Updates the migration to False for all animals when new year starts."""
@@ -246,8 +252,49 @@ class CreateIsland:
     def year(self, new_year_value):
         self.year_num = new_year_value
 
+    def weight_list(self):
+        herb_weight_list = []
+        carn_weight_list = []
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                herb_weight_list.append(herb.weight)
+
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                carn_weight_list.append(carn.weight)
+
+        return herb_weight_list, carn_weight_list
+
+    def age_list(self):
+        herb_age_list = []
+        carn_age_list = []
+
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                herb_age_list.append(herb.age)
+
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                carn_age_list.append(carn.age)
+
+        return herb_age_list, carn_age_list
+
+    def fitness_list(self):
+        herb_fitness_list = []
+        carn_fitness_list = []
+        for cell in self.map.values():
+            for herb in cell.present_herbivores:
+                herb_fitness_list.append(herb.phi)
+
+        for cell in self.map.values():
+            for carn in cell.present_carnivores:
+                carn_fitness_list.append(carn.phi)
+
+        return herb_fitness_list, carn_fitness_list
+
+
     def simulate_one_year(self):
-        self.new_year_reset()
+        # self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
         self.migration_animals()

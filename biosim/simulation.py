@@ -26,7 +26,8 @@ class BioSim:
                  img_base=None,
                  img_fmt='png'):
 
-        random.seed(seed)
+        self.seed = seed
+        # random.seed(seed)
 
         self.last_year_simulated = 0
         self.island_map = island_map
@@ -91,6 +92,7 @@ class BioSim:
         self.num_years = num_years  # ??
 
         for _ in range(num_years):
+            random.seed(self.seed)
             new_island_population = self.island.simulate_one_year()
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
@@ -339,19 +341,19 @@ if __name__ == '__main__':
     plt.ion()
     default_map = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWHHHHHHHHHWWLLLLLLWWW\nWHHHHHLLLLLLLLLLLLWWW\nWHHHHHLLLDDLLLHLLLWWW\nWHHLLLLLDDDLLLHHHHWWW\nWWHHHHLLLDDLLLHWWWWWW\nWHHHLLLLLDDLLLLLLLWWW\nWHHHHLLLLDDLLLLWWWWWW\nWWHHHHLLLLLLLLWWWWWWW\nWWWHHHHLLLLLLLWWWWWWW\nWWWWWWWWWWWWWWWWWWWWW"""
 
-    ini_herbs = [{'loc': (10, 10),
+    ini_herbs = [{'loc': (3, 10),
                   'pop': [{'species': 'Herbivore',
                            'age': 5,
                            'weight': 20}
                           for _ in range(150)]}]
-    ini_carns = [{'loc': (10, 10),
+    ini_carns = [{'loc': (3, 10),
                   'pop': [{'species': 'Carnivore',
                            'age': 5,
                            'weight': 20}
                           for _ in range(40)]}]
 
     sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
-                 seed=123456,
+                 seed=12345,
                  )
 
     sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})

@@ -168,6 +168,7 @@ class Animals:
         Calculates the probability for the animal to migrate to new cell.
         :return:
         """
+        # return True
         if self.has_migrated is False:
             return bool(random.random() < self.params["mu"] * self.phi)
         return False

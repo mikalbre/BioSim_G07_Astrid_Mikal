@@ -61,7 +61,7 @@ class SingleCell:
             else:
                 raise ValueError('The only argument for passable is bool.')
         if accessability_boolean is True:
-            #cls.params = accessability
+            cls.params = accessability
 
     def __init__(self):
         self.available_fodder = 0
@@ -164,7 +164,8 @@ class SingleCell:
         migrated_carn = []
 
         for herb in self.present_herbivores:
-            if herb.prob_migrate() is True:  # If it migrates
+
+            if  not herb.has_migrated  and herb.prob_migrate():  # If it migrates
                 chosen_cell = random.choice(neighboring_cells)  # ((2,1), Water)
                 new_loc = chosen_cell[0]
                 landscape_type = chosen_cell[1]
@@ -173,12 +174,14 @@ class SingleCell:
                     continue
                 else:
                     migrated_herb.append((new_loc, herb))
-                    herb.set_migration_true()  # Updates that animal has move
+            herb.set_migration_true()
+                      # Updates that animal has move
         self.present_herbivores = [herb for herb in self.present_herbivores
                                    if herb not in migrated_herb]
 
         for carn in self.present_carnivores:
-            if carn.prob_migrate() is True:
+
+            if not carn.has_migrated and carn.prob_migrate() :
                 chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
                 new_loc = chosen_cell[0]
                 landscape_type = chosen_cell[1]
@@ -186,7 +189,8 @@ class SingleCell:
                     continue
                 else:
                     migrated_carn.append((new_loc, carn))
-                    carn.set_migration_true()  # Updates that animal has moved
+            carn.set_migration_true()  # Updates that animal has moved
+
         self.present_carnivores = [carn for carn in self.present_carnivores
                                    if carn not in migrated_carn]
 

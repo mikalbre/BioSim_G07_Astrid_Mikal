@@ -66,8 +66,8 @@ class BioSim:
         self._fit_axis = None
         self._age_ax = None
         self._age_axis = None
-        self.weight_ax = None
-        self.weight_axis = None
+        self._weight_ax = None
+        self._weight_axis = None
 
 
     def set_animal_parameters(self, species, params):
@@ -100,14 +100,8 @@ class BioSim:
             self.carnivore_list.append(new_island_population['Carnivore'])
 
             if self._fit_ax is not None:
-                self._fit_ax.clear()
-                # self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step",
-                #                   color="g")
-                # self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step",
-                #                   color="r")
-                # self._fit_ax.title.set_text("Histogram of fitness")
                 self.up_hist(num_years)
-            # self.Visualization.update_hist(fit_list=self.island.fitness_list()[0])
+
             if num_years % vis_years == 0:
                 self.update_graphics()
 
@@ -146,38 +140,6 @@ class BioSim:
     def make_movie(self, movie_fmt):
         pass
 
-    # @property
-    # def fitness_list(self):
-    #     herb_lt = [Animals.get_fitness() for cell in np.asarray(self.island.map.values()).flatten()
-    #                for herbs in cell.present_herbivores]
-    #     carn_lt = [Animals.phi for cell in np.asarray(self.object).flatten()
-    #                for Animals in cell.num_carnivores]
-    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
-    #
-    # @property
-    # def age_list(self):
-    #     herb_lt = [Animals.get_age() for cell in np.asarray(self.object).flatten()
-    #                for Animals in cell.num_herbivores]
-    #     carn_lt = [Animals.age for cell in np.asarray(self.object).flatten()
-    #                for Animals in cell.num_carnivores]
-    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
-    #
-    # @property
-    # def weight_list(self):
-    #     herb_lt = [Animals.get_weight() for cell in np.asarray(self.object).flatten()
-    #                for Animals in cell.num_herbivores]
-    #     carn_lt = [Animals.get_weight() for cell in np.asarray(self.object).flatten()
-    #                for Animals in cell.num_carnivores]
-    #     return {"Herbivore": herb_lt, {"Carnivore"}: carn_lt}
-
-    # def update_plot_hist(self, fit_list=None):
-    #     self._fit_ax = self._fig.add_subplot(6, 3, 16)
-    #     self._fit_ax.title.set_text("Hist FIT")
-    #     self._fit_ax.hist(self.fitness_list()["Herbivore"], bins=10, histtype="step")
-    #
-    # def update_hist(self):
-    #     pass
-
     def set_up_graphics(self):
         if self._fig is None:
             self._fig = plt.figure(figsize=(16, 9))
@@ -207,15 +169,17 @@ class BioSim:
             self._carn_heat_ax.set_title("Carnivore movement on Rossumøya")
 
         if self._fit_axis is None:
-            self._fit_ax = self._fig.add_subplot(3, 2, 5)
-            # self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step", color="g")
-            # self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step", color="r")
-            # self._fit_ax.set_title("Histogram of fitness")
-        #     self._fit_ax = self._fig.add_subplot(3, 2, 5)
+            self._fit_ax = self._fig.add_subplot(4, 4, 14)
+
+        if self._age_axis is None:
+            self._age_ax = self._fig.add_subplot(4, 4, 15)
+
+        if self._weight_axis is None:
+            self._weight_ax = self._fig.add_subplot(4, 4, 16)
 
 
     def plot_island_map(self):
-        #kart = """WWW\nWLW\nWWW"""
+
         island_string = self.island_map
         string_map = textwrap.dedent(island_string)
         string_map.replace('\n', ' ')
@@ -229,7 +193,6 @@ class BioSim:
         kart_rgb = [[rgb_value[column] for column in row]
                     for row in string_map.splitlines()]
 
-        #fig = plt.figure()
         self._map = self._fig.add_subplot(3, 2, 1)
 
         self._map.imshow(kart_rgb)
@@ -325,13 +288,6 @@ class BioSim:
             plt.colorbar(self._carn_heat_axis, ax=self._carn_heat_ax)
         else:
             self._carn_heat_axis.set_data(carnivore_array)
-    #
-    # def hist(self):
-    #
-    #     for animal  in self.:
-    #         all_herb = animal['Herbivore']
-    #         all_carn = animal['Carnivore']
-    #
 
     def up_hist(self, num_years):
         fit_bins = (int(self.hist_specs["fitness"]["max"]/self.hist_specs["fitness"]["delta"]))
@@ -342,13 +298,22 @@ class BioSim:
                           histtype="step", color="r", range=(0,self.hist_specs["fitness"]["max"]))
         self._fit_ax.title.set_text("Histogram of fitness")
 
-        age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"])
+        age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"]))
         self._age_ax.clear()
-        self._age_ax.hist(self.island.age_list()[0], bins=fit_bins,
+
+        self._age_ax.hist(self.island.age_list()[0], bins=age_bins,
                           histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
-        self._age_ax.hist(self.island.age_list()[1], bins=fit_bins,
+        self._age_ax.hist(self.island.age_list()[1], bins=age_bins,
                           histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
-        self._age_ax.title.set_text("Histogram of fitness")
+        self._age_ax.title.set_text("Histogram of age")
+
+        weight_bins = (int(self.hist_specs["weight"]["max"] / self.hist_specs["weight"]["delta"]))
+        self._weight_ax.clear()
+        self._weight_ax.hist(self.island.weight_list()[0], bins=weight_bins,
+                          histtype="step", color="g", range=(0, self.hist_specs["weight"]["max"]))
+        self._weight_ax.hist(self.island.weight_list()[1], bins=weight_bins,
+                          histtype="step", color="r", range=(0, self.hist_specs["weight"]["max"]))
+        self._weight_ax.title.set_text("Histogram of weight")
 
     def update_graphics(self):
         # fig = plt.figure()
@@ -381,21 +346,17 @@ if __name__ == '__main__':
 
     sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
                  seed=123456,
-                 hist_specs={'fitness': {'max': 1.0, 'delta': 0.05}})
+                 hist_specs={'fitness': {'max': 1.0, 'delta': 0.05},
+                                'age': {'max': 60.0, 'delta': 2},
+                                'weight': {'max': 60, 'delta': 2}},)
 
     sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
     sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
                                             'omega': 0.3, 'F': 65,
                                             'DeltaPhiMax': 9.})
     sim.set_landscape_parameters('L', {'f_max': 600})
-    # print(sim.heat_map_herbivore())
+
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=300, vis_years=1, img_years=2000)
     #
-    # sim.add_population(population=ini_herbs)
-    # print(sim.hist())
-
-    # {'weight': {'max': 80, 'delta': 2}, 'fitness': {'max': 1.0, 'delta': 0.05}}
-
-
