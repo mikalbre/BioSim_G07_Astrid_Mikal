@@ -6,9 +6,6 @@ import numpy as np
 from biosim import island as island
 from biosim import landscape as Landscape
 from biosim.animals import Animals, Herbivore, Carnivore
-from biosim.visualization import Visualization
-
-from matplotlib.ticker import TickHelper
 
 import pandas as pd
 import matplotlib.pyplot as plt

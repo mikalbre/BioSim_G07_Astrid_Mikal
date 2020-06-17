@@ -4,6 +4,8 @@ from biosim.animals import Animals, Herbivore, Carnivore
 import pytest
 from pytest import approx
 
+from scipy.stats import stats
+
 
 class Test_Animals:
     # @pytest.fixture
@@ -147,7 +149,14 @@ class Test_Animals:
         phi = herb.phi
         assert herb.get_fitness() == phi
 
-
+    @pytest.mark.parametrize('Species', [Herbivore, Carnivore])
+    def test_initial_weight_gaussian_dist(self, Species):
+        list_of_initial_weights = []
+        for _ in range(1000):
+            s = Species()
+            list_of_initial_weights.append(s.weight)
+            ka_statistics, p_value = stats.kstest(list_of_initial_weights, 'norm')
+            assert p_value < 0.01
 
 class TestHerbivore:
     def test_feeding(self):
