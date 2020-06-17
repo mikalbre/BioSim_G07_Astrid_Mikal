@@ -36,10 +36,10 @@ class CreateIsland:
         #self.total_data_herb = []
         #self.total_data_carn = []
 
-
-        self.stat = stat
-        if self.stat:
-            self.stat = {}
+        #
+        # self.stat = stat
+        # if self.stat:
+        #     self.stat = {}
 
     @property
     def num_animals(self):

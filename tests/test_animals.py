@@ -87,11 +87,11 @@ class Test_Animals:
     def test_procreation(self, mocker):
         herb = Herbivore(4, 30)
         herb_born = herb.procreation(1)
-        assert herb_born == 0
+        assert herb_born is None
 
         carn = Carnivore(4, 30)
         carn_born = carn.procreation(1)
-        assert carn_born == 0
+        assert carn_born is None
 
         herb = Herbivore(4, 30)
         weight = herb.weight
@@ -99,7 +99,7 @@ class Test_Animals:
         assert weight < lose_weight
         for _ in range(10):
             procreation = herb.procreation(10)
-            assert procreation == 0
+            assert procreation is None
 
         herb = Herbivore(5, 40)
         phi = herb.phi
