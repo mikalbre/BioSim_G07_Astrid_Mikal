@@ -155,7 +155,7 @@ class CreateIsland:
             loc = map_location['loc']  # Gets a coordinate X: (1, 1)
             if loc not in self.map.keys():  # Checks if (1,1) is key in self.map
                 raise ValueError("Location does not exist")
-            if not self.map[loc].accessability:
+            if not self.map[loc].accessibility:
                 raise ValueError("Animals not allowed to enter Water")
 
             pop = map_location['pop']  # Takes out 'pop' as key and gets the value
@@ -205,7 +205,7 @@ class CreateIsland:
         for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
 
 
-            if cell.accessability is True:
+            if cell.accessibility is True:
                 neighboring_cells = self.migration_neighboring_cells(loc)
 
 
