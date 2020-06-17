@@ -8,8 +8,6 @@ from biosim import landscape as Landscape
 from biosim.animals import Animals, Herbivore, Carnivore
 from biosim.visualization import Visualization
 
-from matplotlib.ticker import TickHelper
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import textwrap
@@ -25,7 +23,6 @@ class BioSim:
                  ini_pop,
                  seed,
                  hist_specs=None,
-                 stat = False,
                  ymax_animals=None,
                  cmax_animals=None,
                  img_base=None,
@@ -44,6 +41,7 @@ class BioSim:
         self.carnivore_list = [self.island.num_animals_per_species['Carnivore']]
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
+        self.hist_specs = hist_specs
 
         self.img_base = img_base
         self.img_fmt = img_fmt
@@ -103,13 +101,13 @@ class BioSim:
 
             if self._fit_ax is not None:
                 self._fit_ax.clear()
-                self._fit_ax = self._fig.add_subplot(3, 2, 5)
-                self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step",
-                                  color="g")
-                self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step",
-                                  color="r")
-                self._fit_ax.title.set_text("Historgram of fitness")
-
+                # self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step",
+                #                   color="g")
+                # self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step",
+                #                   color="r")
+                # self._fit_ax.title.set_text("Histogram of fitness")
+                self.up_hist(num_years)
+            # self.Visualization.update_hist(fit_list=self.island.fitness_list()[0])
             if num_years % vis_years == 0:
                 self.update_graphics()
 
@@ -188,7 +186,7 @@ class BioSim:
         # if self._fit_ax is None:
         #     self.update_plot_hist(fit_list=self.fitness_list)
 
-        if self._map is None:  # MAP
+        if self._map is None:
             self.plot_island_map()
             self._map.set_title("Landscape of Rossumøya")
 
@@ -209,11 +207,10 @@ class BioSim:
             self._carn_heat_ax.set_title("Carnivore movement on Rossumøya")
 
         if self._fit_axis is None:
-
             self._fit_ax = self._fig.add_subplot(3, 2, 5)
             # self._fit_ax.hist(self.island.fitness_list()[0], bins=10, histtype="step", color="g")
             # self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step", color="r")
-            # self._fit_ax.title.set_text("Historgram of fitness")
+            # self._fit_ax.set_title("Histogram of fitness")
         #     self._fit_ax = self._fig.add_subplot(3, 2, 5)
 
 
@@ -283,7 +280,6 @@ class BioSim:
             ynew = np.full(xnew.shape, np.nan)
             self.herbivore_line.set_data((np.hstack((x_data, xnew)), np.hstack((y_data, ynew))))
 
-
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))],
                               self.herbivore_list, 'b-')
@@ -337,9 +333,22 @@ class BioSim:
     #         all_carn = animal['Carnivore']
     #
 
-    # def up_hist(self, num_years):
-    #     if self._fit_ax is not None:
+    def up_hist(self, num_years):
+        fit_bins = (int(self.hist_specs["fitness"]["max"]/self.hist_specs["fitness"]["delta"]))
+        self._fit_ax.clear()
+        self._fit_ax.hist(self.island.fitness_list()[0], bins=fit_bins,
+                          histtype="step", color="g", range=(0,self.hist_specs["fitness"]["max"]))
+        self._fit_ax.hist(self.island.fitness_list()[1], bins=fit_bins,
+                          histtype="step", color="r", range=(0,self.hist_specs["fitness"]["max"]))
+        self._fit_ax.title.set_text("Histogram of fitness")
 
+        age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"])
+        self._age_ax.clear()
+        self._age_ax.hist(self.island.age_list()[0], bins=fit_bins,
+                          histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
+        self._age_ax.hist(self.island.age_list()[1], bins=fit_bins,
+                          histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
+        self._age_ax.title.set_text("Histogram of fitness")
 
     def update_graphics(self):
         # fig = plt.figure()
@@ -372,7 +381,7 @@ if __name__ == '__main__':
 
     sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
                  seed=123456,
-                 )
+                 hist_specs={'fitness': {'max': 1.0, 'delta': 0.05}})
 
     sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
     sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
@@ -386,5 +395,7 @@ if __name__ == '__main__':
     #
     # sim.add_population(population=ini_herbs)
     # print(sim.hist())
+
+    # {'weight': {'max': 80, 'delta': 2}, 'fitness': {'max': 1.0, 'delta': 0.05}}
 
 
