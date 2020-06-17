@@ -21,28 +21,25 @@ class CreateIsland:
     def __init__(self,
                  geography_island_string,
                  initial_population,
-                 stat = False):
+                 stat=False):
 
-        self.year_num = 0  # years simulated
+        self.year_num = 0
 
         self.map = self.make_map(geography_island_string)  # simulation file
         self.add_population(initial_population)  # simulation file
 
-        self.len_map_x = None
-        self.len_map_y = None
+        #self.len_map_x = None
+        #self.len_map_y = None
 
-        self.pop_each_cell = []
+        #self.pop_each_cell = []
 
-        self.total_data_herb = []
-        self.total_data_carn = []
+        #self.total_data_herb = []
+        #self.total_data_carn = []
 
 
         self.stat = stat
         if self.stat:
             self.stat = {}
-
-        #geography_island_string_map = geography_island_string.strip()
-        #geography_island_string = geography_island_string_map.strip().split('\n')
 
     @property
     def num_animals(self):
@@ -72,8 +69,8 @@ class CreateIsland:
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
-        self.total_data_herb.append(num_animals_per_species["Herbivore"])
-        self.total_data_carn.append(num_animals_per_species["Carnivore"])
+        #self.total_data_herb.append(num_animals_per_species["Herbivore"])
+        #self.total_data_carn.append(num_animals_per_species["Carnivore"])
 
         return num_animals_per_species
 

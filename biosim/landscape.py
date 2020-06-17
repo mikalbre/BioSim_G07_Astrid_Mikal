@@ -30,18 +30,6 @@ class SingleCell:
 
         """
 
-        # if not isinstance(parameter, dict):
-        #     raise TypeError("Parameter must be type dict")
-        #
-        # #cls.params.update(parameter)  # Trenger?
-        #
-        # for iterators in parameter:
-        #     if iterators in cls.params:
-        #         if iterators == 'f_max' and parameter[iterators] < 0:
-        #             raise ValueError("f_max cannot be negative")
-        #     else:
-        #         raise ValueError("This specific parameter not defined for this cell")
-
         if not isinstance(parameter, dict):
             raise TypeError("Parameter must be type dict")
 
@@ -49,10 +37,8 @@ class SingleCell:
             if param in cls.params:
                 if param == 'f_max' and parameter[param] < 0:
                     raise ValueError("f_max cannot be negative")
-                #cls.params[param] = parameter[param]
             else:
                 raise TypeError("This specific parameter not defined for this cell")
-        #cls.params.update(parameter)
 
         accessability_boolean = False
         if accessability:
@@ -165,31 +151,30 @@ class SingleCell:
 
         for herb in self.present_herbivores:
 
-            if  not herb.has_migrated  and herb.prob_migrate():  # If it migrates
-                chosen_cell = random.choice(neighboring_cells)  # ((2,1), Water)
+            if not herb.has_migrated and herb.prob_migrate():
+                chosen_cell = random.choice(neighboring_cells)
                 new_loc = chosen_cell[0]
                 landscape_type = chosen_cell[1]
                 #print(hex(id(landscape_type)))
-                if isinstance(landscape_type, Water):  # So, Water != Water? NOT IN HERE
+                if isinstance(landscape_type, Water):
                     continue
                 else:
                     migrated_herb.append((new_loc, herb))
             herb.set_migration_true()
-                      # Updates that animal has move
         self.present_herbivores = [herb for herb in self.present_herbivores
                                    if herb not in migrated_herb]
 
         for carn in self.present_carnivores:
 
-            if not carn.has_migrated and carn.prob_migrate() :
-                chosen_cell = random.choice(neighboring_cells)  # X: [((2, 2), Lowland)]
+            if not carn.has_migrated and carn.prob_migrate():
+                chosen_cell = random.choice(neighboring_cells)
                 new_loc = chosen_cell[0]
                 landscape_type = chosen_cell[1]
                 if isinstance(landscape_type, Water):
                     continue
                 else:
                     migrated_carn.append((new_loc, carn))
-            carn.set_migration_true()  # Updates that animal has moved
+            carn.set_migration_true()
 
         self.present_carnivores = [carn for carn in self.present_carnivores
                                    if carn not in migrated_carn]
@@ -346,37 +331,37 @@ class Water(SingleCell):
         self.available_fodder = self.params["f_max"]
 
 
-if __name__ == "__main__":
-    random.seed(2)
-    c = Lowland()
-    poph = [{'species': 'Herbivore',
-            'age': 5,
-            'weight': 20} for _ in range(50)
-            ]
-    popc = [{'species': 'Carnivore',
-            'age': 5,
-             'weight': 20} for _ in range(20)
-            ]
-
-    print(f"fodder: {c.get_fodder()}")
-    c.animals_allocate(poph)
-    # c.animals_allocate(popc)
-    # print(f"num_an herb: {len(c.present_herbivores)}")
-    # print(f"num_an carn: {len(c.present_carnivores)}")
-
-    # if years == 50:
-    c.animals_allocate(popc)
-
-
-    for j in range(10):
-        for years in range(200):
-            c.eat()
-            c.procreation()
-            c.aging()
-            c.animal_death()
-        print("______ Etter syklus ______")
-        print(f'Herb num: {len(c.present_herbivores)}')
-        print(f'Carn num: {len(c.present_carnivores)}')
-
-        #print(c.present_herbivores)
-        #print(c.present_carnivores)
+# if __name__ == "__main__":
+#     random.seed(2)
+#     c = Lowland()
+#     poph = [{'species': 'Herbivore',
+#             'age': 5,
+#             'weight': 20} for _ in range(50)
+#             ]
+#     popc = [{'species': 'Carnivore',
+#             'age': 5,
+#              'weight': 20} for _ in range(20)
+#             ]
+#
+#     print(f"fodder: {c.get_fodder()}")
+#     c.animals_allocate(poph)
+#     # c.animals_allocate(popc)
+#     # print(f"num_an herb: {len(c.present_herbivores)}")
+#     # print(f"num_an carn: {len(c.present_carnivores)}")
+#
+#     # if years == 50:
+#     c.animals_allocate(popc)
+#
+#
+#     for j in range(10):
+#         for years in range(200):
+#             c.eat()
+#             c.procreation()
+#             c.aging()
+#             c.animal_death()
+#         print("______ Etter syklus ______")
+#         print(f'Herb num: {len(c.present_herbivores)}')
+#         print(f'Carn num: {len(c.present_carnivores)}')
+#
+#         #print(c.present_herbivores)
+#         #print(c.present_carnivores)

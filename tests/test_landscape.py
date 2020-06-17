@@ -6,6 +6,7 @@ import pytest
 import random
 random.seed(1)
 
+
 class TestSingleClass:
 
     # @pytest.fixture
@@ -33,10 +34,7 @@ class TestSingleClass:
         with pytest.raises(TypeError):
             Lowland().cell_parameter(params)
 
-        params = {'f_max': 10}
-        accessability = True
-        with pytest.raises(ValueError):
-            SingleCell.cell_parameter(params, accessability)
+# test accessibility
 
     def test_init(self):
         cell = SingleCell()
@@ -130,8 +128,6 @@ class TestSingleClass:
         assert lowland.available_fodder == 0
 
     def test_feed_carn_with_herb(self):
-        # mocker.patch('random.random', return_value=0.8)
-
         lowland = Lowland()
 
         lowland.animals_allocate([{'species': 'Herbivore', 'age': 6, 'weight': 20},
@@ -186,8 +182,26 @@ class TestSingleClass:
         assert num_herb < num_herb_after_procreation
 
 
-    def test_migration(self):
-        pass
+    def test_migration(self, mocker):
+        #mocker.patch("random.choice", return_value=0)
+        cell = SingleCell()
+        neighbor_cells = [((10, 10), Water),
+                          ((10, 10), Water), ((10, 10), Water),  ((10, 10), Water)]
+        herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
+        assert isinstance(herb_migrate, list)
+        assert isinstance(carn_migrate, list)
+
+        carn = Carnivore()
+        carn.has_migrated = False
+        cell.present_carnivores.append(carn)
+        herb = Herbivore()
+        cell.present_herbivores.append(herb)
+        herb.has_migrated = False
+
+        herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
+        assert len(herb_migrate + carn_migrate) > 0
+        assert carn.has_migrated is True
+        assert carn.has_migrated is True
 
     def test_add_herb_migrated(self):
         cell = Lowland()
@@ -261,6 +275,31 @@ class TestSingleClass:
         lowland.animal_death()
         assert carn_not_dying in lowland.present_herbivores
 
+    def test_num_herbivores(self):
+        lowland = Lowland()
+        ini_animal = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_animal)
+        num_herb = lowland.num_herbivores
+        assert num_herb > 0
+
+    def test_num_carnivores(self):
+        lowland = Lowland()
+        ini_animal = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_animal)
+        num_carn = lowland.num_carnivores
+        assert num_carn > 0
+
+    def test_num_animals(self):
+        lowland = Lowland()
+        ini_herb = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        ini_carn = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_herb)
+        lowland.animals_allocate(ini_carn)
+        num_animals = lowland.num_animals
+        assert num_animals > 0
+
+
+
 
 class TestHighland:
     def test_init(self):
@@ -278,6 +317,11 @@ class TestLowland:
         assert type(lowland.present_carnivores) is list
         assert lowland.get_fodder() == 800
 
+    def test_grow(self):
+        lowland = Lowland()
+        lowland.fodder_regrow()
+        assert lowland.get_fodder() == 800
+
 
 class TestDesert:
     def test_init(self):
@@ -286,12 +330,23 @@ class TestDesert:
         assert type(desert.present_carnivores) is list
         assert desert.get_fodder() == 0
 
+    def test_grow(self):
+        desert = Desert()
+        desert.fodder_regrow()
+        assert desert.get_fodder() == 0
+
 
 class TestWater:
     def test_init(self):
         water = Water()
         assert type(water.present_herbivores) is list
         assert type(water.present_carnivores) is list
+        assert water.get_fodder() == 0
+
+    def test_grow(self):
+        water = Water()
+        assert water.get_fodder() == 0
+        water.fodder_regrow()
         assert water.get_fodder() == 0
 
 # available fixtures: cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, doctest_namespace, mocker, module_mocker, monkeypatch, package_mocker, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, session_mocker, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
