@@ -339,27 +339,26 @@ class BioSim:
 
 if __name__ == '__main__':
     plt.ion()
-    default_map = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWHHHHHHHHHWWLLLLLLWWW\nWHHHHHLLLLLLLLLLLLWWW\nWHHHHHLLLDDLLLHLLLWWW\nWHHLLLLLDDDLLLHHHHWWW\nWWHHHHLLLDDLLLHWWWWWW\nWHHHLLLLLDDLLLLLLLWWW\nWHHHHLLLLDDLLLLWWWWWW\nWWHHHHLLLLLLLLWWWWWWW\nWWWHHHHLLLLLLLWWWWWWW\nWWWWWWWWWWWWWWWWWWWWW"""
-
-    ini_herbs = [{'loc': (3, 10),
+    # default_map = """WWWWWWWWWWWWWWWWWWWWW\nWWWWWWWWHWWWWLLLLLLLW\nWHHHHHLLLLWWLLLLLLLWW\nWHHHHHHHHHWWLLLLLLWWW\nWHHHHHLLLLLLLLLLLLWWW\nWHHHHHLLLDDLLLHLLLWWW\nWHHLLLLLDDDLLLHHHHWWW\nWWHHHHLLLDDLLLHWWWWWW\nWHHHLLLLLDDLLLLLLLWWW\nWHHHHLLLLDDLLLLWWWWWW\nWWHHHHLLLLLLLLWWWWWWW\nWWWHHHHLLLLLLLWWWWWWW\nWWWWWWWWWWWWWWWWWWWWW"""
+    default_map = """WWWWWWWWWW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWDDDDDDDDW\nWWWWWWWWWW"""
+    ini_herbs = [{'loc': (5, 5),
                   'pop': [{'species': 'Herbivore',
                            'age': 5,
-                           'weight': 20}
-                          for _ in range(150)]}]
-    ini_carns = [{'loc': (3, 10),
+                           'weight': 50}
+                          for _ in range(1000)]}]
+    ini_carns = [{'loc': (5, 5),
                   'pop': [{'species': 'Carnivore',
                            'age': 5,
-                           'weight': 20}
-                          for _ in range(40)]}]
+                           'weight': 50}
+                          for _ in range(1000)]}]
 
     sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
                  seed=12345,
                  )
 
-    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
-    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
-                                            'omega': 0.3, 'F': 65,
-                                            'DeltaPhiMax': 9.})
+    sim.set_animal_parameters('Herbivore', {'mu':  1, 'omega': 0, "gamma": 0, "a_half": 1000})
+    sim.set_animal_parameters('Carnivore', {'a_half': 1000, 'gamma': 0,
+                                            'omega': 0, 'F': 0, "mu": 0})
     sim.set_landscape_parameters('L', {'f_max': 700})
     # print(sim.heat_map_herbivore())
     sim.simulate(num_years=100, vis_years=1, img_years=2000)

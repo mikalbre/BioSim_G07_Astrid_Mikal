@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import random
-import subprocess
-import numpy as np
+
 from biosim import island as island
 from biosim import landscape as Landscape
 from biosim.animals import Animals, Herbivore, Carnivore
 from biosim.visualization import Visualization
 
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import textwrap
+import random
+import subprocess
+import numpy as np
+
+_FFMPEG_BINARY = "ffmpeg"
+_CONVERT_BINARY = "magick"
+
+_DEFAULT_GRAPHICS_DIR = os.path.join("..", "data")
+_DEFAULT_GRAPHICS_NAME = "dv"
+
+_DEFAULT_MOVIE_FORMAT = "mp4"
 
 
 class BioSim:
@@ -25,7 +35,8 @@ class BioSim:
                  hist_specs=None,
                  ymax_animals=None,
                  cmax_animals=None,
-                 img_base=None,
+                 img_dir=None,
+                 img_name=_DEFAULT_GRAPHICS_NAME,
                  img_fmt='png'):
 
         random.seed(seed)
@@ -43,9 +54,14 @@ class BioSim:
         self.cmax_animals = cmax_animals
         self.hist_specs = hist_specs
 
-        self.img_base = img_base
+        if img_dir is not None:
+            self.img_base = os.path.join(img_dir, img_name)
+        else:
+            self.img_base = None
+
         self.img_fmt = img_fmt
         self._img_ctr = 0
+
         self.num_years = None
 
         self.herbivore_line = None
@@ -99,8 +115,10 @@ class BioSim:
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
 
-            if self._fit_ax is not None:
+            if self._age_ax is not None:
                 self.up_hist(num_years)
+
+            self._fig.suptitle(f"Year:{self.num_years}")
 
             if num_years % vis_years == 0:
                 self.update_graphics()
@@ -137,12 +155,9 @@ class BioSim:
         df_sim = pd.DataFrame.from_dict(dict_for_df)
         return df_sim
 
-    def make_movie(self, movie_fmt):
-        pass
-
     def set_up_graphics(self):
         if self._fig is None:
-            self._fig = plt.figure(figsize=(16, 9))
+            self._fig = plt.figure(figsize=(12, 6))
             self._fig.suptitle("Rossumøya", fontweight="bold")
 
         # if self._fit_ax is None:
@@ -153,7 +168,7 @@ class BioSim:
             self._map.set_title("Landscape of Rossumøya")
 
         if self._pop_ax is None:
-            self._pop_ax = self._fig.add_subplot(3, 2, 2)
+            self._pop_ax = self._fig.add_subplot(4, 3, 3)
             if self.ymax_animals is not None:
                 self._pop_ax.set_ylim(0, self.ymax_animals)
 
@@ -176,6 +191,7 @@ class BioSim:
 
         if self._weight_axis is None:
             self._weight_ax = self._fig.add_subplot(4, 4, 16)
+
 
 
     def plot_island_map(self):
@@ -315,6 +331,12 @@ class BioSim:
                           histtype="step", color="r", range=(0, self.hist_specs["weight"]["max"]))
         self._weight_ax.title.set_text("Histogram of weight")
 
+        self._map.set_title(f"Year:{num_years}")
+
+
+
+
+
     def update_graphics(self):
         # fig = plt.figure()
         # ax = fig.add_subplot(1, 1, 1)
@@ -325,9 +347,42 @@ class BioSim:
         self.plot_population_graph()
         self.update_heatmap()
         plt.pause(0.1)
+        self._fig.suptitle("ÅR: {}".format(self.num_years))
 
     def save_graphics(self):
-        pass
+        if self.img_base is None:
+            return
+
+        plt.savefig(f"{self.img_base}_{self._img_ctr:05d}.{self.img_fmt}")
+        self._img_ctr += 1
+
+    def make_movie(self, movie_fmt):
+        if self.img_base is None:
+            raise RuntimeError("No filename defined.")
+
+        if movie_fmt == "mp4":
+            try:
+                subprocess.check_call([_FFMPEG_BINARY,
+                                       "-framerate", "5", "-i",
+                                       "{}_%05d.png".format(self.img_base),
+                                       "-y",
+                                       "-profile:v", "baseline",
+                                       "-level", "3.0",
+                                       "-pix_fmt", "yuv420p",
+                                       "{}.{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError( "ERROR: ffmpeg failed with: {)". format(err))
+        elif movie_fmt == "gif":
+            try:
+                subprocess.check_call([_CONVERT_BINARY,
+                                       "-delay", "1",
+                                       "-loop", "0",
+                                       "{}.{]".format(self.img_base),
+                                       "{].{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError("ERROR: converted failed: " + movie_fmt)
+        else:
+            raise ValueError("Uknown movie format: " + movie_fmt)
 
 if __name__ == '__main__':
     plt.ion()
@@ -354,9 +409,10 @@ if __name__ == '__main__':
     sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
                                             'omega': 0.3, 'F': 65,
                                             'DeltaPhiMax': 9.})
-    sim.set_landscape_parameters('L', {'f_max': 600})
+    sim.set_landscape_parameters('L', {'f_max': 700})
 
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=300, vis_years=1, img_years=2000)
-    #
+    sim.make_movie(movie_fmt="mp4")
+
