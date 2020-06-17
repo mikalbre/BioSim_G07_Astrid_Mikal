@@ -24,6 +24,8 @@ class BioSim:
                  island_map,
                  ini_pop,
                  seed,
+                 hist_specs=None,
+                 stat = False,
                  ymax_animals=None,
                  cmax_animals=None,
                  img_base=None,
@@ -34,6 +36,7 @@ class BioSim:
         self.last_year_simulated = 0
         self.island_map = island_map
         self.ini_pop = ini_pop
+        self.hist_specs = hist_specs
         self.island = island.CreateIsland(geography_island_string=island_map,
                                           initial_population=ini_pop)
         self.object = self.island.make_map(geography_island_string=island_map)
@@ -283,11 +286,10 @@ class BioSim:
 
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))],
-                              self.herbivore_list, 'g-')
+                              self.herbivore_list, 'b-')
             self._pop_ax.plot([i for i in range(len(self.carnivore_list))],
-                              self.carnivore_list, 'r-')
+                              self.carnivore_list, 'g-')
             self._pop_ax.legend(['Herbivores', 'Carnivores'], loc='upper left')
-        #else:
 
     def update_population_graph(self, population):
         # Bruker get_data først, deretter set_data'
@@ -327,6 +329,13 @@ class BioSim:
             plt.colorbar(self._carn_heat_axis, ax=self._carn_heat_ax)
         else:
             self._carn_heat_axis.set_data(carnivore_array)
+    #
+    # def hist(self):
+    #
+    #     for animal  in self.:
+    #         all_herb = animal['Herbivore']
+    #         all_carn = animal['Carnivore']
+    #
 
     # def up_hist(self, num_years):
     #     if self._fit_ax is not None:
@@ -369,10 +378,13 @@ if __name__ == '__main__':
     sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
                                             'omega': 0.3, 'F': 65,
                                             'DeltaPhiMax': 9.})
-    sim.set_landscape_parameters('L', {'f_max': 700})
+    sim.set_landscape_parameters('L', {'f_max': 600})
     # print(sim.heat_map_herbivore())
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=300, vis_years=1, img_years=2000)
+    #
+    # sim.add_population(population=ini_herbs)
+    # print(sim.hist())
 
 

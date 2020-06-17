@@ -18,7 +18,10 @@ class CreateIsland:
                        "D": Desert,
                        "W": Water}
 
-    def __init__(self, geography_island_string, initial_population):
+    def __init__(self,
+                 geography_island_string,
+                 initial_population,
+                 stat = False):
 
         self.year_num = 0  # years simulated
 
@@ -32,6 +35,11 @@ class CreateIsland:
 
         self.total_data_herb = []
         self.total_data_carn = []
+
+
+        self.stat = stat
+        if self.stat:
+            self.stat = {}
 
         #geography_island_string_map = geography_island_string.strip()
         #geography_island_string = geography_island_string_map.strip().split('\n')
@@ -231,11 +239,9 @@ class CreateIsland:
     def death_animals(self):
         for cell in self.map.values():
             cell.animal_death()
-        #for pos, cell in self.map.items():
-        #   herb_death, carn_death = cell.animal_death()
-        #   if self.store_stats:
-        #       self.stats[self.year]['Herbivore']['death'][pos] = herb_death
-        #       self.stats[self.year]['Carnivore']['death'][pos] = carn_death
+          # if self.stat:
+          #     self.stat[self.year]['Herbivore']['death'][pos] = herb_death
+          #     self.stat[self.year]['Carnivore']['death'][pos] = carn_death
 
     def fitness_list(self):
         phi_list_herb = []
