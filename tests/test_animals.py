@@ -17,8 +17,8 @@ class Test_Animals:
     #     Animals.set_parameters(Animals.params)
 
     def test_set_parameters(self):
-        params = {'w_birth': -8.0, 'eta': 2, 'DeltaPhiMax': 0}
 
+        params = {'w_birth': -8.0, 'eta': 2, 'DeltaPhiMax': 0}
         with pytest.raises(ValueError):
             Herbivore().set_parameters(params)
 
@@ -34,11 +34,16 @@ class Test_Animals:
         with pytest.raises(ValueError):
             Carnivore().set_parameters(params)
 
+
+
     def test_init(self):
         herb = Herbivore(5, 3)
         isinstance(herb.age, int)
         assert herb.age == 5
         assert herb.weight >= 0
+
+        with pytest.raises(ValueError):
+           Herbivore(-2, 8). __init__()
 
         # carn = Carnivore(age=3.2, weight=5)
         # with pytest.raises(ValueError):
@@ -87,11 +92,11 @@ class Test_Animals:
     def test_procreation(self, mocker):
         herb = Herbivore(4, 30)
         herb_born = herb.procreation(1)
-        assert herb_born == 0
+        assert herb_born is None
 
         carn = Carnivore(4, 30)
         carn_born = carn.procreation(1)
-        assert carn_born == 0
+        assert carn_born is None
 
         herb = Herbivore(4, 30)
         weight = herb.weight
@@ -99,7 +104,7 @@ class Test_Animals:
         assert weight < lose_weight
         for _ in range(10):
             procreation = herb.procreation(10)
-            assert procreation == 0
+            assert procreation is None
 
         herb = Herbivore(5, 40)
         phi = herb.phi
