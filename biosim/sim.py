@@ -271,6 +271,7 @@ class BioSim:
         ydata = self.carnivore_line.get_data()
         ydata[self.num_years] = population
         self.carnivore_line.set_data(ydata)
+        self.carnivore_line.lege
 
         ydata = self.herbivore_line.get_data()
         ydata[self.num_years] = population
