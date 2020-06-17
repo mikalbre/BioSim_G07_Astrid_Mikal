@@ -162,7 +162,7 @@ class TestCreateIsland:
                                             Water()), ((2, 1), Water()), ((2, 3), Water())]
 
     def test_migrate_animals(self):
-        multi_string = "WWWW\nWLHW\nWLWW\nWWWW"
+        multi_string = "WWWW\nWLHW\nWHWW\nWWWW"
         pop = [{'loc': (2, 2), 'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                        for _ in range(30)]}]
         test_island = CreateIsland(multi_string, pop)

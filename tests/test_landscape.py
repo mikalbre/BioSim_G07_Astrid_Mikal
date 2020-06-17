@@ -38,9 +38,6 @@ class TestSingleClass:
         with pytest.raises(ValueError):
             SingleCell.cell_parameter(params, accessability)
 
-
-
-
     def test_init(self):
         cell = SingleCell()
         assert type(cell.present_herbivores) is list
