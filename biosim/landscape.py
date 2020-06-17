@@ -17,7 +17,7 @@ class SingleCell:
     The different types of landscape inherits from this class.
     """
 
-    params = None
+    params_dict = None
 
     @classmethod
     def cell_parameter(cls, parameter, accessibility=None):
@@ -39,11 +39,13 @@ class SingleCell:
             raise TypeError("Parameter must be type dict")
 
         for param in parameter:
-            if param in cls.params:
+            if param in cls.params_dict:
                 if param == 'f_max' and parameter[param] < 0:
                     raise ValueError("f_max cannot be negative")
             else:
                 raise TypeError("This specific parameter not defined for this cell")
+        cls.params_dict.update(parameter)
+
 
         accessibility_boolean = False
         if accessibility:
@@ -51,8 +53,8 @@ class SingleCell:
                 accessibility_boolean = True
             else:
                 raise ValueError('The only argument for passable is bool.')
-        if accessibility_boolean is True:
-            cls.params = accessibility
+        # if accessibility_boolean is True:
+        #     cls.params = accessibility
 
     def __init__(self):
         """
@@ -318,18 +320,18 @@ class Highland(SingleCell):
     """
 
     accessibility = True
-    params = {"f_max": 300}
+    params_dict = {"f_max": 300}
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
+        self.available_fodder = self.params_dict["f_max"]
 
     def fodder_regrow(self):
         """
         When called, the method restores the amount of available fodder to f_max.
         """
 
-        self.available_fodder = self.params["f_max"]
+        self.available_fodder = self.params_dict["f_max"]
 
 
 class Lowland(SingleCell):
@@ -340,18 +342,18 @@ class Lowland(SingleCell):
     """
 
     accessibility = True
-    params = {"f_max": 800}
+    params_dict = {"f_max": 800}
 
     def __init__(self):
         super().__init__()
-        self.available_fodder = self.params["f_max"]
+        self.available_fodder = self.params_dict["f_max"]
 
     def fodder_regrow(self):
         """
         Restores the amount of available fodder to f_max when this method is called.
         """
 
-        self.available_fodder = self.params["f_max"]
+        self.available_fodder = self.params_dict["f_max"]
 
 
 class Desert(SingleCell):
@@ -397,37 +399,37 @@ class Water(SingleCell):
         self.available_fodder = self.params["f_max"]
 
 #
-# if __name__ == "__main__":
-#     random.seed(2)
-#     c = Lowland()
-#     poph = [{'species': 'Herbivore',
-#             'age': 5,
-#             'weight': 20} for _ in range(50)
-#             ]
-#     popc = [{'species': 'Carnivore',
-#             'age': 5,
-#              'weight': 20} for _ in range(20)
-#             ]
-#
-#     print(f"fodder: {c.get_fodder()}")
-#     c.animals_allocate(poph)
-#     # c.animals_allocate(popc)
-#     # print(f"num_an herb: {len(c.present_herbivores)}")
-#     # print(f"num_an carn: {len(c.present_carnivores)}")
-#
-#     # if years == 50:
-#     c.animals_allocate(popc)
-#
-#
-#     for j in range(10):
-#         for years in range(200):
-#             c.eat()
-#             c.procreation()
-#             c.aging()
-#             c.animal_death()
-#         print("______ Etter syklus ______")
-#         print(f'Herb num: {len(c.present_herbivores)}')
-#         print(f'Carn num: {len(c.present_carnivores)}')
-#
-#         #print(c.present_herbivores)
-#         #print(c.present_carnivores)
+if __name__ == "__main__":
+    random.seed(1)
+    c = Lowland()
+    poph = [{'species': 'Herbivore',
+            'age': 5,
+            'weight': 20} for _ in range(50)
+            ]
+    popc = [{'species': 'Carnivore',
+            'age': 5,
+             'weight': 20} for _ in range(20)
+            ]
+    c.params_dict= {'f_max': 800}
+    print(f"fodder: {c.available_fodder}")
+    c.animals_allocate(poph)
+    # c.animals_allocate(popc)
+    # print(f"num_an herb: {len(c.present_herbivores)}")
+    # print(f"num_an carn: {len(c.present_carnivores)}")
+
+    # if years == 50:
+    c.animals_allocate(popc)
+
+
+    for j in range(10):
+        for years in range(200):
+            c.eat()
+            c.procreation()
+            c.aging()
+            c.animal_death()
+        print("______ Etter syklus ______")
+        print(f'Herb num: {len(c.present_herbivores)}')
+        print(f'Carn num: {len(c.present_carnivores)}')
+
+        #print(c.present_herbivores)
+        #print(c.present_carnivores)

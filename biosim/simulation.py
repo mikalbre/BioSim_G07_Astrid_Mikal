@@ -97,8 +97,8 @@ class BioSim:
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
 
-            # Visualization.update_histogram_fitness(self.island.fitness_list()[0],
-            #                                        self.island.fitness_list()[1])
+            if self._age_ax is not None:
+                self.up_hist(num_years)
 
             if num_years % vis_years == 0:
                 self.update_graphics()

@@ -63,7 +63,9 @@ class BioSim:
         self.img_fmt = img_fmt
         self._img_ctr = 0
 
-        self.num_years = None
+        # self.num_years = None
+        self.step = 0
+        self.final_year =None
 
         self.herbivore_line = None
         self.carnivore_line = None
@@ -104,9 +106,11 @@ class BioSim:
             Landscape.Lowland.cell_parameter(params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
+
         if img_years is None:
             img_years = vis_years
 
+        # self.final_year = self.step + num_years
         self.set_up_graphics()
         self.plot_island_map()
         self.num_years = num_years  # ??
@@ -116,18 +120,69 @@ class BioSim:
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
 
-            if self._age_axis is not None:
-                self.up_hist(num_years)
+            # if self._age_axis or self._fit_axis or self._weight_axis is not None:
+            #     self.up_hist(num_years)
 
-            self._fig.suptitle(f"Year:{self.num_years}")
+            # if self._age_ax is not None: #_ax for å PLOTTE
+            # self.up_hist(num_years)
 
+
+
+            # while self.step < self.final_year:
             if num_years % vis_years == 0:
                 self.update_graphics()
+                self.update_histogram_fitness(self.num_years)
+                self.update_histogram_age((self.num_years))
+                self.update_histogram_weight(self.num_years)
 
             if num_years % img_years == 0:
                 self.save_graphics()
 
+            # self.step += 1
+
             self.last_year_simulated += 1
+        # if img_years is None:
+        #     img_years = vis_years
+        #
+        # self.final_year = self.step + num_years
+        # self.set_up_graphics()
+        # self.plot_island_map()
+        # self.num_years = num_years  # ??
+        #
+
+        # self._fig.suptitle(f"Year:{self.num_years}")
+
+        # if num_years % vis_years == 0:
+        #     self.update_graphics()
+        #
+        # if num_years % img_years == 0:
+        #     self.save_graphics()
+        #
+        # self.last_year_simulated += 1
+        #     while self.step < self.final_year:
+        #         if self.step % vis_years == 0:
+        #             self.update_graphics()
+        #
+        #         if self.step % img_years == 0:
+        #             self.save_graphics()
+
+        # for _ in range(num_years):
+        #     new_island_population = self.island.simulate_one_year()
+        #     self.herbivore_list.append(new_island_population['Herbivore'])
+        #     self.carnivore_list.append(new_island_population['Carnivore'])
+        #
+        #     if self._age_ax is not None:
+        #         self.up_hist(num_years)
+        #
+        #     while self.step < self.final_year:
+        #         if self.step % vis_years == 0:
+        #             self.update_graphics()
+        #
+        #         if self.step % img_years == 0:
+        #             self.save_graphics()
+        #
+        #         self.step += 1
+        #         self._fig.suptitle(f"Year:{num_years}")
 
     def add_population(self, population):
         self.island.add_population(population)
@@ -161,9 +216,6 @@ class BioSim:
             self._fig = plt.figure(figsize=(12, 6))
             self._fig.suptitle("Rossumøya", fontweight="bold")
 
-        # if self._fit_ax is None:
-        #     self.update_plot_hist(fit_list=self.fitness_list)
-
         if self._map is None:
             self.plot_island_map()
             self._map.set_title("Landscape of Rossumøya")
@@ -192,6 +244,7 @@ class BioSim:
 
         if self._weight_axis is None:
             self._weight_ax = self._fig.add_subplot(4, 4, 16)
+
 
 
 
@@ -272,7 +325,7 @@ class BioSim:
         ydata = self.carnivore_line.get_data()
         ydata[self.num_years] = population
         self.carnivore_line.set_data(ydata)
-        self.carnivore_line.lege
+
 
         ydata = self.herbivore_line.get_data()
         ydata[self.num_years] = population
@@ -307,33 +360,90 @@ class BioSim:
         else:
             self._carn_heat_axis.set_data(carnivore_array)
 
-    def up_hist(self, num_years):
-        fit_bins = (int(self.hist_specs["fitness"]["max"]/self.hist_specs["fitness"]["delta"]))
-        self._fit_ax.clear()
-        self._fit_ax.hist(self.island.fitness_list()[0], bins=fit_bins,
-                          histtype="step", color="g", range=(0,self.hist_specs["fitness"]["max"]))
-        self._fit_ax.hist(self.island.fitness_list()[1], bins=fit_bins,
-                          histtype="step", color="r", range=(0,self.hist_specs["fitness"]["max"]))
-        self._fit_ax.title.set_text("Histogram of fitness")
+    def update_histogram_fitness(self, num_years):
+        if self.hist_specs is None:
+            self._fit_ax.clear()
+            self._fit_ax.hist(self.island.fitness_list()[0],
+                              histtype="step", color="g",)
+            self._fit_ax.hist(self.island.fitness_list()[1],
+                              histtype="step", color="r",)
+            self._fit_ax.title.set_text("Histogram of fitness")
+        else:
+            fit_bins = (int(self.hist_specs["fitness"]["max"] / self.hist_specs["fitness"]["delta"]))
+            self._fit_ax.clear()
+            self._fit_ax.hist(self.island.fitness_list()[0], bins=fit_bins,
+                              histtype="step", color="g",
+                              range=(0, self.hist_specs["fitness"]["max"]))
+            self._fit_ax.hist(self.island.fitness_list()[1], bins=fit_bins,
+                              histtype="step", color="r",
+                              range=(0, self.hist_specs["fitness"]["max"]))
+            self._fit_ax.title.set_text("Histogram of fitness")
 
-        age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"]))
-        self._age_ax.clear()
+    def update_histogram_age(self, num_years):
+        if self.hist_specs is None:
+            self._age_ax.clear()
 
-        self._age_ax.hist(self.island.age_list()[0], bins=age_bins,
-                          histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
-        self._age_ax.hist(self.island.age_list()[1], bins=age_bins,
-                          histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
-        self._age_ax.title.set_text("Histogram of age")
+            self._age_ax.hist(self.island.age_list()[0],
+                              histtype="step", color="g")
+            self._age_ax.hist(self.island.age_list()[1],
+                              histtype="step", color="r")
+            self._age_ax.title.set_text("Histogram of age")
+        else:
+            age_bins = (int(self.hist_specs["age"]["max"] / self.hist_specs["age"]["delta"]))
+            self._age_ax.clear()
+            self._age_ax.hist(self.island.age_list()[0], bins=age_bins,
+                              histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
+            self._age_ax.hist(self.island.age_list()[1], bins=age_bins,
+                              histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
+            self._age_ax.title.set_text("Histogram of age")
 
-        weight_bins = (int(self.hist_specs["weight"]["max"] / self.hist_specs["weight"]["delta"]))
-        self._weight_ax.clear()
-        self._weight_ax.hist(self.island.weight_list()[0], bins=weight_bins,
-                          histtype="step", color="g", range=(0, self.hist_specs["weight"]["max"]))
-        self._weight_ax.hist(self.island.weight_list()[1], bins=weight_bins,
-                          histtype="step", color="r", range=(0, self.hist_specs["weight"]["max"]))
-        self._weight_ax.title.set_text("Histogram of weight")
+    def update_histogram_weight(self, num_years):
+        if self.hist_specs is None:
+            self._weight_ax.clear()
+            self._weight_ax.hist(self.island.weight_list()[0],
+                                 histtype="step", color="g")
+            self._weight_ax.hist(self.island.weight_list()[1],
+                                 histtype="step", color="r")
+            self._weight_ax.title.set_text("Histogram of weight")
+        else:
+            weight_bins = (int(self.hist_specs["weight"]["max"] / self.hist_specs["weight"]["delta"]))
+            self._weight_ax.clear()
+            self._weight_ax.hist(self.island.weight_list()[0], bins=weight_bins,
+                                 histtype="step", color="g",
+                                 range=(0, self.hist_specs["weight"]["max"]))
+            self._weight_ax.hist(self.island.weight_list()[1], bins=weight_bins,
+                                 histtype="step", color="r",
+                                 range=(0, self.hist_specs["weight"]["max"]))
+            self._weight_ax.title.set_text("Histogram of weight")
 
-        self._map.set_title(f"Year:{num_years}")
+
+    # def up_hist(self, num_years):
+    #     fit_bins = (int(self.hist_specs["fitness"]["max"]/self.hist_specs["fitness"]["delta"]))
+    #     self._fit_ax.clear()
+    #     self._fit_ax.hist(self.island.fitness_list()[0], bins=fit_bins,
+    #                       histtype="step", color="g", range=(0,self.hist_specs["fitness"]["max"]))
+    #     self._fit_ax.hist(self.island.fitness_list()[1], bins=fit_bins,
+    #                       histtype="step", color="r", range=(0,self.hist_specs["fitness"]["max"]))
+    #     self._fit_ax.title.set_text("Histogram of fitness")
+    #
+    #     age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"]))
+    #     self._age_ax.clear()
+    #
+    #     self._age_ax.hist(self.island.age_list()[0], bins=age_bins,
+    #                       histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
+    #     self._age_ax.hist(self.island.age_list()[1], bins=age_bins,
+    #                       histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
+    #     self._age_ax.title.set_text("Histogram of age")
+    #
+    #     weight_bins = (int(self.hist_specs["weight"]["max"] / self.hist_specs["weight"]["delta"]))
+    #     self._weight_ax.clear()
+    #     self._weight_ax.hist(self.island.weight_list()[0], bins=weight_bins,
+    #                       histtype="step", color="g", range=(0, self.hist_specs["weight"]["max"]))
+    #     self._weight_ax.hist(self.island.weight_list()[1], bins=weight_bins,
+    #                       histtype="step", color="r", range=(0, self.hist_specs["weight"]["max"]))
+    #     self._weight_ax.title.set_text("Histogram of weight")
+
+        # self._map.set_title(f"Year:{num_years}")
 
 
 
@@ -342,9 +452,14 @@ class BioSim:
     def update_graphics(self):
         # fig = plt.figure()
         # ax = fig.add_subplot(1, 1, 1)
-        # ax.set_xlim(0, n_steps)
+        # ax.set_xlim(0, self.step)
         # ax.set_ylim(0, 1)
         # line = ax.plot(np.arrange(n_steps), np.full(n_steps, np.nan), 'b-'[0])
+        # for n in range(n_steps):
+        #     ydata = line.get_ydata()
+        #     ydata[n] = np.random.random()
+        #     line.set_ydata(ydata)
+        #     plt.pause(1e-6)
 
         self.plot_population_graph()
         self.update_heatmap()
@@ -355,7 +470,9 @@ class BioSim:
         if self.img_base is None:
             return
 
-        plt.savefig(f"{self.img_base}_{self._img_ctr:05d}.{self.img_fmt}")
+        plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
+                                                     num=self._img_ctr,
+                                                     type=self.img_fmt))
         self._img_ctr += 1
 
     def make_movie(self, movie_fmt):

@@ -18,7 +18,7 @@ class Animals:
     It contains methods, variables and properties that are common for both carnivore and herbivore.
     """
 
-    params = None
+    params_dict = None
 
     @classmethod
     def set_parameters(cls, params):
@@ -36,17 +36,20 @@ class Animals:
         -------
         ValueError
         """
-
+        # cls.params_dict.update(params)
         for parameter in params:
-            if parameter in cls.params:
+            cls.params_dict.update(params)
+            if parameter in cls.params_dict:
                 if params[parameter] < 0:
                     raise ValueError(f"{parameter} cannot be negative.")
                 if parameter == "DeltaPhiMax" and params[parameter] <= 0:
                     raise ValueError("DeltaPhiMax must be larger than zero")
                 if parameter == "eta" and not 0 <= params[parameter] <= 1:
                     raise ValueError("Eta must be greater than zero and smaller than one")
+                cls.params_dict.update(params)
             else:
                 raise ValueError("Parameter not defined for this animal")
+        cls.params_dict.update(params)
 
     def __init__(self, age=0, weight=None):
         """
@@ -108,7 +111,7 @@ class Animals:
         offspring_weight : float
         """
 
-        offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+        offspring_weight = random.gauss(self.params_dict["w_birth"], self.params_dict["sigma_birth"])
         return offspring_weight
 
     @staticmethod
@@ -144,9 +147,9 @@ class Animals:
         if self.weight <= 0:
             self.phi = 0
         else:
-            q_age = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
+            q_age = self.sigmoid(self.age, self.params_dict["a_half"], self.params_dict["phi_age"], 1)
             q_weight = self.sigmoid(self.weight,
-                                    self.params["w_half"], self.params["phi_weight"], -1)
+                                    self.params_dict["w_half"], self.params_dict["phi_weight"], -1)
             self.phi = q_age * q_weight
 
         return self.phi
@@ -173,13 +176,13 @@ class Animals:
         offspring : Object
         """
 
-        if (self.weight < self.params["zeta"] *
-                (self.params["w_birth"] + self.params["sigma_birth"])):
+        if (self.weight < self.params_dict["zeta"] *
+                (self.params_dict["w_birth"] + self.params_dict["sigma_birth"])):
             return
 
-        if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+        if random.random() <= min(1, self.params_dict["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
-            self.weight -= self.params["xi"] * offspring.weight
+            self.weight -= self.params_dict["xi"] * offspring.weight
             self.fitness_calculation()
             return offspring
 
@@ -193,7 +196,7 @@ class Animals:
         """
 
         if self.has_migrated is False:
-            return bool(random.random() < self.params["mu"] * self.phi)
+            return bool(random.random() < self.params_dict["mu"] * self.phi)
         return False
 
     def set_migration_true(self):
@@ -217,7 +220,7 @@ class Animals:
         """
 
         self.age += 1
-        self.weight -= self.params["eta"] * self.weight
+        self.weight -= self.params_dict["eta"] * self.weight
         self.fitness_calculation()
 
     def animal_dying(self):
@@ -231,9 +234,9 @@ class Animals:
 
         if self.weight == 0:
             return True
-        elif random.random() < self.params["omega"] * (1 - self.phi):
+        elif random.random() < self.params_dict["omega"] * (1 - self.phi):
             return True
-        elif random.random() >= self.params["omega"] * (1 - self.phi):
+        elif random.random() >= self.params_dict["omega"] * (1 - self.phi):
             return False
 
     def get_age(self):
@@ -251,7 +254,7 @@ class Herbivore(Animals):
     The subclass Herbivore inheritance from the parent class Animal.
     """
 
-    params = {
+    params_dict = {
         'w_birth': 8.0,
         'sigma_birth': 1.5,
         'beta': 0.9,
@@ -295,9 +298,9 @@ class Herbivore(Animals):
         if available_food < 0:
             self.eaten = 0
         else:
-            self.eaten = min(self.params["F"], available_food)
+            self.eaten = min(self.params_dict["F"], available_food)
 
-        self.weight += self.params["beta"] * self.eaten
+        self.weight += self.params_dict["beta"] * self.eaten
         self.fitness_calculation()
 
         return self.eaten
@@ -308,7 +311,7 @@ class Carnivore(Animals):
     The subclass Herbivore inheritance from the parent class Animal.
     """
 
-    params = {
+    params_dict = {
         'w_birth': 6.0,
         'sigma_birth': 1.0,
         'beta': 0.75,
@@ -352,16 +355,16 @@ class Carnivore(Animals):
         for herb in herb_phi_sorted_list:
             if self.phi <= herb.phi:
                 kill_prob = 0
-            elif (self.phi - herb.phi) < self.params["DeltaPhiMax"]:
-                kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
+            elif (self.phi - herb.phi) < self.params_dict["DeltaPhiMax"]:
+                kill_prob = (self.phi - herb.phi) / (self.params_dict["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten += min(self.params["F"], herb.weight)
-                if self.eaten > self.params["F"]:
+                self.eaten += min(self.params_dict["F"], herb.weight)
+                if self.eaten > self.params_dict["F"]:
                     break
-                self.weight += self.params["beta"] * self.eaten
+                self.weight += self.params_dict["beta"] * self.eaten
                 herb.alive = False
                 dead_herbs.append(herb)
                 self.fitness_calculation()
