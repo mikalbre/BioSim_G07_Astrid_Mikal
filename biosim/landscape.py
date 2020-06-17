@@ -61,7 +61,7 @@ class SingleCell:
             else:
                 raise ValueError('The only argument for passable is bool.')
         if accessability_boolean is True:
-            #cls.params = accessability
+            cls.params = accessability
 
     def __init__(self):
         self.available_fodder = 0
