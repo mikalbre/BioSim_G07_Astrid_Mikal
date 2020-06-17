@@ -330,10 +330,18 @@ class BioSim:
         fit_bins = (int(self.hist_specs["fitness"]["max"]/self.hist_specs["fitness"]["delta"]))
         self._fit_ax.clear()
         self._fit_ax.hist(self.island.fitness_list()[0], bins=fit_bins,
-                          histtype="step", color="g", range=self.hist_specs["fitness"]["max"])
-        self._fit_ax.hist(self.island.fitness_list()[1], bins=10, histtype="step",
-                          color="r")
+                          histtype="step", color="g", range=(0,self.hist_specs["fitness"]["max"]))
+        self._fit_ax.hist(self.island.fitness_list()[1], bins=fit_bins,
+                          histtype="step", color="r", range=(0,self.hist_specs["fitness"]["max"]))
         self._fit_ax.title.set_text("Histogram of fitness")
+
+        age_bins = (int(self.hist_specs["age"]["max"]/self.hist_specs["age"]["delta"])
+        self._age_ax.clear()
+        self._age_ax.hist(self.island.age_list()[0], bins=fit_bins,
+                          histtype="step", color="g", range=(0, self.hist_specs["age"]["max"]))
+        self._age_ax.hist(self.island.age_list()[1], bins=fit_bins,
+                          histtype="step", color="r", range=(0, self.hist_specs["age"]["max"]))
+        self._age_ax.title.set_text("Histogram of fitness")
 
     def update_graphics(self):
         # fig = plt.figure()
