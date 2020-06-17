@@ -9,24 +9,12 @@ random.seed(1)
 
 class TestSingleClass:
 
-    # @pytest.fixture
-    # def test_cell_parameters(self, request):
-    #     request =[{'species': 'Herbivore',
-    #                    'age': 5,
-    #                    'weight': 20}]
-    #     if request.param == "Herbivore":
-    #         assert Herbivore()
-    #     elif request.param == "Carnivore":
-    #         assert Carnivore()
-    #     else:
-    #         assert ValueError("Invalid species!")
-
     def test_cell_parameters(self):
         test_input = 'f_max: 50.0'
         with pytest.raises(TypeError):
             Lowland().cell_parameter(test_input)
 
-        params = {'f_max': -10}  # ValueError
+        params = {'f_max': -10}
         with pytest.raises(ValueError):
             Lowland().cell_parameter(params)
 

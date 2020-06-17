@@ -20,26 +20,14 @@ class CreateIsland:
 
     def __init__(self,
                  geography_island_string,
-                 initial_population,
-                 stat=False):
+                 initial_population
+                 ):
 
         self.year_num = 0
 
         self.map = self.make_map(geography_island_string)  # simulation file
         self.add_population(initial_population)  # simulation file
 
-        #self.len_map_x = None
-        #self.len_map_y = None
-
-        #self.pop_each_cell = []
-
-        #self.total_data_herb = []
-        #self.total_data_carn = []
-
-        #
-        # self.stat = stat
-        # if self.stat:
-        #     self.stat = {}
 
     @property
     def num_animals(self):
@@ -69,27 +57,12 @@ class CreateIsland:
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
-        #self.total_data_herb.append(num_animals_per_species["Herbivore"])
-        #self.total_data_carn.append(num_animals_per_species["Carnivore"])
 
         return num_animals_per_species
 
-    # def population_in_each_cell(self):  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
-    #     number_of_herbivores = []
-    #     number_of_carnivores = []
-    #     row_position = []
-    #     column_position = []
-    #
-    #     for loc, cell in self.map.items():
-    #         row_position.append(loc[0])
-    #         column_position.append(loc[1])
-    #         number_of_herbivores.append(len(cell.num_herbivores))
-    #         number_of_carnivores.append((len(cell.num_carnivores)))
-    #
-    #     return numpy.column_stack(row_position,
-    #                               column_position, number_of_herbivores, number_of_carnivores)
-    @staticmethod
-    def condition_for_island_map_string(geography_island_string):
+
+    #@staticmethod
+    def condition_for_island_map_string(self, geography_island_string):
         """Method to check whether the string of the landscape type of island are rectangular.
         Checks if all lines have same length as the first (base) line.
         If conditions are met, the method returns a list of strings in map_list.
@@ -97,15 +70,17 @@ class CreateIsland:
             geography_island_string: multilinestring of island map
         Returns: list of strings X: ['WWW', 'WLW', 'WWW']
         """
-        #map_list = []
-        #geography_island_string_map = [i.strip('[]') for i in geography_island_string]
-        #map_list = geography_island_string_map.split('\n')
 
         geography_island_string_map = geography_island_string.strip().split('\n')
         map_list = geography_island_string_map
 
         if not check_length_of_string(map_list):
             raise ValueError("Multi line string must have equal length, must be a rectangle.")
+
+        for cell in map_list:
+            for l_type in cell:
+                if l_type not in self.map_params_dict.keys():
+                    raise ValueError("Must be of correct landscape type")
 
         first_line_north = map_list[0]
         last_line_south = map_list[-1]
@@ -303,7 +278,7 @@ class CreateIsland:
 
 if __name__ =='__main__':
 
-    default_map = """WWWW\nWLHW\nWLWW\nWWWW"""
+    default_map = """WWWW\nWLRW\nWLWW\nWWWW"""
 
     default_population = [{"loc": (2, 2), "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                                   for _ in range(150)]}]
