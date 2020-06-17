@@ -161,6 +161,8 @@ class SingleCell:
         """
 
         herb_newbord = []
+        carn_newbord = []
+
         if len(self.present_herbivores) >= 2:
             for herbivores in self.present_herbivores:
                 offspring = herbivores.procreation(len(self.present_herbivores))
@@ -169,7 +171,7 @@ class SingleCell:
                 herb_newbord.append(offspring)
             self.present_herbivores.extend(herb_newbord)
 
-        carn_newbord = []
+
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:
                 offspring = carnivores.procreation(len(self.present_carnivores))

@@ -109,7 +109,7 @@ class BioSim:
 
         self.set_up_graphics()
         self.plot_island_map()
-        self.num_years = num_years  # ??
+        self.num_years = num_years
 
         for _ in range(num_years):
             new_island_population = self.island.simulate_one_year()
@@ -272,7 +272,7 @@ class BioSim:
         ydata = self.carnivore_line.get_data()
         ydata[self.num_years] = population
         self.carnivore_line.set_data(ydata)
-        self.carnivore_line.lege
+        #self.carnivore_line.lege
 
         ydata = self.herbivore_line.get_data()
         ydata[self.num_years] = population
@@ -417,4 +417,3 @@ if __name__ == '__main__':
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=300, vis_years=1, img_years=2000)
     sim.make_movie(movie_fmt="mp4")
-

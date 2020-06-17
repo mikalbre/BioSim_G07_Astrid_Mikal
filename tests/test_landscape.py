@@ -58,7 +58,7 @@ class TestSingleClass:
             SingleCell.animals_allocate(ini_animal)
 
         highland = Highland()
-        add_herbs_to_island = [{'species': 'Herbivore', 'age': 3, 'weight': 10},
+        add_herbs_to_island = {'species': 'Herbivore', 'age': 3, 'weight': 10},
                                {'species': 'Herbivore', 'age': 5, 'weight': 14},
                                {'species': 'Herbivore', 'age': 13, 'weight': 23}]
         highland.animals_allocate(add_herbs_to_island)

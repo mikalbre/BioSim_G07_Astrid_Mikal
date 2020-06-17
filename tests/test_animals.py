@@ -162,7 +162,6 @@ class Test_Animals:
     def test_death_z(self):  # NOT WORKING
         #
         b = Herbivore(age=0, weight=10)
-        b = Herbivore()
         p = 0.4
         N = 10
         n = sum([(b.animal_dying() for _ in range(N))])

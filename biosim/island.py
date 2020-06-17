@@ -1,17 +1,41 @@
+# -*- coding: utf-8 -*-
 
-from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
-from biosim.animals import *
-import random
-import numpy
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
+"""
+File for island with many cells
+"""
+from biosim.landscape import Highland, Lowland, Desert, Water
 
 
 def check_length_of_string(map_list):
-    if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
+    """
+    Compares length of all lines in a list of lines to the first line in the list.
+    Parameters
+    ----------
+    map_list : list
+        list of lines
+
+    Returns
+    -------
+    bool
+        False if not all lines are equal, True if all lines are equal.
+    """
+
+    if not all(len(map_list[0]) == len(row) for row in map_list[1:]):
         return False
     return True
 
 
 class CreateIsland:
+    """
+    Initiates the CreateIsland class.
+    Class attribute map_params_dict holds information of which letter relates to which class in
+    landscape.py.
+
+    The CreateIsland takes a multilinestring and initial population on Rossumøya as input.
+    """
 
     map_params_dict = {"H": Highland,
                        "L": Lowland,
@@ -22,17 +46,31 @@ class CreateIsland:
                  geography_island_string,
                  initial_population
                  ):
+        """
+        Initializes instance of CreateIsland.
+
+        Parameters
+        ----------
+        geography_island_string : str
+            Multilinestring of map
+        initial_population : dict
+            Key: location given in coordinates - Value: list of dict
+        """
 
         self.year_num = 0
 
-        self.map = self.make_map(geography_island_string)  # simulation file
-        self.add_population(initial_population)  # simulation file
-
+        self.map = self.make_map(geography_island_string)
+        self.add_population(initial_population)
 
     @property
     def num_animals(self):
-        """Returns total number of animals on island.
-        Returns: int of total number of animals.
+        """
+        This property method returns number of total animals on Rossumøya.
+
+        Returns
+        -------
+        num_animals : int
+            Total number of animals on island
         """
 
         num_animals = 0
@@ -42,9 +80,15 @@ class CreateIsland:
 
     @property
     def num_animals_per_species(self):
-        """Returns number of herbivores and carnivores on island.
-        Iterates through each cell and count number of animals.
-        Returns: dict of number per species
+        """
+        This property method returns the number of herbivores and carnivores on island.
+        Iterates through each cell on island and count number of animals.
+
+        Returns
+        -------
+        num_animals_per_species : dict
+            Key: Species - Values: Total number of the specific animal
+
         """
 
         num_animals_per_species = {}
@@ -60,16 +104,28 @@ class CreateIsland:
 
         return num_animals_per_species
 
-
-    #@staticmethod
-    def condition_for_island_map_string(self, geography_island_string):
-        """Method to check whether the string of the landscape type of island are rectangular.
-        Checks if all lines have same length as the first (base) line.
-        If conditions are met, the method returns a list of strings in map_list.
-        Parameters:
-            geography_island_string: multilinestring of island map
-        Returns: list of strings X: ['WWW', 'WLW', 'WWW']
+    @staticmethod
+    def condition_for_island_map_string(geography_island_string):
         """
+        Method to check whether the string of the landscape type of island are rectangular,
+        if they are not equal length a ValueError will occur.
+        If map is rectangular, the method checks if the island is surrounded by water.
+        If all these conditions are met, the method returns a list of strings in map_list.
+
+        Parameters
+        ----------
+        geography_island_string : multilinestring
+
+        Returns
+        -------
+        map_list : list
+            list of strings
+        """
+
+        map_params_dict = {"H": Highland,
+                           "L": Lowland,
+                           "D": Desert,
+                           "W": Water}
 
         geography_island_string_map = geography_island_string.strip().split('\n')
         map_list = geography_island_string_map
@@ -79,7 +135,7 @@ class CreateIsland:
 
         for cell in map_list:
             for l_type in cell:
-                if l_type not in self.map_params_dict.keys():
+                if l_type not in map_params_dict.keys():
                     raise ValueError("Must be of correct landscape type")
 
         first_line_north = map_list[0]
@@ -95,25 +151,25 @@ class CreateIsland:
             if not landscape_type == 'W':
                 raise ValueError("Cells in west and east of island must consist of water!")
 
-
-
         return map_list
 
     def make_map(self, geography_island_string):
-        """Create a dictionary from the multi- line string.
-        Input is the multi- line string.
-        Output is the island_map with;
-        Key: Instance of cell (landscape type- 'Highland', 'Lowland', 'Desert', 'Water')
-        Value: Coordinates in (x, y) tuple form. (1,1) is upper left corner
-        Returns: dict where key: tuple, value: instance of landscape type
         """
+        Create a dictionary from the multilinestring given as input.
+        Coordinate (1, 1) is upper left corner.
 
-        map_list = self.condition_for_island_map_string(geography_island_string)
+        Parameters
+        ----------
+        geography_island_string : multilinestring
 
+        Returns
+        -------
+        island_map : dict
+            key: tuple with cell coordinate - Value: Instance of subclass of SingleCell
+        """
         island_map = {}
 
-        self.len_map_x = len(map_list[0])
-        self.len_map_y = len(map_list)
+        map_list = self.condition_for_island_map_string(geography_island_string)
 
         coord_x = 1
         for line in map_list:
@@ -123,10 +179,23 @@ class CreateIsland:
                 coord_y += 1
             coord_x += 1
 
-        return island_map  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
+        return island_map
 
     def add_population(self, population):
-        """Add population of both herbivores and carnivores to the island."""
+        """
+        Add population of both herbivores and carnivores to the island.
+        The method feeds a population to cells.
+
+        Parameters
+        ----------
+        population: list
+            loc: tuple
+            pop: dict
+
+        Methods
+        -------
+        SingleCell.animals_allocate()
+        """
 
         for map_location in population:
             loc = map_location['loc']  # Gets a coordinate X: (1, 1)
@@ -139,94 +208,155 @@ class CreateIsland:
             self.map[loc].animals_allocate(pop)  # puts animal in location_cell in landscape.py file
 
     def feed_animal(self):
+        """
+        Calls eat in all cells of the map.
+        Fodder grows and herbivores and carnivores gets to eat.
+
+        Methods
+        -------
+        SingleCell.eat()
+        """
         for cell in self.map.values():
             cell.eat()  # X: Lowland.eat() and lowland- fodder grows and all animals eat.
 
     def procreation_animals(self):
+        """
+        Calls procreate in all cells of the map.
+
+        Methods
+        -------
+        SingleCell.procreation()
+        """
+
         for cell in self.map.values():
             cell.procreation()
 
-    def add_migrated_herb_to_new_cell(self, new_loc, herbivore):  # Works
-        self.map[new_loc].add_herb_migrated(herbivore)  # ?
+    def add_migrated_herb_to_new_cell(self, new_loc, herbivore):
+        """
+        Adds migrated herbivore to new cell by position.
 
-    def add_migrated_carn_to_new_cell(self, new_loc, carnivore):  # Works
+        Parameters
+        ----------
+        new_loc : tuple
+        herbivore : object
+        """
+
+        self.map[new_loc].add_herb_migrated(herbivore)
+
+    def add_migrated_carn_to_new_cell(self, new_loc, carnivore):
+        """
+        Adds migrated herbivore to new cell by position.
+
+        Parameters
+        ----------
+        new_loc : tuple
+        carnivore : object
+        """
+
         self.map[new_loc].add_carn_migrated(carnivore)
 
     def migration_neighboring_cells(self, loc):
-        """Finds the location/cell North, East, West and South from current cell."""
+        """
+        Finds the cells adjacent to the current cell.
+        Meaning the cells located north, east, west and south from current cell.
 
-        coord_x, coord_y = loc  # (2, 2)
-        # Gets the location of the cell with coordinates
-        cell_1 = (coord_x - 1, coord_y)  # North cell (1,2)
-        cell_2 = (coord_x + 1, coord_y)  # South cell (3,2)
-        cell_3 = (coord_x, coord_y - 1)  # West cell  (2,1)
-        cell_4 = (coord_x, coord_y + 1)  # East cell  (2,3)
+        Parameters
+        ----------
+        loc : tuple
+            Coordinate
 
-        # Checks the landscape type
+        Returns
+        -------
+        neighbor_cells : list
+            Contains location and landscape type of adjacent cells.
+        """
+
+        coord_x, coord_y = loc
+
+        cell_1 = (coord_x - 1, coord_y)
+        cell_2 = (coord_x + 1, coord_y)
+        cell_3 = (coord_x, coord_y - 1)
+        cell_4 = (coord_x, coord_y + 1)
+
         type_1 = self.map[cell_1]
         type_2 = self.map[cell_2]
         type_3 = self.map[cell_3]
         type_4 = self.map[cell_4]
 
-        # X: [((2,2), Lowland), ((3,3), Highland),((3,1), Water), ((4,2),Lowland)]
         neighbor_cells = [(cell_1, type_1), (cell_2, type_2), (cell_3, type_3), (cell_4, type_4)]
 
         return neighbor_cells
 
-        #return [cell for cell in neighbor_cells if cell[1] is not Water]
-        #accessible_neighbor_cells = [cell for cell in neighbor_cells if cell[1] is not Water]
-        #return accessible_neighbor_cells  # X: [((2,2), Lowland), ((3,3), Highland), ((4,2),Lowland)]
-
     def migration_animals(self):
-        """Iterates through each cell """
-        for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
+        """
+        Checks each cell in the map if it is accessible for the animals, and if the condition is
+        met it finds the cells' neighbors. It then calls migrate method from SingleCell and
+        returns the herbivores and carnivores, if any, that has migrated to a new cell.
+        In migrate method in SingleCell the migrated animal gets deleted from that cell.
+        The migrated animal gets added to the new cell that was selected randomly.
 
+        Methods
+        -------
+        SingleCell.migrate()
+        """
 
+        for loc, cell in self.map.items():
             if cell.accessibility is True:
                 neighboring_cells = self.migration_neighboring_cells(loc)
+                migrated_herb, migrated_carn = cell.migrate(neighboring_cells)
 
+                for new_loc, herb in migrated_herb:
+                    self.add_migrated_herb_to_new_cell(new_loc, herb)
+                    cell.remove_herb_migrated(herb)
 
-                if len(neighboring_cells) > 0:
-                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)
-
-                    for new_loc, herb in migrated_herb:
-                        self.add_migrated_herb_to_new_cell(new_loc, herb)
-                        cell.remove_herb_migrated(herb)
-                    for new_loc, carn in migrated_carn:
-                        self.add_migrated_carn_to_new_cell(new_loc, carn)
-                        cell.remove_carn_migrated(carn)
-
-
+                for new_loc, carn in migrated_carn:
+                    self.add_migrated_carn_to_new_cell(new_loc, carn)
+                    cell.remove_carn_migrated(carn)
 
     def new_year_reset(self):
-        """Updates the migration to False for all animals when new year starts."""
+        """
+        Updates the migration to False for all animals when new year starts.
+        """
+
         for cell in self.map.values():
             for herbivore in cell.present_carnivores:
                 herbivore.set_migration_false()
+
             for carnivore in cell.present_carnivores:
                 carnivore.set_migration_false()
 
     def aging_animals(self):
-        """Increments age by one and reduces weight of each animal annually."""
+        """
+        Every year, increment the age of every animal by 1 and reduce the weight of the animal.
+        """
         for cell in self.map.values():
             cell.aging()
 
     def death_animals(self):
+        """
+        Calls animal_death in all cells on the map.
+        """
         for cell in self.map.values():
             cell.animal_death()
-          # if self.stat:
-          #     self.stat[self.year]['Herbivore']['death'][pos] = herb_death
-          #     self.stat[self.year]['Carnivore']['death'][pos] = carn_death
 
     @property
     def year(self):
-        return self.year_num + 1
+        return self.year_num
 
     @year.setter
     def year(self, new_year_value):
         self.year_num = new_year_value
 
     def weight_list(self):
+        """
+        Lists of weights of all animals on island.
+
+        Returns
+        -------
+        herb_weight_list : list
+        carn_weight_list : list
+        """
+
         herb_weight_list = []
         carn_weight_list = []
         for cell in self.map.values():
@@ -240,6 +370,15 @@ class CreateIsland:
         return herb_weight_list, carn_weight_list
 
     def age_list(self):
+        """
+        Lists of ages of all animals on island.
+
+        Returns
+        -------
+        herb_age_list : list
+        carn_age_list : list
+        """
+
         herb_age_list = []
         carn_age_list = []
 
@@ -254,8 +393,18 @@ class CreateIsland:
         return herb_age_list, carn_age_list
 
     def fitness_list(self):
+        """
+        Lists of fitness for all animals on island.
+
+        Returns
+        -------
+        herb_age_list : list
+        carn_age_list : list
+        """
+
         herb_fitness_list = []
         carn_fitness_list = []
+
         for cell in self.map.values():
             for herb in cell.present_herbivores:
                 herb_fitness_list.append(herb.phi)
@@ -266,21 +415,26 @@ class CreateIsland:
 
         return herb_fitness_list, carn_fitness_list
 
-
     def simulate_one_year(self):
-        # self.new_year_reset()
+        """
+        Simulates a whole year by the following sequence.
+
+        Returns
+        -------
+
+        """
+        self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
         self.migration_animals()
         self.aging_animals()
         self.death_animals()
-        self.year_num += 1
+        self.year += 1
 
-        return self.num_animals_per_species
 
 if __name__ =='__main__':
 
-    default_map = """WWWW\nWLRW\nWLWW\nWWWW"""
+    default_map = """WWWW\nWLHW\nWLWW\nWWWW"""
 
     default_population = [{"loc": (2, 2), "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
                                                   for _ in range(150)]}]
