@@ -306,6 +306,11 @@ class TestHighland:
         highland = Highland()
         assert type(highland.present_herbivores) is list
         assert type(highland.present_carnivores) is list
+        assert highland.get_fodder() == 300
+
+    def test_grow(self):
+        highland = Highland()
+        highland.available_fodder = 0
         highland.fodder_regrow()
         assert highland.get_fodder() == 300
 
@@ -319,6 +324,8 @@ class TestLowland:
 
     def test_grow(self):
         lowland = Lowland()
+        lowland.available_fodder = 3
+        assert lowland.get_fodder() == 3
         lowland.fodder_regrow()
         assert lowland.get_fodder() == 800
 
