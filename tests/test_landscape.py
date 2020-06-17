@@ -1,8 +1,6 @@
 from biosim.animals import Herbivore, Carnivore
 from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
-# import unittest
 import pytest
-# import numpy as np
 import random
 random.seed(1)
 
@@ -144,34 +142,34 @@ class TestSingleClass:
         mocker.patch('random.random', return_value=0.0)
         mocker.patch('random.gauss', return_value=5)
         lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
+        animals_carn = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
                                   {'species': 'Carnivore', 'age': 4, 'weight': 15},
-                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}])
-        num_carn = len(lowland.present_carnivores)  # 3
+                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}]
+        lowland.animals_allocate(animals_carn)
+        num_carn = len(lowland.present_carnivores)
         for _ in range(100):
             lowland.procreation()
+
         num_carn_after_procreation = len(lowland.present_carnivores)
+
         assert num_carn < num_carn_after_procreation
 
-
-        # NOT WORKING:
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 50},
+        animals_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 50},
                                   {'species': 'Herbivore', 'age': 3, 'weight': 60},
                                   {'species': 'Herbivore', 'age': 5, 'weight': 60},
-                                  {'species': 'Herbivore', 'age': 10, 'weight': 70}])
-        num_herb = len(lowland.present_herbivores)  # 4
-        print('\n')
-        print(lowland.present_herbivores)
+                                  {'species': 'Herbivore', 'age': 10, 'weight': 70}]
+        lowland.animals_allocate(animals_herb)
+        num_herb = len(lowland.present_herbivores)
+
         for _ in range(100):
             lowland.procreation()
+
         num_herb_after_procreation = len(lowland.present_herbivores)
-        print('\n number after', num_herb_after_procreation)
 
         assert num_herb < num_herb_after_procreation
 
 
-    def test_migration(self, mocker):
-        #mocker.patch("random.choice", return_value=0)
+    def test_migration(self):
         cell = SingleCell()
         neighbor_cells = [((10, 10), Water),
                           ((10, 10), Water), ((10, 10), Water),  ((10, 10), Water)]
@@ -179,17 +177,22 @@ class TestSingleClass:
         assert isinstance(herb_migrate, list)
         assert isinstance(carn_migrate, list)
 
-        carn = Carnivore()
+        carn = Carnivore(age=1, weight=50)
         carn.has_migrated = False
         cell.present_carnivores.append(carn)
-        herb = Herbivore()
-        cell.present_herbivores.append(herb)
-        herb.has_migrated = False
 
+        cell.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 30} for _ in range(20)])
+        for _ in range(10):
+            herb_migrate = cell.migrate(neighbor_cells)
+        assert herb_migrate
         herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
         assert len(herb_migrate + carn_migrate) > 0
         assert carn.has_migrated is True
-        assert carn.has_migrated is True
+
+        herb = Herbivore(age=1, weight=60)
+        cell.animals_allocate(herb)
+        herb.has_migrated = False
+        assert herb.has_migrated is True
 
     def test_add_herb_migrated(self):
         cell = Lowland()

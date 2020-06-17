@@ -95,7 +95,9 @@ class CreateIsland:
             if not landscape_type == 'W':
                 raise ValueError("Cells in west and east of island must consist of water!")
 
-        return map_list  # X: ['WWW', 'WLW', 'WWW']
+
+
+        return map_list
 
     def make_map(self, geography_island_string):
         """Create a dictionary from the multi- line string.

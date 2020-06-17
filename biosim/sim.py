@@ -36,6 +36,7 @@ class BioSim:
                  ymax_animals=None,
                  cmax_animals=None,
                  img_dir=None,
+                 img_base=None,
                  img_name=_DEFAULT_GRAPHICS_NAME,
                  img_fmt='png'):
 
@@ -115,7 +116,7 @@ class BioSim:
             self.herbivore_list.append(new_island_population['Herbivore'])
             self.carnivore_list.append(new_island_population['Carnivore'])
 
-            if self._age_ax is not None:
+            if self._age_axis is not None:
                 self.up_hist(num_years)
 
             self._fig.suptitle(f"Year:{self.num_years}")
