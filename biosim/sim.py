@@ -113,7 +113,7 @@ class BioSim:
         # self.final_year = self.step + num_years
         self.set_up_graphics()
         self.plot_island_map()
-        self.num_years = num_years  # ??
+        self.num_years = num_years
 
         for _ in range(num_years):
             new_island_population = self.island.simulate_one_year()
@@ -534,4 +534,3 @@ if __name__ == '__main__':
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=300, vis_years=1, img_years=2000)
     sim.make_movie(movie_fmt="mp4")
-
