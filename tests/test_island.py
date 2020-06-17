@@ -4,10 +4,10 @@ import pytest
 
 
 
-def test_string_line_length():
-    string = """abc\ndef\nghi"""
-    island = CreateIsland(string, pop)
-    assert island.check_length_of_string(string) is True
+# def test_string_line_length():  # NOT WORKING
+#     string = """abc\ndef\nghi"""
+#     island = CreateIsland(string, pop)
+#     assert island.check_length_of_string(string) is True
 
 
 class TestCreateIsland:
@@ -27,6 +27,15 @@ class TestCreateIsland:
         pass
 
     def test_conditions_for_multiline_string(self):  # ALL GOOD
+
+        string = "WWWW\nWWW\nWWWW"
+        with pytest.raises(ValueError):
+            CreateIsland.condition_for_island_map_string(string)
+
+        string = "WWWWW\nRWWWW\nWWWWH\nWWWWW"
+        with pytest.raises(ValueError):
+            CreateIsland.condition_for_island_map_string(string)
+
         string = "WWW\nWWW\nWWW"
         list_string = CreateIsland.condition_for_island_map_string(string)
         assert list_string == ['WWW', 'WWW', 'WWW']
@@ -88,7 +97,12 @@ class TestCreateIsland:
             CreateIsland(multi_string, pop)
 
     def test_new_year_reset(self):
-        pass
+        multi_string = "WWW\nWDW\nWWW"
+        pop = [{'loc': (2, 2),
+                'pop': [{'species': 'Herbivore', 'age': 5, 'weight': 20}]}]
+        test_island = CreateIsland(multi_string, pop)
+
+        test_island.simulate_one_year()
 
     def test_year(self):
         pass

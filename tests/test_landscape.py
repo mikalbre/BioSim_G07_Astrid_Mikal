@@ -33,11 +33,24 @@ class TestSingleClass:
         with pytest.raises(TypeError):
             Lowland().cell_parameter(params)
 
+        params = {'f_max': 10}
+        accessability = True
+        with pytest.raises(ValueError):
+            SingleCell.cell_parameter(params, accessability)
+
+
+
+
     def test_init(self):
         cell = SingleCell()
         assert type(cell.present_herbivores) is list
         assert type(cell.present_carnivores) is list
         assert cell.get_fodder() == 0
+
+    def test_repr(self):
+        lowland = Lowland()
+        string = 'Lowland'
+        assert string == Lowland.__repr__(lowland)
 
     def test_grow(self):
         cell = SingleCell()
@@ -79,8 +92,6 @@ class TestSingleClass:
         ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
         with pytest.raises(TypeError):
             lowland.animals_allocate(ini_animal)
-
-
 
     def test_eat(self):
         for herb in Lowland().present_herbivores:
@@ -176,6 +187,41 @@ class TestSingleClass:
         print('\n number after', num_herb_after_procreation)
 
         assert num_herb < num_herb_after_procreation
+
+
+    def test_migration(self):
+        pass
+
+    def test_add_herb_migrated(self):
+        cell = Lowland()
+        assert len(cell.present_herbivores) == 0
+        cell.add_herb_migrated(Herbivore())
+        assert len(cell.present_herbivores) == 1
+
+    def test_add_carn_migrated(self):
+        cell = Highland()
+        assert len(cell.present_carnivores) == 0
+        cell.add_carn_migrated(Carnivore())
+        assert len(cell.present_carnivores) == 1
+
+    def test_remove_herb_migrated(self):
+        cell = Lowland()
+        assert len(cell.present_herbivores) == 0
+        herb = Herbivore()
+        cell.add_herb_migrated(herb)
+        assert len(cell.present_herbivores) == 1
+        cell.remove_herb_migrated(herb)
+        assert len(cell.present_herbivores) == 0
+
+    def test_remove_carn_migrated(self):
+        cell = Highland()
+        assert len(cell.present_carnivores) == 0
+        herb = Herbivore()
+        cell.add_carn_migrated(herb)
+        assert len(cell.present_carnivores) == 1
+        cell.remove_carn_migrated(herb)
+        assert len(cell.present_carnivores) == 0
+
 
     def test_aging(self):
         lowland = Lowland()

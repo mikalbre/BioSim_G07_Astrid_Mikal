@@ -3,7 +3,7 @@ from biosim.landscape import SingleCell, Highland, Lowland, Desert, Water
 from biosim.animals import *
 import random
 import numpy
-import statistics
+
 
 def check_length_of_string(map_list):
     if not all(len(map_list[0]) == len(line) for line in map_list[1:]):
@@ -72,26 +72,25 @@ class CreateIsland:
 
         num_animals_per_species["Herbivore"] = num_herbivores
         num_animals_per_species["Carnivore"] = num_carnivores
-        # self.total_data_herb.append(num_animals_per_species["Herbivore"])
-        # self.total_data_carn.append(num_animals_per_species["Carnivore"])
+        self.total_data_herb.append(num_animals_per_species["Herbivore"])
+        self.total_data_carn.append(num_animals_per_species["Carnivore"])
 
         return num_animals_per_species
 
-    def population_in_each_cell(self):  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
-        number_of_herbivores = []
-        number_of_carnivores = []
-        row_position = []
-        column_position = []
-
-        for loc, cell in self.map.items():
-            row_position.append(loc[0])
-            column_position.append(loc[1])
-            number_of_herbivores.append(len(cell.num_herbivores))
-            number_of_carnivores.append((len(cell.num_carnivores)))
-
-        return numpy.column_stack(row_position,
-                                  column_position, number_of_herbivores, number_of_carnivores)
-
+    # def population_in_each_cell(self):  # X: {(1,1): Water, (1,2): Water, ... , (2,2): Lowland}
+    #     number_of_herbivores = []
+    #     number_of_carnivores = []
+    #     row_position = []
+    #     column_position = []
+    #
+    #     for loc, cell in self.map.items():
+    #         row_position.append(loc[0])
+    #         column_position.append(loc[1])
+    #         number_of_herbivores.append(len(cell.num_herbivores))
+    #         number_of_carnivores.append((len(cell.num_carnivores)))
+    #
+    #     return numpy.column_stack(row_position,
+    #                               column_position, number_of_herbivores, number_of_carnivores)
     @staticmethod
     def condition_for_island_map_string(geography_island_string):
         """Method to check whether the string of the landscape type of island are rectangular.
@@ -139,8 +138,8 @@ class CreateIsland:
 
         island_map = {}
 
-        # self.len_map_x = len(map_list[0])
-        # self.len_map_y = len(map_list) # BRUKES DISSE?
+        self.len_map_x = len(map_list[0])
+        self.len_map_y = len(map_list)
 
         coord_x = 1
         for line in map_list:
@@ -207,18 +206,14 @@ class CreateIsland:
     def migration_animals(self):
         """Iterates through each cell """
         for loc, cell in self.map.items():  # X: dict_items( [ ((1,1), Water), ((1,2), Water),...] )
-            #print(f"num_herb_before: {cell.num_herbivores}")
 
-            if cell.accessability is True:  # cell is Lowland, Highland, Desert, Water
+            if cell.accessability is True:
                 neighboring_cells = self.migration_neighboring_cells(loc)
 
                 if len(neighboring_cells) > 0:
-                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)  # takes in new cell
-                    #print(migrated_carn)
-                    #print(migrated_herb)
-                    #print(f"num_herb_after: {cell.num_herbivores}")
+                    migrated_herb, migrated_carn = cell.migrate(neighboring_cells)
+
                     for new_loc, herb in migrated_herb:
-                        # if new_loc == self.map_params_dict["W"]: # Mulig?
                         self.add_migrated_herb_to_new_cell(new_loc, herb)
                     for new_loc, carn in migrated_carn:
                         self.add_migrated_carn_to_new_cell(new_loc, carn)
@@ -243,51 +238,9 @@ class CreateIsland:
           #     self.stat[self.year]['Herbivore']['death'][pos] = herb_death
           #     self.stat[self.year]['Carnivore']['death'][pos] = carn_death
 
-    def fitness_list(self):
-        phi_list_herb = []
-
-        for cell in self.map.values():
-            for herb in cell.present_herbivores:
-                phi_list_herb.append(herb.phi)
-
-        phi_list_carn = []
-        for cell in self.map.values():
-            for carn in cell.present_carnivores:
-                phi_list_carn.append(carn.phi)
-
-        return phi_list_herb, phi_list_carn
-
-    def age_list(self):
-        age_list_herb = []
-
-        for cell in self.map.values():
-            for herb in cell.present_herbivores:
-                age_list_herb.append(herb.age)
-
-        age_list_carn = []
-        for cell in self.map.values():
-            for carn in cell.present_carnivores:
-                age_list_carn.append(carn.age)
-
-        return age_list_herb, age_list_carn
-
-    def weight_list(self):
-        weight_list_herb = []
-
-        for cell in self.map.values():
-            for herb in cell.present_herbivores:
-                weight_list_herb.append(herb.weight)
-
-        weight_list_carn = []
-        for cell in self.map.values():
-            for carn in cell.present_carnivores:
-                weight_list_carn.append(carn.weight)
-
-        return weight_list_herb, weight_list_carn
-
     @property
     def year(self):
-        return self.year_num
+        return self.year_num + 1
 
     @year.setter
     def year(self, new_year_value):
@@ -300,7 +253,7 @@ class CreateIsland:
         self.migration_animals()
         self.aging_animals()
         self.death_animals()
-        self.year += 1
+        self.year_num += 1
 
         return self.num_animals_per_species
 

@@ -3,7 +3,8 @@
 from biosim.animals import Animals, Herbivore, Carnivore
 import pytest
 from pytest import approx
-
+import math
+import scipy.stats as stats
 
 class Test_Animals:
     # @pytest.fixture
@@ -36,8 +37,9 @@ class Test_Animals:
         assert herb.age == 5
         assert herb.weight >= 0
 
-        with pytest.raises(ValueError):
-            Animals(Carnivore(-2, None))
+        # carn = Carnivore(age=3.2, weight=5)
+        # with pytest.raises(ValueError):
+        #     carn.__init__(age=0, weight=None)
 
     def test_repr(self):
         herb = Herbivore(5, 20)
@@ -52,6 +54,15 @@ class Test_Animals:
 
         carn = Carnivore(2, None)
         assert carn.get_initial_weight_offspring() == 5
+
+    # def test_get_initial_weight_gaussian_dist(self):
+    #     weight = []
+    #     herbivores = [Herbivore(0, None) for _ in range(2000)]
+    #     for herb in len(herbivores):
+    #         weight.append(herb.get_initial_weight_offspring)
+    #         ks_statistic, p-value = stats.kstest(weight, 'norm')
+    #         assert p-value < 0.05
+
 
     def test_sigmoid(self):
         pass
@@ -103,11 +114,18 @@ class Test_Animals:
         # offspring = herb.procreation(2)
         # assert offspring["Type"] == "Herbivore"
 
-    def test_migrate(self):
-        pass
+    def test_has_moved(self):
+        herb = Herbivore()
+        herb.prob_migrate()
+        assert herb.has_migrated is True
+        assert herb.set_migration_true() is True
+        assert herb.set_migration_false() is not False
 
-    def test_has_moved(self):  # riktig?
-        pass
+    # def test_has_migrate(self, mocker):
+    #     mocker.patch('random.random', return_value=0.01)
+    #     herb = Herbivore()
+    #     herb.prob_migrate()
+    #     assert herb.has_migrated is True
 
     def test_growing_older(self):
         herbivore = Herbivore(3, 12)
@@ -133,6 +151,19 @@ class Test_Animals:
         dead = carn.animal_dying()
         assert dead is False
 
+    def test_death_z(self):  # NOT WORKING
+        #
+        b = Herbivore(age=0, weight=10)
+        b = Herbivore()
+        p = 0.4
+        N = 10
+        n = sum([(b.animal_dying() for _ in range(N))])
+
+        mean = N * p
+        var = N * p * (1-p)
+        Z = (n - mean) / math.sqrt(var)
+        phi = 2 * stats.norm.cdf(-abs(Z))
+        assert phi > 0.01
 
     def test_get_age(self):
         herb = Herbivore(5, 20)
