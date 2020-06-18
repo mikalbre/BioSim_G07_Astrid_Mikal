@@ -3,73 +3,75 @@
 __author__ = 'Astrid Sedal, Mikal Breiteig'
 __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
-"""This file contains the Animal base class and child classes for herbivores and carnivores"""
+"""
+This file contains the Animal base class and child classes for herbivores and carnivores
+"""
 
 from math import exp
 import random
-random.seed(1)
-
-
 
 
 class Animals:
-    """
-    Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
-    It represents a single animal, and does not specify the type of animal.
-    It contains methods, variables and properties that are common for both carnivore and herbivore.
-    """
-    params = None  # instead of setting all parameter equal to None
+
+    params_dict = None
 
     @classmethod
     def set_parameters(cls, params):
         """
         Takes a dictionary of parameter as input.
-        :param params:
-        :return:
+        Checks for invalid values of parameters.
+        Set class parameters.
+
+        Parameters
+        ----------
+        params : dict
+            Dictionary with class parameters.
+
+        Raises
+        -------
+        ValueError
         """
-
-        #animal_set_parameters = cls.params.update()
-
+        # cls.params_dict.update(params)
         for parameter in params:
-            if parameter in cls.params:
+            # cls.params_dict.update(params)
+            if parameter in cls.params_dict:
                 if params[parameter] < 0:
                     raise ValueError(f"{parameter} cannot be negative.")
                 if parameter == "DeltaPhiMax" and params[parameter] <= 0:
                     raise ValueError("DeltaPhiMax must be larger than zero")
                 if parameter == "eta" and not 0 <= params[parameter] <= 1:
                     raise ValueError("Eta must be greater than zero and smaller than one")
+                cls.params_dict.update(params)
             else:
                 raise ValueError("Parameter not defined for this animal")
 
     def __init__(self, age=0, weight=None):
         """
+        Animal parent class, i.e. all animals in the simulation must be subclasses of
+        this parent class.
+        It represents a single animal, and does not specify the type of animal.
+        It contains methods, variables and properties that are common for both carnivore
+        and herbivore.
 
-        :param age: int
+        Initialises instance. If weight not specified, weight is determine from the gaussian
+        distribution.
+
+        Parameters
+        ----------
+        age : int
             The age of the animal
-        :param weight: float
+        weight : float
             The weight of the animal
+
+        Attributes
+        ----------
+        self.age : int
+        self.weight : float
+        self.alive : bool
+        self.has_migrated : bool
+        self.eaten : int, float
+        self.phi : float
         """
-
-        # if age is None:  # La til denne
-        #     raise ValueError("Age of animal not given.")
-        # elif age < 0 or age is float:
-        #     raise ValueError("Age of animal must be positive and integer.")
-        # else:
-        #     self.age = age
-        # if weight is None or weight > 0:
-        #     if weight is None:
-        #         self.weight = self.get_initial_weight_offspring()
-        #     else:
-        #         self.weight = weight
-        # else:
-        #      raise ValueError("weight not allowed")
-
-        # if weight is None:
-        #     self.weight = self.get_initial_weight_offspring()
-        # elif weight < 0:  # La til denne
-        #   raise ValueError("Weight of animal must be positive")
-        # else:
-        #     self.weight = weight
 
         if age < 0 or age is float:
             raise ValueError("Age of animal must be positive and integer.")
@@ -81,7 +83,6 @@ class Animals:
         else:
             self.weight = weight
 
-        # sjekk
         self.alive = True
         self.has_migrated = False
         self.eaten = 0
@@ -90,26 +91,45 @@ class Animals:
         self.fitness_calculation()
 
     def __repr__(self):
+        """
+        If instance is called, __repr__ will present it with a string.
+
+        Returns
+        -------
+        string : chr
+        """
+
         string = f'Type: {type(self).__name__}, Age: {self.get_age()}, Fitness: {self.phi}'
         return string
 
     def get_initial_weight_offspring(self):
-        offspring_weight = random.gauss(self.params["w_birth"], self.params["sigma_birth"])
+        """
+        Draws the weight of an animal from a gaussian distribution.
+
+        Returns
+        -------
+        offspring_weight : float
+        """
+
+        offspring_weight = random.gauss(self.params_dict["w_birth"],
+                                        self.params_dict["sigma_birth"])
         return offspring_weight
 
     @staticmethod
     def sigmoid(x, x_half, phi_, p):
         """
-        Used to calculate the fitness of the animal
+        Calculates components for the fitness of the animal.
+
         Parameters
         ----------
-        x
-        x_half
-        phi_
-        p
+        x : Age or weight component of the fitness calculation
+        x_half : Age or weight component of the fitness calculation
+        phi_ : Age or weight component of the fitness calculation
+        p : Determines whether positive or negative element
 
         Returns
         -------
+        sigmoid : float
         """
 
         sigmoid = (1/(1 + exp(p * phi_ * (x - x_half))))
@@ -117,94 +137,108 @@ class Animals:
 
     def fitness_calculation(self):
         """
-        Calculate fitness of animal.
+        Calculates the fitness of the animal.
         Fitness depends on weight and age of animal.
-        :return:
+
+        Returns
+        -------
+        phi : float
         """
 
         if self.weight <= 0:
             self.phi = 0
         else:
-            q_age = self.sigmoid(self.age, self.params["a_half"], self.params["phi_age"], 1)
+            q_age = self.sigmoid(self.age,
+                                 self.params_dict["a_half"], self.params_dict["phi_age"], 1)
             q_weight = self.sigmoid(self.weight,
-                                    self.params["w_half"], self.params["phi_weight"], -1)
+                                    self.params_dict["w_half"], self.params_dict["phi_weight"], -1)
             self.phi = q_age * q_weight
+
         return self.phi
 
     def procreation(self, num_same_species):
         """
         Calculates the probability of animal having an offspring.
-        If only one animal of same species in a cell, the probability of
-        offspring will be zero.
-        Must be more than one animal in the cell to potensially create an offspring in the method.
+
+        Must be more than one animal in the cell to potentially create an offspring in the method.
         The offspring is of the same class as the parent animal. At birth the age of offspring
         is zero and its weight is calculated using gaussian distribution.
 
-        How to implement maximum one child per animal?????
-
         At birth of offspring the parent animal looses weight relative to constant xi and the
-        birthweight of offspring. Recalculates the parent animal's fitness after birth.
+        birth weight of offspring. If the conditions are met, the method will recalculate
+        the parent animal fitness after birth.
 
-        :param num_same_species: int
+        Parameters
+        ----------
+        num_same_species : int
             The amount of animals of the same species in a single cell.
 
-        :return:
-        offspring: Object
+        Returns
+        -------
+        offspring : Object
         """
 
-        if (self.weight < self.params["zeta"] *
-                (self.params["w_birth"] + self.params["sigma_birth"])):
-            return 0  # La til 0
+        if (self.weight < self.params_dict["zeta"] *
+                (self.params_dict["w_birth"] + self.params_dict["sigma_birth"])):
+            return
 
-        if random.random() <= min(1, self.params["gamma"] * self.phi * (num_same_species - 1)):
+        if random.random() <= min(1, self.params_dict["gamma"] * self.phi * (num_same_species - 1)):
             offspring = type(self)()
-            # offspring.weight = self.get_initial_weight_offspring()
-            self.weight -= self.params["xi"] * offspring.weight  # get_initial_weight_offspring
+            self.weight -= self.params_dict["xi"] * offspring.weight
             self.fitness_calculation()
-
             return offspring
-
-        return 0  # la til return
 
     def prob_migrate(self):
         """
         Calculates the probability for the animal to migrate to new cell.
-        :return:
+
+        Returns
+        -------
+        bool
         """
+
         if self.has_migrated is False:
-            return bool(random.random() < self.params["mu"] * self.phi)
+            return bool(random.random() < self.params_dict["mu"] * self.phi)
         return False
 
     def set_migration_true(self):
+        """
+        Flags migration for animal in cell as True.
+        """
+
         self.has_migrated = True
 
     def set_migration_false(self):
+        """
+        Flags migration for animal in cell as False.
+        """
+
         self.has_migrated = False
 
     def growing_older(self):
         """
         When animals grows older the age increases by one and the weight decreases with a
-        constant that is based on its weight.
-        Returns
-        -------
-
+        constant that is based on its weight. Then recalculates the fitness.
         """
 
         self.age += 1
-        self.weight -= self.params["eta"] * self.weight
+        self.weight = self.weight - (self.params_dict["eta"] * self.weight)
         self.fitness_calculation()
 
     def animal_dying(self):
         """
-        Calculate the probability of the animal dying
-        :return:
+        Calculate if the animal dies or not.
+
+        Returns
+        -------
+        bool
         """
 
         if self.weight == 0:
             return True
-        elif random.random() < self.params["omega"] * (1 - self.phi):
+        elif random.random() < self.params_dict["omega"] * (1 - self.phi):
             return True
-        elif random.random() >= self.params["omega"] * (1 - self.phi):
+        elif random.random() >= self.params_dict["omega"] * (1 - self.phi):
             return False
 
     def get_age(self):
@@ -219,9 +253,10 @@ class Animals:
 
 class Herbivore(Animals):
     """
-
+    The subclass Herbivore inheritance from the parent class Animal.
     """
-    params = {
+
+    params_dict = {
         'w_birth': 8.0,
         'sigma_birth': 1.5,
         'beta': 0.9,
@@ -243,35 +278,42 @@ class Herbivore(Animals):
 
     def feeding(self, available_food):
         """
-        Calculates amount of fodder the animal eats in current cell, and returns the
-        amount of fodder remaining.
-        If available food in cell is negative the method returns an error message.
+        Calculates amount of fodder the animal eats in current cell.
+
         If F is less or equal to available fodder in cell, the weight increases by constant beta
-        multiplied with the amount eated.
+        multiplied with the amount eaten.
         If F is more than available fodder in cell, the weight increases by constant beta times the
         available fodder in cell.
 
         Due to the increase in weight, the fitness must be recalculated.
 
-        :param available_food: float
-            available fodder in cell
-        :return: float
-            remaining fodder in cell
+        Parameters
+        ----------
+        available_food : float
+
+        Returns
+        -------
+        self.eaten : float
+            The eaten amount for a herbivore.
         """
 
         if available_food < 0:
             self.eaten = 0
         else:
-            self.eaten = min(self.params["F"], available_food)
+            self.eaten = min(self.params_dict["F"], available_food)
 
-        self.weight += self.params["beta"] * self.eaten
+        self.weight += self.params_dict["beta"] * self.eaten
         self.fitness_calculation()
+
         return self.eaten
 
 
 class Carnivore(Animals):
+    """
+    The subclass Herbivore inheritance from the parent class Animal.
+    """
 
-    params = {
+    params_dict = {
         'w_birth': 6.0,
         'sigma_birth': 1.0,
         'beta': 0.75,
@@ -292,27 +334,54 @@ class Carnivore(Animals):
     def __init__(self, age=0, weight=None):
         super().__init__(age, weight)
 
-    def hunt_herb(self, herbi_phi_sorted_list):
-        self.eaten = 0
-        del_herb = []
-        for herb in herbi_phi_sorted_list:
+    def hunt_herb(self, herb_phi_sorted_list):
+        """
+        The method has all the herbivore in currents cell sorted by fitness as input.
+        If the animal eat, the animal eats a herbivore. The weight of the carnivore will increase
+        and the fitness is recalculated.
 
+        Parameters
+        ----------
+        herb_phi_sorted_list : list
+            Increasing fitness.
+
+        Returns
+        -------
+        dead_herbs : list
+            List of herbivore(s) eaten by a single carnivore
+        """
+
+        self.eaten = 0
+        dead_herbs = []
+        weight_killed_herb = 0
+        init_weight = self.weight
+
+        for herb in herb_phi_sorted_list:
             if self.phi <= herb.phi:
                 kill_prob = 0
-            elif (self.phi - herb.phi) < self.params["DeltaPhiMax"]:
-                kill_prob = (self.phi - herb.phi) / (self.params["DeltaPhiMax"])
+            elif (self.phi - herb.phi) < self.params_dict["DeltaPhiMax"]:
+                kill_prob = (self.phi - herb.phi) / (self.params_dict["DeltaPhiMax"])
             else:
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                self.eaten += min(self.params["F"], herb.weight)
-                if self.eaten > self.params["F"]:
-                    break
-                self.weight += self.params["beta"] * self.eaten
-                herb.alive = False
-                del_herb.append(herb)
-                # print('appending herb', del_herb)
-                self.fitness_calculation()
+                if herb.weight >= self.params_dict["F"]:
+                    self.weight += self.params_dict["beta"] * self.params_dict["F"]
+                    herb.alive = False
+                    self.fitness_calculation()
+                    dead_herbs.append(herb)
+                    return dead_herbs
 
+                else:
+                    self.weight += self.params_dict["beta"] * herb.weight
+                    herb.alive = False
+                    dead_herbs.append(herb)
+                    self.fitness_calculation()
 
-        return del_herb
+                    weight_killed_herb += herb.weight
+                    left_overs = weight_killed_herb - self.params_dict["F"]
+
+                    if left_overs >= 0:
+                        self.weight = (init_weight +
+                                       self.params_dict["beta"] * self.params_dict["F"])
+        return dead_herbs

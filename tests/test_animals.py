@@ -1,20 +1,24 @@
+# -*- coding: utf-8 -*-
+
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
 """Tests the animals.py file in the biosim folder."""
 
 from biosim.animals import Animals, Herbivore, Carnivore
 import pytest
 from pytest import approx
+import math
+import scipy.stats as stats
+
+from scipy.stats import stats
 
 
-class Test_Animals:
-    # @pytest.fixture
-    # def set_parameters(request):
-    #     Animals.set_parameters(request.param)
-    #     yield
-    #     Animals.set_parameters(Animals.params)
+class TestAnimals:
 
     def test_set_parameters(self):
-        params = {'w_birth': -8.0, 'eta': 2, 'DeltaPhiMax': 0}
 
+        params = {'w_birth': -8.0, 'eta': 2, 'DeltaPhiMax': 0}
         with pytest.raises(ValueError):
             Herbivore().set_parameters(params)
 
@@ -37,7 +41,7 @@ class Test_Animals:
         assert herb.weight >= 0
 
         with pytest.raises(ValueError):
-            Animals(Carnivore(-2, None))
+            Herbivore(-2, 8). __init__()
 
     def test_repr(self):
         herb = Herbivore(5, 20)
@@ -53,9 +57,16 @@ class Test_Animals:
         carn = Carnivore(2, None)
         assert carn.get_initial_weight_offspring() == 5
 
+    # def test_get_initial_weight_gaussian_dist(self):
+    #     weight = []
+    #     herbivores = [Herbivore(0, None) for _ in range(2000)]
+    #     for herb in len(herbivores):
+    #         weight.append(herb.get_initial_weight_offspring)
+    #         ks_statistic, p-value = stats.kstest(weight, 'norm')
+    #         assert p-value < 0.05
+
     def test_sigmoid(self):
         pass
-
 
     def test_fitness_calculation(self):
         herb = Herbivore(6, 0)
@@ -73,41 +84,50 @@ class Test_Animals:
     def test_procreation(self, mocker):
         herb = Herbivore(4, 30)
         herb_born = herb.procreation(1)
-        assert herb_born == 0
+        assert herb_born is None
 
         carn = Carnivore(4, 30)
         carn_born = carn.procreation(1)
-        assert carn_born == 0
+        assert carn_born is None
 
         herb = Herbivore(4, 30)
         weight = herb.weight
-        lose_weight = herb.params["zeta"] * (herb.params["w_birth"] + herb.params["sigma_birth"]) #33.25
+        lose_weight = (herb.params_dict["zeta"] * (herb.params_dict["w_birth"]
+                                                   + herb.params_dict["sigma_birth"]))
         assert weight < lose_weight
         for _ in range(10):
             procreation = herb.procreation(10)
-            assert procreation == 0
+            assert procreation is None
 
         herb = Herbivore(5, 40)
         phi = herb.phi
-        mocker.patch('random.random', return_value=0.01)
+        mocker.patch('random.random', return_value=0.0001)
         herb.procreation(2)
         mocker.patch('random.gauss', return_value=5)
-
-        #herb.weight -= herb.params["xi"] * herb.get_initial_weight_offspring()
+        herb.weight = 40 - (herb.params_dict["xi"] * herb.get_initial_weight_offspring())
         phi_procreated = herb.phi
-        #assert herb.weight == 34  # NOT WORKING CHECK IT OUT!!!!
+        assert herb.weight == 34  # NOT WORKING CHECK IT OUT!!!!
         assert phi > phi_procreated
         #
         # herb = Herbivore(5, 20)
-        # mocker.patch('random.random', return_value=0.001)
+        # mocker.patch('random.random', return_value=0.00001)
         # offspring = herb.procreation(2)
-        # assert offspring["Type"] == "Herbivore"
+        # # assert offspring["Type"] == "Herbivore"
+        # assert isinstance(offspring, Herbivore)
 
-    def test_migrate(self):
-        pass
+    def test_has_moved(self, mocker):
+        herb = Herbivore(5, 20)
+        assert herb.has_migrated is False
+        mocker.patch('random.random', return_value=0.001)
+        for _ in range(10):
+            herb.prob_migrate()
+        assert herb.has_migrated
 
-    def test_has_moved(self):  # riktig?
-        pass
+    # def test_has_migrate(self, mocker):
+    #     mocker.patch('random.random', return_value=0.01)
+    #     herb = Herbivore()
+    #     herb.prob_migrate()
+    #     assert herb.has_migrated is True
 
     def test_growing_older(self):
         herbivore = Herbivore(3, 12)
@@ -133,6 +153,18 @@ class Test_Animals:
         dead = carn.animal_dying()
         assert dead is False
 
+    def test_death_z(self):  # NOT WORKING
+        #
+        b = Herbivore(age=0, weight=10)
+        p = 0.4
+        N = 10
+        n = sum([(b.animal_dying() for _ in range(N))])
+
+        mean = N * p
+        var = N * p * (1-p)
+        Z = (n - mean) / math.sqrt(var)
+        phi = 2 * stats.norm.cdf(-abs(Z))
+        assert phi > 0.01
 
     def test_get_age(self):
         herb = Herbivore(5, 20)
@@ -147,6 +179,14 @@ class Test_Animals:
         phi = herb.phi
         assert herb.get_fitness() == phi
 
+    @pytest.mark.parametrize('Species', [Herbivore, Carnivore])
+    def test_initial_weight_gaussian_dist(self, Species):
+        list_of_initial_weights = []
+        for _ in range(1000):
+            s = Species()
+            list_of_initial_weights.append(s.weight)
+            ka_statistics, p_value = stats.kstest(list_of_initial_weights, 'norm')
+            assert p_value < 0.01
 
 
 class TestHerbivore:
@@ -167,7 +207,7 @@ class TestHerbivore:
         pre_eat_weight = herb.weight
         herb.feeding(17)
         post_eat_weight = herb.weight
-        assert post_eat_weight == pre_eat_weight + herb.params["beta"] * herb.params["F"]
+        assert post_eat_weight == pre_eat_weight + herb.params_dict["beta"] * herb.params_dict["F"]
 
 
 class TestCarnivore:

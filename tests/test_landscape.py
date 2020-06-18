@@ -1,31 +1,23 @@
+# -*- coding: utf-8 -*-
+
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
 from biosim.animals import Herbivore, Carnivore
 from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
-# import unittest
 import pytest
-# import numpy as np
 import random
 random.seed(1)
 
-class TestSingleClass:
 
-    # @pytest.fixture
-    # def test_cell_parameters(self, request):
-    #     request =[{'species': 'Herbivore',
-    #                    'age': 5,
-    #                    'weight': 20}]
-    #     if request.param == "Herbivore":
-    #         assert Herbivore()
-    #     elif request.param == "Carnivore":
-    #         assert Carnivore()
-    #     else:
-    #         assert ValueError("Invalid species!")
+class TestSingleClass:
 
     def test_cell_parameters(self):
         test_input = 'f_max: 50.0'
         with pytest.raises(TypeError):
             Lowland().cell_parameter(test_input)
 
-        params = {'f_max': -10}  # ValueError
+        params = {'f_max': -10}
         with pytest.raises(ValueError):
             Lowland().cell_parameter(params)
 
@@ -39,6 +31,11 @@ class TestSingleClass:
         assert type(cell.present_carnivores) is list
         assert cell.get_fodder() == 0
 
+    def test_repr(self):
+        lowland = Lowland()
+        string = 'Lowland'
+        assert string == Lowland.__repr__(lowland)
+
     def test_grow(self):
         cell = SingleCell()
         cell.fodder_regrow()
@@ -46,10 +43,13 @@ class TestSingleClass:
 
     def test_animal_allocates(self):
         lowland = Lowland()
+
         ini_animal = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)]
         lowland.animals_allocate(ini_animal)
+
         num_herb = len(lowland.present_herbivores)
         assert num_herb == 20
+
         add_new_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20}]
         lowland.animals_allocate(add_new_herb)
         assert len(lowland.present_herbivores) == 21
@@ -59,13 +59,13 @@ class TestSingleClass:
         num_carn = len(lowland.present_carnivores)
         assert num_carn == 20
 
-        ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
+        ini_animal = {'species': 'Dog', 'age': 5, 'weight': 20}
         with pytest.raises(TypeError):
             SingleCell.animals_allocate(ini_animal)
 
         highland = Highland()
         add_herbs_to_island = [{'species': 'Herbivore', 'age': 3, 'weight': 10},
-                               {'species': 'Herbivore', 'age': 5, 'weight': 14},
+                              {'species': 'Herbivore', 'age': 5, 'weight': 14},
                                {'species': 'Herbivore', 'age': 13, 'weight': 23}]
         highland.animals_allocate(add_herbs_to_island)
         herbivore_0 = highland.present_herbivores[0]
@@ -79,8 +79,6 @@ class TestSingleClass:
         ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
         with pytest.raises(TypeError):
             lowland.animals_allocate(ini_animal)
-
-
 
     def test_eat(self):
         for herb in Lowland().present_herbivores:
@@ -99,7 +97,6 @@ class TestSingleClass:
         highland.eat()
         available_fodder = highland.available_fodder
         assert available_fodder == 300
-        # kan også teste eat ved å sjekke om fodder_available er red., og om #herb er red.
 
     def test_fodder_regrow(self):
         lowland = Lowland()
@@ -122,8 +119,6 @@ class TestSingleClass:
         assert lowland.available_fodder == 0
 
     def test_feed_carn_with_herb(self):
-        # mocker.patch('random.random', return_value=0.8)
-
         lowland = Lowland()
 
         lowland.animals_allocate([{'species': 'Herbivore', 'age': 6, 'weight': 20},
@@ -152,30 +147,97 @@ class TestSingleClass:
         mocker.patch('random.random', return_value=0.0)
         mocker.patch('random.gauss', return_value=5)
         lowland = Lowland()
-        lowland.animals_allocate([{'species': 'Carnivore', 'age': 5, 'weight': 20},
+        animals_carn = [{'species': 'Carnivore', 'age': 5, 'weight': 20},
                                   {'species': 'Carnivore', 'age': 4, 'weight': 15},
-                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}])
-        num_carn = len(lowland.present_carnivores)  # 3
+                                  {'species': 'Carnivore', 'age': 5, 'weight': 25}]
+        lowland.animals_allocate(animals_carn)
+        num_carn = len(lowland.present_carnivores)
         for _ in range(100):
             lowland.procreation()
+
         num_carn_after_procreation = len(lowland.present_carnivores)
+
         assert num_carn < num_carn_after_procreation
 
-
-        # NOT WORKING:
-        lowland.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 50},
+        animals_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 50},
                                   {'species': 'Herbivore', 'age': 3, 'weight': 60},
                                   {'species': 'Herbivore', 'age': 5, 'weight': 60},
-                                  {'species': 'Herbivore', 'age': 10, 'weight': 70}])
-        num_herb = len(lowland.present_herbivores)  # 4
-        print('\n')
-        print(lowland.present_herbivores)
+                                  {'species': 'Herbivore', 'age': 10, 'weight': 70}]
+        lowland.animals_allocate(animals_herb)
+        num_herb = len(lowland.present_herbivores)
+
         for _ in range(100):
             lowland.procreation()
+
         num_herb_after_procreation = len(lowland.present_herbivores)
-        print('\n number after', num_herb_after_procreation)
 
         assert num_herb < num_herb_after_procreation
+
+
+    def test_migration(self, mocker):
+        cell = SingleCell()
+        neighbor_cells = [((10, 10), Water),
+                          ((10, 10), Water), ((10, 10), Water),  ((10, 10), Water)]
+        herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
+        assert isinstance(herb_migrate, list)
+        assert isinstance(carn_migrate, list)
+
+        carn = Carnivore(age=1, weight=50)
+        carn.has_migrated = False
+        cell.present_carnivores.append(carn)
+
+        cell.animals_allocate([{'species': 'Herbivore', 'age': 5, 'weight': 30} for _ in range(20)])
+        for _ in range(10):
+            herb_migrate = cell.migrate(neighbor_cells)
+        assert herb_migrate
+
+        herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
+        assert len(herb_migrate + carn_migrate) > 0
+        assert carn.has_migrated is True
+
+        herb = Herbivore(age=1, weight=60)
+        cell.animals_allocate(herb)
+        herb.has_migrated = False
+        assert herb.has_migrated is True
+
+
+        mocker.patch('random.choice', return_value=((5, 5), Lowland))
+
+
+
+    def test_add_herb_migrated(self):
+        cell = Lowland()
+        assert len(cell.present_herbivores) == 0
+        cell.add_herb_migrated(Herbivore())
+        assert len(cell.present_herbivores) == 1
+
+    def test_add_carn_migrated(self):
+        cell = Highland()
+        assert len(cell.present_carnivores) == 0
+        cell.add_carn_migrated(Carnivore())
+        assert len(cell.present_carnivores) == 1
+
+    def test_remove_herb_migrated(self):
+        cell = Lowland()
+        assert len(cell.present_herbivores) == 0
+
+        herb = Herbivore()
+        cell.add_herb_migrated(herb)
+        assert len(cell.present_herbivores) == 1
+
+        cell.remove_herb_migrated(herb)
+        assert len(cell.present_herbivores) == 0
+
+    def test_remove_carn_migrated(self):
+        cell = Highland()
+        assert len(cell.present_carnivores) == 0
+
+        herb = Herbivore()
+        cell.add_carn_migrated(herb)
+        assert len(cell.present_carnivores) == 1
+
+        cell.remove_carn_migrated(herb)
+        assert len(cell.present_carnivores) == 0
 
     def test_aging(self):
         lowland = Lowland()
@@ -218,12 +280,40 @@ class TestSingleClass:
         lowland.animal_death()
         assert carn_not_dying in lowland.present_herbivores
 
+    def test_num_herbivores(self):
+        lowland = Lowland()
+        ini_animal = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_animal)
+        num_herb = lowland.num_herbivores
+        assert num_herb > 0
+
+    def test_num_carnivores(self):
+        lowland = Lowland()
+        ini_animal = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_animal)
+        num_carn = lowland.num_carnivores
+        assert num_carn > 0
+
+    def test_num_animals(self):
+        lowland = Lowland()
+        ini_herb = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        ini_carn = [{'species': 'Carnivore', 'age': 5, 'weight': 20} for _ in range(20)]
+        lowland.animals_allocate(ini_herb)
+        lowland.animals_allocate(ini_carn)
+        num_animals = lowland.num_animals
+        assert num_animals > 0
+
 
 class TestHighland:
     def test_init(self):
         highland = Highland()
         assert type(highland.present_herbivores) is list
         assert type(highland.present_carnivores) is list
+        assert highland.get_fodder() == 300
+
+    def test_grow(self):
+        highland = Highland()
+        highland.available_fodder = 0
         highland.fodder_regrow()
         assert highland.get_fodder() == 300
 
@@ -235,12 +325,25 @@ class TestLowland:
         assert type(lowland.present_carnivores) is list
         assert lowland.get_fodder() == 800
 
+    def test_grow(self):
+        lowland = Lowland()
+        lowland.available_fodder = 3
+        assert lowland.get_fodder() == 3
+
+        lowland.fodder_regrow()
+        assert lowland.get_fodder() == 800
+
 
 class TestDesert:
     def test_init(self):
         desert = Desert()
         assert type(desert.present_herbivores) is list
         assert type(desert.present_carnivores) is list
+        assert desert.get_fodder() == 0
+
+    def test_grow(self):
+        desert = Desert()
+        desert.fodder_regrow()
         assert desert.get_fodder() == 0
 
 
@@ -251,4 +354,9 @@ class TestWater:
         assert type(water.present_carnivores) is list
         assert water.get_fodder() == 0
 
-# available fixtures: cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, doctest_namespace, mocker, module_mocker, monkeypatch, package_mocker, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, session_mocker, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+    def test_grow(self):
+        water = Water()
+        assert water.get_fodder() == 0
+
+        water.fodder_regrow()
+        assert water.get_fodder() == 0

@@ -1,320 +1,290 @@
-from biosim.island import CreateIsland
-from landscape import Highland, Lowland, Desert, Water
-from animals import Herbivore, Carnivore
-from biosim import animals
-from biosim import landscape as Landscape
-from biosim import island
+# -*- coding: utf-8 -*-
 
-import random
-import os
-from matplotlib import colors
-import matplotlib.pyplot as plt
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
+
+from biosim.animals import Herbivore, Carnivore
+from biosim import landscape as Landscape
+from biosim.island import CreateIsland as island
+from biosim.visualization import Visualization
+
 import pandas as pd
-import numpy as np
+import os
 import subprocess
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+
+_FFMPEG_BINARY = "ffmpeg"
+_CONVERT_BINARY = "magick"
+
+_DEFAULT_GRAPHICS_DIR = os.path.join("..", "data")
+_DEFAULT_GRAPHICS_NAME = "dv"
+
+_DEFAULT_MOVIE_FORMAT = "mp4"
+
 
 class BioSim:
-
-    default_map = """WWW\nWLW\nWWW"""
-    #
-    # default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
-    #                                               for _ in range(150)]},
-    #                        {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
-    #                                                for _ in range(40)]}]
     def __init__(self,
-                 island_map=None,
-                 ini_pop=None,
-                 seed=None,
+                 island_map,
+                 ini_pop,
+                 seed,
                  ymax_animals=None,
                  cmax_animals=None,
                  hist_specs=None,
-                 img_base=None,
-                 img_fmt='png'
+                 img_name=_DEFAULT_GRAPHICS_NAME,
+                 img_fmt='png',
+                 img_dir=None,
+                 img_base=None
                  ):
+        """
+        Parameters
+        ----------
+        island_map: multilinestring specifying island geography
+        ini_pop : List of dictionaries specifying initial population
+        seed: Integer used as random number seed
+        ymax_animals: Number specifying y-axis limit for graph showing animal numbers.
+        cmax_animals: Dict specifying color- code limits for animal densities.
+        hist_specs: Dict specifying settings in histogram
+        img_name: Graphics name
+        img_fmt: String wih fle type for figure, e.g. 'png'
+        img_dir: path
+        img_base: where to store pictures and make movies from
+        """
 
-        if seed is not None:
-            random.seed(seed)
+        random.seed(seed)
 
-        self.island_map = island_map
-        self.map = CreateIsland(island_map, ini_pop)
+        self._year = 0
+        self._final_year = None
 
-        if island_map is None:
-            self.island = CreateIsland(self.default_map, ini_pop)
+        self._step = 0
+        self.hist_specs = hist_specs
+        self.inserted_map = island_map
+        self.island = island(island_map, ini_pop)
 
-        #     self.island = CreateIsland(island_map_str, ini_pop)
-        #     self.island_map_str = self.default_map
-        # else:
-        #     self.island_map_str = island_map_str
+        self.ymax_animals = ymax_animals
+        self.cmax_animals = cmax_animals
 
-        # if ini_pop is None:
-        #     self.ini_pop = self.default_population
-        # else:
-        #     self.ini_pop = ini_pop
-
-
-
-
-        #self.island_map = CreateIsland.make_map(island_map_str)
-
-        #self.ini_pop = CreateIsland.add_population(ini_pop)
-
-        if ymax_animals is None:
-            """Number specifying y-axis limit for graph showing animal numbers"""
-            self.ymax_animals = 15000  # ??
+        if img_dir is not None:
+            self.img_base = os.path.join(img_dir, img_name)
         else:
-            self.ymax_animals = ymax_animals
+            self.img_base = None
 
-        if cmax_animals is None:
-            """Dict specifying color-code limits for animal densities """
-            self.cmax_animals = {'Herbivore': 50, 'Carnivore': 20}  # ??
-        else:
-            self.cmax_animals = cmax_animals
-
-        if not 'fitness' and 'age' and 'weight' in hist_specs:
-                raise ValueError('Does not accept this input!')
-                # Riktig?
-
-        self.img_ctr = 0
-        self.final_year = None
         self.img_fmt = img_fmt
+        self._img_ctr = 0
 
-        if img_base is None:
-            self.img_base = os.path.join('..', 'BioSim')
-        else:
-            self.img_base = img_base
+        self.visualization = Visualization()
+        self.visualization.graphics_setup(kart_rgb=self.plot_island_map(island_map))
 
-        # fig = plt.figure(figsize=(10, 7), constrained_layout=True)
-        # gs = fig.add_gridspec(4, 6)
-        self.fig = None
-        self.ax_heat_h = None
-        self.herb_denisty = None
+    def set_animal_parameters(self, species, params):
+        """
+        Sets parameter for animals
+        Parameters
+        ----------
+        species: object
+        params: dict
 
+        Returns
+        -------
 
-        #self.x_len = island.CreateIsland.num_animals_per_species
-        # self.y_len
-
-
-    @staticmethod
-    def set_animal_parameters(species, params):
+        """
         if species == 'Herbivore':
-            animals.Herbivore.set_parameters(params)
+            Herbivore.set_parameters(params)
         elif species == 'Carnviore':
-            animals.Carnivore.set_parameters(params)
+            Carnivore.set_parameters(params)
 
-    @staticmethod
-    def set_landscape_parameters(landscape, params):
-        # if landscape is 'W':
-        #     Landscape.Water.cell_parameter(params, accessability=False)
-        # elif landscape is 'D':
-        #     Landscape.Desert.cell_parameter(params, accessabiliy=True)
+    def set_landscape_parameters(self, landscape, params):
+        if landscape == 'W':
+            Landscape.Water.cell_parameter(params)
+        elif landscape == 'D':
+            Landscape.Desert.cell_parameter(params)
         if landscape == 'H':
-            Landscape.Highland.cell_parameter(params, accessability=True)
+            Landscape.Highland.cell_parameter(params)
         elif landscape == 'L':
             Landscape.Lowland.cell_parameter(params)
 
-
-
-    def add_population(self, population):
-        return self.island.add_population(population)
-
-    @property
-    def year(self):
-        return self.island.year()
-
-    def empty_nested_list(self):
-        empty_nested_list = []
-        for y in range(self.y_len):
-            for x in range(self.x_len):
-                empty_nested_list[y].append(None)
-        return empty_nested_list
-
-    @property
-    def animal_dist(self):
-        data = {}
-        rows = []
-        col = []
-        herbs = []
-        #carns = []
-
-        for coord, cell in self.map.make_map(geography_island_string=default_map).items():
-            herbs.append(cell.present_herbivores)
-            #carns.append(cell.present_herbivores)
-            rows.append(coord[0])
-            col.append(coord[1])
-        data['Row'] = rows
-        data['Col'] = col
-        data['Herbivore'] = herbs
-        #data['Carnivore'] = carns
-        return pd.DataFrame(data)
-
-    def herb_dist(self):
-        row_num = np.shape()
-
-
-    def heat_map_herbivore(self):
-        # herb_cell = self.animal_dist.pivot('Row', 'Col', 'Herbivore')
-        # herb_cell(np.reshape(self.animal_dist['Herbivore'].values), newshape=(3, 3))
-        self.herb_denisty = self.ax_heat_h.imshow(np.reshape(self.animal_dist['Herbivore'].values,
-                                                             newshape=(3, 3)),
-                                                  vmax=self.cmax_animals['Herbivore']
-                                                  )
-        self.ax_heat_h.set_title('Test HERB DENS')
-
-
-    def update_all(self):
-        self.heat_map_herbivore()
-
-
-    def set_up_grafics(self):
-        if self.fig is None:
-            self.fig = plt.figure()
-            # self.fig.suptilte('Test overskrift', fontsize=16)
-            self.fig.tight_layout()
-
-        if self.herb_denisty is None:
-            self.ax_heat_h = self.fig.add_subplot(2, 2, 4)
-            self.heat_map_herbivore()
-
     def simulate(self, num_years, vis_years=1, img_years=None):
-        # sim.simulate(num_years=100, vis_years=1, img_years=2000)
+        """
+        Simulates number of years using the simulate_one_year method from island.py
+        Parameters
+        ----------
+        num_years: int
+        vis_years: int
+        img_years: int
+
+        Returns
+        -------
+        """
         if img_years is None:
             img_years = vis_years
 
-        self.set_up_grafics()
-        self.final_year = 1 + num_years
+        self._final_year = self._year + num_years
 
-        while self.year < self.final_year:
-            if self.year % vis_years == 0:
-                self.update_all()
+        while self._year < self._final_year:
             self.island.simulate_one_year()
 
+        # for year in range(num_years):
 
-if __name__ == "__main__":
-    plt.ion()
-    default_map = """WWW\nWLW\nWWW"""
+            if self._year % vis_years == 0:
+                self.visualization._changing_text.set_text('Year:' + str(self._year))
+                self.visualization.update_graphics(vis_years, self.create_population_heatmap(),
+                                                   self.island.num_animals_per_species)
+                self.visualization.update_histogram_fitness(self.island.fitness_list()[0],
+                                                            self.island.fitness_list()[1],
+                                                            self.hist_specs)
+                self.visualization.update_histogram_age(self.island.age_list()[0],
+                                                        self.island.age_list()[1],
+                                                        self.hist_specs)
+                self.visualization.update_histogram_weight(self.island.weight_list()[0],
+                                                           self.island.weight_list()[1],
+                                                           self.hist_specs)
+            if self._year % img_years == 0:
+                self.save_graphics()
 
-    ini_herbs = [{'loc': (2, 2),
-                  'pop': [{'species': 'Herbivore',
-                           'age': 5,
-                           'weight': 20}
-                          for _ in range(150)]}]
+            self._year += 1
 
-    sim = BioSim(island_map=default_map, ini_pop=ini_herbs,
-                 seed=123456,
-                 hist_specs={'fitness': {'max': 1.0, 'delta': 0.05},
-                             'age': {'max': 60.0, 'delta': 2},
-                             'weight': {'max': 60, 'delta': 2}},
-                 )
+    def add_population(self, population):
+        """
+        Adds population to Rossumøya.
 
-    sim.set_animal_parameters('Herbivore', {'zeta': 3.2, 'xi': 1.8})
-    sim.set_animal_parameters('Carnivore', {'a_half': 70, 'phi_age': 0.5,
-                                            'omega': 0.3, 'F': 65,
-                                            'DeltaPhiMax': 9.})
-    sim.set_landscape_parameters('L', {'f_max': 700})
-    # print(sim.heat_map_herbivore())
-    sim.simulate(num_years=100, vis_years=1, img_years=2000)
+        Parameters
+        ----------
+        population: dict
+        """
 
-    # sim.add_population(population=ini_carns)
-    # sim.simulate(num_years=100, vis_years=1, img_years=2000)
+        self.island.add_population(population)
 
+    @property
+    def year(self):
+        return self.island.year
 
-    #
-    #
-    #
-    #
-    # @staticmethod
-    # def set_animal_parameters(self, species, img_fmt):
-    #     animal_species = {'Hervivore': Herbivore,
-    #                       'Carnivore': Carnivore}
-    #     animal_species[species].set_parameters(params)  # se mer på
-    #
-    # @staticmethod
-    # def set_landscape_parameters(self)
-    #     map_params_dict = {"H": Highland,
-    #                         "L": Lowland,
-    #                         "D": Desert,
-    #                         "W": Water}
-    #
-    # def simulate(self, num_years):
-    #     current_year = 1
-    #     while current_year <= num_years:
-    #         current_year += 1
-    #
-    # def add_population(self, population):
-    #     self.Island.CreateIsland(population)
-    #
-    # @property
-    # def year(self):
-    #     return self.island.y
-    #
-    # @property
-    # def num_animals(self):
-    #     return
-    #
-    # @property
-    # def num_animals_per_species(self):
-    #     return
-    #
-    #
-    #
+    @property
+    def num_animals(self):
+        return self.island.num_animals
 
-"""
-    Set population
-    initial year = 0
-    increase year
-    set_animal_parameters
-    set_landscape_parameters
-    simulate
-    num_animals_per_species
-    num_animals_on_island
+    @property
+    def num_animals_per_species(self):
+        return self.island.num_animals_per_species
 
-herb_list = []
+    @property
+    def animal_distribution(self):
+        dict_for_df = {'Row': [], 'Col': [], 'Herbivore': [], 'Carnivore': []}
+        for pos, cell in self.island.map.items():
+            row, col = pos
+            dict_for_df['Row'].append(row)
+            dict_for_df['Col'].append(col)
+            dict_for_df['Herbivore'].append(cell.num_herbivores)
+            dict_for_df['Carnivore'].append(cell.num_carnivores)
+        df_sim = pd.DataFrame.from_dict(dict_for_df)
+        return df_sim
 
-num_animals = 5
-# Appends herbivores to list
-for iterator in range(num_animals):
-    herb = Herbivore()
-    herb_list.append(herb)
-    print(herb_list)
+    def length_of_map(self):
+        """
+        Finds the length and width of the map
+        Returns
+        -------
+        lenx_map: int
+        leny_map: int
+        """
 
-# Print the age, weight, fitness for each herbivore in the list
-for herb in herb_list:
-    print("Age: ", herb.get_age(),
-          "weight: ", herb.get_weight(),
-          "fitness: ", herb.fitness_calculation())
+        lines = self.inserted_map.strip()
+        lines = lines.split('\n')
+        lenx_map = len(lines[0])
+        leny_map = len(lines)
+        return lenx_map, leny_map
 
-# simulates 10 years
-for iterator in range(10):  # years
-    for herb in herb_list:# herbivore
-        herb.feeding(11)
-        herb.procreation(num_animals)
-        herb.growing_older()  # adds year and
-        herb.dying()
+    def plot_island_map(self, island_map):
+        """
+        Plots the map of Rossumøya.
+        Parameters
+        ----------
+        island_map
 
-        print("Age: ", herb.get_age(),
-              "weight: ", herb.get_weight(),
-              "fitness: ", herb.get_fitness())
+        Returns
+        -------
+        kart_rgb
+        """
+        #
+        # island_string = island_map
+        # string_map = textwrap.dedent(island_string)
+        # string_map.replace('\n', ' ')
 
-"""
+        #                   R    G    B
+        rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
+                     'L': (0.0, 0.6, 0.0),  # dark green
+                     'H': (0.5, 1.0, 0.5),  # light green
+                     'D': (1.0, 1.0, 0.5)}  # light yellow
 
-"""
+        kart_rgb = [[rgb_value[column] for column in row]
+                    for row in island_map.splitlines()]
+        return kart_rgb
 
-Parameters
-----------
-geography_island_string
-    Multi- line string specifying island geography
-initial_population
-    List of dictionaries specifying initial population
-seed
-    Integer used as random number seed
-ymax_animals
-    Number of specifying y-axis limit for graph showing animal numbers
-cmax_animals
-    Dict specifying color-code limits for animal densities
-hist_specs
-    Specifications for histogram. Dictionary.
-img_base
-    String with the beginning of file name for figures, including path
-img_fmt
-    String with type for figures, e.g. 'png'
-"""
+    def create_population_heatmap(self):
+        """
+        Uses DataFrame and return values to plot in the heatmaps.
+
+        Returns
+        -------
+        herb_array : object
+        carn_array : object
+        """
+        x_len, y_len = self.length_of_map()
+
+        df = self.animal_distribution
+        df.set_index(['Row', 'Col'], inplace=True)
+        herb_array = np.asarray(df['Herbivore']).reshape(y_len, x_len)
+        carn_array = np.asarray(df['Carnivore']).reshape(y_len, x_len)
+
+        return herb_array, carn_array
+
+    def make_movie(self, movie_fmt):
+        """
+        Method will create an mp4 or a gif from saved images.
+
+        Parameters
+        ----------
+        movie_fmt
+            Must have a ffmpeg
+        """
+
+        if self.img_base is None:
+            raise RuntimeError("No filename defined.")
+
+        if movie_fmt == "mp4":
+            try:
+                subprocess.check_call([_FFMPEG_BINARY,
+                                       "-framerate", "5", "-i",
+                                       "{}_%05d.png".format(self.img_base),
+                                       "-y",
+                                       "-profile:v", "baseline",
+                                       "-level", "3.0",
+                                       "-pix_fmt", "yuv420p",
+                                       "{}.{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError("ERROR: ffmpeg failed with: {)". format(err))
+        elif movie_fmt == "gif":
+            try:
+                subprocess.check_call([_CONVERT_BINARY,
+                                       "-delay", "1",
+                                       "-loop", "0",
+                                       "{}.{]".format(self.img_base),
+                                       "{].{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError("ERROR: converted failed with: {}".format(err))
+        else:
+            raise ValueError("Uknown movie format: " + movie_fmt)
+
+    def save_graphics(self):
+        """
+        Method will save figure with given filename.
+
+        """
+
+        if self.img_base is None:
+            return
+
+        plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
+                                                     num=self._img_ctr,
+                                                     type=self.img_fmt))
+        self._img_ctr += 1

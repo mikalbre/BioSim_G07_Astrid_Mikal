@@ -45,7 +45,6 @@ if __name__ == '__main__':
                            'weight': 20}
                           for _ in range(40)]}]
 
-# LOOK AT THIS
     sim = BioSim(island_map=geogr, ini_pop=ini_herbs,
                  seed=123456,
                  hist_specs = {'fitness': {'max': 1.0, 'delta': 0.05},
@@ -64,6 +63,6 @@ if __name__ == '__main__':
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
-    plt.savefig('check_sim.pdf')
+    #plt.savefig('check_sim.pdf')
 
-    input('Press ENTER')
+    #input('Press ENTER')
