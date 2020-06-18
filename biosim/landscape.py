@@ -47,15 +47,6 @@ class SingleCell:
         cls.params_dict.update(parameter)
 
 
-        accessibility_boolean = False
-        if accessibility:
-            if type(accessibility) is bool:
-                accessibility_boolean = True
-            else:
-                raise ValueError('The only argument for passable is bool.')
-        else:
-            accessibility_boolean is True
-
     def __init__(self):
         """
         Initializes the cell and creates empty lists for herbivores and carnivores.

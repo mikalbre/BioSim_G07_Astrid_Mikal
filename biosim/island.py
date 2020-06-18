@@ -433,25 +433,3 @@ class CreateIsland:
         self.year += 1
 
         return self.num_animals_per_species
-
-
-if __name__ =='__main__':
-
-    default_map = """WWWW\nWLHW\nWLWW\nWWWW"""
-
-    default_population = [{"loc": (2, 2), "pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
-                                                  for _ in range(150)]}]
-    CreateIsland(default_map, default_population).simulate_one_year()
-
-
-# for pos, cell in self.map.items():
-#   herb_birth, carn_birth = cell.procreation()
-#   if self.store_stats:
-#       self.stats[self.year]['Herbivore']['birth'][pos] = herb_birth
-#       self.stats[self.year]['Carnivore']['birth'][pos] = carn_birth
-
-
-    # default_population = [{"loc": (2, 2),"pop": [{'species': 'Herbivore', 'age': 5, 'weight': 20}
-    #                                               for _ in range(150)]},
-    #                        {"loc": (2, 2), "pop": [{'species': 'Carnivore', 'age': 5, 'weight': 20}
-    #                                                for _ in range(40)]}]

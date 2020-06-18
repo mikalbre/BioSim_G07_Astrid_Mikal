@@ -50,7 +50,6 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")
 
-
     def __init__(self, age=0, weight=None):
         """
         Initialises instance. If weight not specified, weight is determine from the gaussian
@@ -111,7 +110,8 @@ class Animals:
         offspring_weight : float
         """
 
-        offspring_weight = random.gauss(self.params_dict["w_birth"], self.params_dict["sigma_birth"])
+        offspring_weight = random.gauss(self.params_dict["w_birth"],
+                                        self.params_dict["sigma_birth"])
         return offspring_weight
 
     @staticmethod
@@ -147,7 +147,8 @@ class Animals:
         if self.weight <= 0:
             self.phi = 0
         else:
-            q_age = self.sigmoid(self.age, self.params_dict["a_half"], self.params_dict["phi_age"], 1)
+            q_age = self.sigmoid(self.age,
+                                 self.params_dict["a_half"], self.params_dict["phi_age"], 1)
             q_weight = self.sigmoid(self.weight,
                                     self.params_dict["w_half"], self.params_dict["phi_weight"], -1)
             self.phi = q_age * q_weight

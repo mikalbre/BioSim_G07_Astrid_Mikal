@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
+
 from biosim.animals import Herbivore, Carnivore
 from biosim import landscape as Landscape
 from biosim.island import CreateIsland as island
-from biosim.landscape import Lowland, Highland, Desert, Water
 from biosim.visualization import Visualization
-import textwrap
+
 import pandas as pd
 import os
 import subprocess
@@ -34,15 +38,17 @@ class BioSim:
                  img_dir=None,
                  img_base=None
                  ):
+
         random.seed(seed)
+
         self._year = 0
         self.final_year = None
+
+        self._step = 0
+        self.hist_specs = hist_specs
         self.inserted_map = island_map
         self.island = island(island_map, ini_pop)
 
-        self.hist_specs = hist_specs
-        self.herbivore_list = [self.island.num_animals_per_species['Herbivore']]
-        self.carnivore_list = [self.island.num_animals_per_species['Carnivore']]
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
 
@@ -74,8 +80,8 @@ class BioSim:
             Landscape.Lowland.cell_parameter(params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
-        # if img_years is None:
-        #     img_years = vis_years
+        if img_years is None:
+            img_years = vis_years
         #
         # if self._step % vis_steps == 0:
         #     self.update_graphics()
@@ -88,19 +94,22 @@ class BioSim:
         for year in range(num_years):
             self._year += 1
             self.island.simulate_one_year()
-            self.visualization.update_graphics(self.create_population_heatmap(),
-                                               self.island.num_animals_per_species)
-            self.visualization.update_histogram_fitness(self.island.fitness_list()[0],
-                                                        self.island.fitness_list()[1],
+            if self._step % vis_years == 0:
+                self.visualization.update_graphics(self.create_population_heatmap(),
+                                                   self.island.num_animals_per_species)
+                self.visualization.update_histogram_fitness(self.island.fitness_list()[0],
+                                                            self.island.fitness_list()[1],
+                                                            self.hist_specs)
+                self.visualization.update_histogram_age(self.island.age_list()[0],
+                                                        self.island.age_list()[1],
                                                         self.hist_specs)
-            self.visualization.update_histogram_age(self.island.age_list()[0],
-                                                    self.island.age_list()[1],
-                                                    self.hist_specs)
-            self.visualization.update_histogram_weight(self.island.weight_list()[0],
-                                                       self.island.weight_list()[1],
-                                                       self.hist_specs)
+                self.visualization.update_histogram_weight(self.island.weight_list()[0],
+                                                           self.island.weight_list()[1],
+                                                           self.hist_specs)
+            if self.img_base is not None:
+                self.save_graphics()
 
-            self.save_graphics()
+            self._step += 1
 
     def add_population(self, population):
         self.island.add_population(population)
@@ -137,10 +146,6 @@ class BioSim:
         return lenx_map, leny_map
 
     def plot_island_map(self, island_map):
-        #
-        # island_string = island_map
-        # string_map = textwrap.dedent(island_string)
-        # string_map.replace('\n', ' ')
 
         #                   R    G    B
         rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
@@ -153,6 +158,14 @@ class BioSim:
         return kart_rgb
 
     def create_population_heatmap(self):
+        """
+        Uses DataFrame and return values to plot in the heatmaps.
+
+        Returns
+        -------
+        herb_array : object
+        carn_array : object
+        """
         x_len, y_len = self.length_of_map()
 
         df = self.animal_distribution
@@ -163,6 +176,18 @@ class BioSim:
         return herb_array, carn_array
 
     def make_movie(self, movie_fmt):
+        """
+        Method will create an mp4 or a gif from saved images.
+
+        Parameters
+        ----------
+        movie_fmt
+            Must have a ffmpeg
+        """
+
+        if self.img_base is None:
+            raise RuntimeError("No filename defined.")
+
         if movie_fmt == "mp4":
             try:
                 subprocess.check_call([_FFMPEG_BINARY,
@@ -183,11 +208,16 @@ class BioSim:
                                        "{}.{]".format(self.img_base),
                                        "{].{}".format(self.img_base, movie_fmt)])
             except subprocess.CalledProcessError as err:
-                raise RuntimeError("ERROR: converted failed: " + movie_fmt)
+                raise RuntimeError("ERROR: converted failed with: {}".format(err))
         else:
             raise ValueError("Uknown movie format: " + movie_fmt)
 
     def save_graphics(self):
+        """
+        Method will save figure with given filename.
+
+        """
+
         if self.img_base is None:
             return
 
@@ -195,5 +225,3 @@ class BioSim:
                                                      num=self._img_ctr,
                                                      type=self.img_fmt))
         self._img_ctr += 1
-
-
