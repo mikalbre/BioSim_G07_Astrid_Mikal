@@ -74,17 +74,16 @@ class BioSim:
             Landscape.Lowland.cell_parameter(params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
-        if img_years is None:
-            img_years = vis_years
-        self.update_graphics()
+        # if img_years is None:
+        #     img_years = vis_years
+        #
+        # if self._step % vis_steps == 0:
+        #     self.update_graphics()
+        #
+        # if self._step % img_steps == 0:
+        #     self._save_graphics()
 
-        if self._step % vis_steps == 0:
-            self.update_graphics()
-
-        if self._step % img_steps == 0:
-            self._save_graphics()
-
-        self._step += 1
+        # self._step += 1
 
         for year in range(num_years):
             self._year += 1
