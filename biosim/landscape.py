@@ -46,7 +46,6 @@ class SingleCell:
                 raise TypeError("This specific parameter not defined for this cell")
         cls.params_dict.update(parameter)
 
-
     def __init__(self):
         """
         Initializes the cell and creates empty lists for herbivores and carnivores.
@@ -163,7 +162,6 @@ class SingleCell:
                     continue
                 herb_newbord.append(offspring)
             self.present_herbivores.extend(herb_newbord)
-
 
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:

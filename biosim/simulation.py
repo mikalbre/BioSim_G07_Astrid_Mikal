@@ -42,7 +42,7 @@ class BioSim:
         random.seed(seed)
 
         self._year = 0
-        self.final_year = None
+        self._final_year = None
 
         self._step = 0
         self.hist_specs = hist_specs
@@ -82,7 +82,8 @@ class BioSim:
     def simulate(self, num_years, vis_years=1, img_years=None):
         if img_years is None:
             img_years = vis_years
-        #
+
+        self._final_year = self._year + num_years
         # if self._step % vis_steps == 0:
         #     self.update_graphics()
         #
@@ -91,11 +92,14 @@ class BioSim:
 
         # self._step += 1
 
-        for year in range(num_years):
-            self._year += 1
+        while self._year < self._final_year:
             self.island.simulate_one_year()
-            if self._step % vis_years == 0:
-                self.visualization.update_graphics(self.create_population_heatmap(),
+
+        # for year in range(num_years):
+
+            if self._year % vis_years == 0:
+                self.visualization._changing_text.set_text('Year:' + str(self._year))
+                self.visualization.update_graphics(vis_years, self.create_population_heatmap(),
                                                    self.island.num_animals_per_species)
                 self.visualization.update_histogram_fitness(self.island.fitness_list()[0],
                                                             self.island.fitness_list()[1],
@@ -106,10 +110,10 @@ class BioSim:
                 self.visualization.update_histogram_weight(self.island.weight_list()[0],
                                                            self.island.weight_list()[1],
                                                            self.hist_specs)
-            if self.img_base is not None:
+            if self._year % img_years == 0:
                 self.save_graphics()
 
-            self._step += 1
+            self._year += 1
 
     def add_population(self, population):
         self.island.add_population(population)
