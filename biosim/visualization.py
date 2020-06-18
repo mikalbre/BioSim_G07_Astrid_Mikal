@@ -1,40 +1,40 @@
-# -*- coding: utf-8 -*-
-
-__author__ = 'Astrid Sedal, Mikal Breiteig'
-__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
-
-from biosim.island import CreateIsland as island
-from biosim import landscape as Landscape
-from biosim.animals import Animals, Carnivore, Herbivore
-from biosim import island
-import textwrap
-import random
-
-import matplotlib.pyplot as plt
-
-
-class Visualization:
-    def __init__(self):
-
-        self.herb_data =[]
-        self.carn_data = []
-
-    def set_plot_first_time(self):
-        self.fig = plt.figure(figsize=(12, 6))
-        plt.axis("off")
-
-        self.fit_ax = self.fig.ass_subplot(6, 3, 16)
-        self.fit_ax.set_title("Fitness histogram")
-        self.fit_axis = None
-
-    def update_hist(self, fit_list=None):
-        self.fit_ax.clear()
-        self.fit_ax.set_title("Fitness hisotogram")
-
-        self.fit_ax.hist(fitness_list()[0], bins=10, histtype="step",
-                              color="g")
-        self.fit_ax.hist(fitness_list()[1], bins=10, histtype="step",
-                              color="r")
+# # -*- coding: utf-8 -*-
+#
+# __author__ = 'Astrid Sedal, Mikal Breiteig'
+# __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+#
+# from biosim.island import CreateIsland as island
+# from biosim import landscape as Landscape
+# from biosim.animals import Animals, Carnivore, Herbivore
+# from biosim import island
+# import textwrap
+# import random
+#
+# import matplotlib.pyplot as plt
+#
+#
+# class Visualization:
+#     def __init__(self):
+#
+#         self.herb_data =[]
+#         self.carn_data = []
+#
+#     def set_plot_first_time(self):
+#         self.fig = plt.figure(figsize=(12, 6))
+#         plt.axis("off")
+#
+#         self.fit_ax = self.fig.ass_subplot(6, 3, 16)
+#         self.fit_ax.set_title("Fitness histogram")
+#         self.fit_axis = None
+#
+#     def update_hist(self, fit_list=None):
+#         self.fit_ax.clear()
+#         self.fit_ax.set_title("Fitness hisotogram")
+#
+#         self.fit_ax.hist(fitness_list()[0], bins=10, histtype="step",
+#                               color="g")
+#         self.fit_ax.hist(fitness_list()[1], bins=10, histtype="step",
+#                               color="r")
 
 # if __name__ == "__main__":
 
@@ -213,9 +213,9 @@ class Visualization:
 
 
 
-
-
-
+#
+#
+#
 # from biosim.landscape import Lowland
 # import matplotlib.pyplot as plt
 # import random
