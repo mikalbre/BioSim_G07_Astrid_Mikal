@@ -354,7 +354,7 @@ class Carnivore(Animals):
         self.eaten = 0
         dead_herbs = []
         weight_killed_herb = 0
-        init_weight = self.weight
+        #init_weight = self.weight
 
         for herb in herb_phi_sorted_list:
             if self.phi <= herb.phi:
@@ -365,23 +365,31 @@ class Carnivore(Animals):
                 kill_prob = 1
 
             if random.random() <= kill_prob:
-                if herb.weight >= self.params_dict["F"]:
-                    self.weight += self.params_dict["beta"] * self.params_dict["F"]
-                    herb.alive = False
-                    self.fitness_calculation()
-                    dead_herbs.append(herb)
+                eat = min(herb.weight, self.params_dict["F"] - weight_killed_herb)
+                self.weight += self.params_dict["beta"] * eat
+                herb.alive = False
+                self.fitness_calculation()
+                dead_herbs.append(herb)
+                weight_killed_herb += eat
+
+                if weight_killed_herb >= self.params_dict["F"]:
                     return dead_herbs
 
-                else:
-                    self.weight += self.params_dict["beta"] * herb.weight
-                    herb.alive = False
-                    dead_herbs.append(herb)
-                    self.fitness_calculation()
-
-                    weight_killed_herb += herb.weight
-                    left_overs = weight_killed_herb - self.params_dict["F"]
-
-                    if left_overs >= 0:
-                        self.weight = (init_weight +
-                                       self.params_dict["beta"] * self.params_dict["F"])
         return dead_herbs
+
+
+
+
+                # else:
+                #     self.weight += self.params_dict["beta"] * herb.weight
+                #     herb.alive = False
+                #     dead_herbs.append(herb)
+                #     self.fitness_calculation()
+                #
+                #     weight_killed_herb += herb.weight
+                #     left_overs = weight_killed_herb - self.params_dict["F"]
+                #
+                #     if left_overs >= 0:
+                #         self.weight = (init_weight +
+                #                        self.params_dict["beta"] * self.params_dict["F"])
+                #
