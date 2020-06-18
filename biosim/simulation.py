@@ -115,6 +115,11 @@ class BioSim:
 
         Returns
         -------
+        """
+        if img_years is None:
+            img_years = vis_years
+
+        self._final_year = self._year + num_years
 
         while self._year < self._final_year:
             self.island.simulate_one_year()
