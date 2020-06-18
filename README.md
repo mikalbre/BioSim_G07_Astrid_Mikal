@@ -6,7 +6,7 @@
 - Mikal Breiteig <mibreite@nmbu.no>
 
 #
-BioSim project for INF200 (Advanced Python Programming).
+## BioSim project for INF200 (Advanced Python Programming).
 ##
 The project is a development of a population dynamic simulation, a project that has been created upon request from 
 the Environmental Projection Agency of Pylandia. The development team consists of Astrid Hæve Sedal and Mikal Breiteig. 
