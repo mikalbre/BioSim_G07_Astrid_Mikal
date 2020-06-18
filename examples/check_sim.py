@@ -63,6 +63,6 @@ if __name__ == '__main__':
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=100, vis_years=1, img_years=2000)
 
-    plt.savefig('check_sim.pdf')
+    #plt.savefig('check_sim.pdf')
 
-    input('Press ENTER')
+    #input('Press ENTER')

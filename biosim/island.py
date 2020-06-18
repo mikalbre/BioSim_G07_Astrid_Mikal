@@ -431,6 +431,8 @@ class CreateIsland:
         self.death_animals()
         self.year += 1
 
+        return self.num_animals_per_species
+
 
 if __name__ =='__main__':
 

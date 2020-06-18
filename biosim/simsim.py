@@ -9,6 +9,8 @@ import pandas as pd
 import os
 import subprocess
 import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 _FFMPEG_BINARY = "ffmpeg"
 _CONVERT_BINARY = "magick"
@@ -42,7 +44,6 @@ class BioSim:
         self.carnivore_list = [self.island.num_animals_per_species['Carnivore']]
         self.ymax_animals = ymax_animals
         self.cmax_animals = cmax_animals
-        self.hist_specs = hist_specs
 
         if img_dir is not None:
             self.img_base = os.path.join(img_dir, img_name)
@@ -53,7 +54,7 @@ class BioSim:
         self._img_ctr = 0
 
         self.visualization = Visualization()
-        self.visualization.graphics_setup()
+        self.visualization.graphics_setup(kart_rgb=self.plot_island_map(island_map))
 
     def set_animal_parameters(self, species, params):
         if species == 'Herbivore':
@@ -75,7 +76,19 @@ class BioSim:
         for year in range(num_years):
             self._year += 1
             self.island.simulate_one_year()
-            self.visualization.update_graphics(self.c)
+            self.visualization.update_graphics(self.create_population_heatmap(),
+                                               self.island.num_animals_per_species)
+            self.visualization.update_histogram_fitness(self.island.fitness_list()[0],
+                                                        self.island.fitness_list()[1],
+                                                        self.hist_specs)
+            self.visualization.update_histogram_age(self.island.age_list()[0],
+                                                    self.island.age_list()[1],
+                                                    self.hist_specs)
+            self.visualization.update_histogram_weight(self.island.weight_list()[0],
+                                                       self.island.weight_list()[1],
+                                                       self.hist_specs)
+
+            self.save_graphics()
 
     def add_population(self, population):
         self.island.add_population(population)
@@ -111,11 +124,11 @@ class BioSim:
         leny_map = len(lines)
         return lenx_map, leny_map
 
-    def plot_island_map(self, ):
-
-        island_string = self.island_map
-        string_map = textwrap.dedent(island_string)
-        string_map.replace('\n', ' ')
+    def plot_island_map(self, island_map):
+        #
+        # island_string = island_map
+        # string_map = textwrap.dedent(island_string)
+        # string_map.replace('\n', ' ')
 
         #                   R    G    B
         rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
@@ -124,23 +137,8 @@ class BioSim:
                      'D': (1.0, 1.0, 0.5)}  # light yellow
 
         kart_rgb = [[rgb_value[column] for column in row]
-                    for row in string_map.splitlines()]
-
-        self._map.imshow(kart_rgb)
-        self._map.set_xticks(np.arange(0, len(kart_rgb[0]), 2))  # sets the location
-        self._map.set_xticklabels(np.arange(1, 1 + len(kart_rgb[0]), 2))  # sets the displayed txt
-        self._map.set_yticks(np.arange(0, len(kart_rgb), 2))
-        self._map.set_yticklabels(np.arange(1, 1 + len(kart_rgb), 2))
-
-        axlg = self._fig.add_axes([0.03, 0.525, 0.05, 0.35])  # llx, lly, w, h
-        axlg.axis('off')
-        for ix, name in enumerate(('Water', 'Lowland',
-                                   'Highland', 'Desert')):
-            axlg.add_patch(plt.Rectangle((0., ix * 0.2), 0.3, 0.1,
-                                         edgecolor='none',
-                                         facecolor=rgb_value[name[0]]))
-            axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
-
+                    for row in island_map.splitlines()]
+        return kart_rgb
 
     def create_population_heatmap(self):
         x_len, y_len = self.length_of_map()
@@ -176,4 +174,14 @@ class BioSim:
                 raise RuntimeError("ERROR: converted failed: " + movie_fmt)
         else:
             raise ValueError("Uknown movie format: " + movie_fmt)
+
+    def save_graphics(self):
+        if self.img_base is None:
+            return
+
+        plt.savefig('{base}_{num:05d}.{type}'.format(base=self.img_base,
+                                                     num=self._img_ctr,
+                                                     type=self.img_fmt))
+        self._img_ctr += 1
+
 
