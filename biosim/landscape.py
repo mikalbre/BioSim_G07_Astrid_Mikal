@@ -53,8 +53,8 @@ class SingleCell:
                 accessibility_boolean = True
             else:
                 raise ValueError('The only argument for passable is bool.')
-        # if accessibility_boolean is True:
-        #     cls.params = accessibility
+        else:
+            accessibility_boolean is True
 
     def __init__(self):
         """
@@ -400,38 +400,39 @@ class Water(SingleCell):
 
         self.available_fodder = self.params["f_max"]
 
-
-if __name__ == "__main__":
-    random.seed(1)
-    c = Lowland()
-    poph = [{'species': 'Herbivore',
-            'age': 5,
-            'weight': 20} for _ in range(50)
-            ]
-    popc = [{'species': 'Carnivore',
-            'age': 5,
-             'weight': 20} for _ in range(20)
-            ]
-    c.params_dict= {'f_max': 800}
-    print(f"fodder: {c.available_fodder}")
-    c.animals_allocate(poph)
-    # c.animals_allocate(popc)
-    # print(f"num_an herb: {len(c.present_herbivores)}")
-    # print(f"num_an carn: {len(c.present_carnivores)}")
-
-    # if years == 50:
-    c.animals_allocate(popc)
-
-
-    for j in range(10):
-        for years in range(200):
-            c.eat()
-            c.procreation()
-            c.aging()
-            c.animal_death()
-        print("______ Etter syklus ______")
-        print(f'Herb num: {len(c.present_herbivores)}')
-        print(f'Carn num: {len(c.present_carnivores)}')
-
-        #print(c.present_herbivores)
-        #print(c.present_carnivores)
+# 
+# if __name__ == "__main__":
+#     random.seed(1)
+#     c = Lowland()
+#     poph = [{'species': 'Herbivore',
+#             'age': 5,
+#             'weight': 20} for _ in range(50)
+#             ]
+#     popc = [{'species': 'Carnivore',
+#             'age': 5,
+#              'weight': 20} for _ in range(20)
+#             ]
+#     c.params_dict= {'f_max': 800}
+#     print(f"fodder: {c.available_fodder}")
+#     c.animals_allocate(poph)
+#     # c.animals_allocate(popc)
+#     # print(f"num_an herb: {len(c.present_herbivores)}")
+#     # print(f"num_an carn: {len(c.present_carnivores)}")
+#
+#     # if years == 50:
+#     c.animals_allocate(popc)
+#
+#
+#     for j in range(10):
+#         for years in range(200):
+#             c.eat()
+#             c.procreation()
+#             c.aging()
+#             c.animal_death()
+#         print("______ Etter syklus ______")
+#         print(f'Herb num: {len(c.present_herbivores)}')
+#         print(f'Carn num: {len(c.present_carnivores)}')
+#
+#         #print(c.present_herbivores)
+#         #print(c.present_carnivores)
+#
