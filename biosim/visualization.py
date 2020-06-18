@@ -30,8 +30,6 @@ class Visualization:
         self.steps = 0
         self.current_herbivore_data = []
         self.current_carnivore_data = []
-        #self.herbivore_list = [self.Island.num_animals_per_species['Herbivore']]
-        #self.carnivore_list = [Island.num_animals_per_species['Carnivore']]
 
         self.step = 0
         self.final_year =None
@@ -83,7 +81,6 @@ class Visualization:
             self._weight_ax = self._fig.add_subplot(6, 3, 18)
             self._weight_ax.title.set_text('Histogram weight')
 
-        # setting up heatmap
         if self._herb_heat_ax is None:
             self._herb_heat_ax = self._fig.add_axes([0.1, 0.28, 0.3, 0.3])
             self._herb_heat_ax.title.set_text('Herbivore distribution')
@@ -96,7 +93,6 @@ class Visualization:
             self._carn_heat_ax.set_yticklabels([])
             self._carn_heat_ax.set_xticklabels([])
 
-        #Island map
         if self._map is None:
             self._map = self._fig.add_axes([0.1, 0.65, 0.4, 0.3])
             self._map.title.set_text('Rossumøya')
@@ -127,13 +123,11 @@ class Visualization:
                                              facecolor=rgb_value[name[0]]))
                 axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
 
-        #Line graphs
         if self._pop_ax is None:
             self._pop_ax = self._fig.add_axes([0.5, 0.65, 0.4, 0.3])
             if self._ymax_animals is not None:
                 self._pop_ax.set_ylim(0, self._ymax_animals)
 
-        #Year counter
         if self._txt_year is None:
             self._txt_year = self._fig.add_axes([0.5, 0.95, 0.05, 0.05])
             self._txt_year.axis('off')
@@ -142,11 +136,10 @@ class Visualization:
 
         plt.pause(0.001)
 
-    def update_graphics(self, distribution=None, num_species_dict=None):
+    def update_graphics(self, years, distribution=None, num_species_dict=None):
         self.steps += 1
         self._changing_text.set_text('Year:' + str(self.steps))
 
-        #heatmap update
         if self._cmax_animals is None:
             self._cmax_animals = self.density_heatmap
         if self._herb_heat_axis is None:
@@ -168,21 +161,24 @@ class Visualization:
         else:
             self._carn_heat_axis.set_data(distribution[1])
 
-        #line graph plot update
         self.current_herbivore_data.append(num_species_dict["Herbivore"])
         self.current_carnivore_data.append(num_species_dict["Carnivore"])
         length = len(self.current_carnivore_data)
         x_value = list(np.arange(length))
+
         if self._pop_ax is not None:
+            x_val = []
+            for val in x_value:
+                x_val.append(val * years)
             self._pop_ax.set_ylim(0, max(self.current_herbivore_data)+10)
 
             self._pop_ax.title.set_text("Number of animals by species")
             self._pop_ax.set_xlabel('Years')
             self._pop_ax.set_ylabel('Number of each species')
 
-            self._pop_ax.plot(x_value, self.current_herbivore_data,
+            self._pop_ax.plot(x_val, self.current_herbivore_data,
                                    '-', color='g', linewidth=0.5)
-            self._pop_ax.plot(x_value, self.current_carnivore_data,
+            self._pop_ax.plot(x_val, self.current_carnivore_data,
                                    '-', color='r', linewidth=0.5)
 
         plt.pause(0.01)

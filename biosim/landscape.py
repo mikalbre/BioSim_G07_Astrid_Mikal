@@ -42,7 +42,6 @@ class SingleCell:
                 raise TypeError("This specific parameter not defined for this cell")
         cls.params_dict.update(parameter)
 
-
     def __init__(self):
         """
         A superclass for the properties of a single cell on an island.
@@ -161,7 +160,6 @@ class SingleCell:
                     continue
                 herb_newbord.append(offspring)
             self.present_herbivores.extend(herb_newbord)
-
 
         if len(self.present_carnivores) >= 2:
             for carnivores in self.present_carnivores:

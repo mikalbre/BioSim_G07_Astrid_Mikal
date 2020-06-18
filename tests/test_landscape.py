@@ -25,8 +25,6 @@ class TestSingleClass:
         with pytest.raises(TypeError):
             Lowland().cell_parameter(params)
 
-# test accessibility
-
     def test_init(self):
         cell = SingleCell()
         assert type(cell.present_herbivores) is list
@@ -99,7 +97,6 @@ class TestSingleClass:
         highland.eat()
         available_fodder = highland.available_fodder
         assert available_fodder == 300
-        # kan også teste eat ved å sjekke om fodder_available er red., og om #herb er red.
 
     def test_fodder_regrow(self):
         lowland = Lowland()
@@ -242,7 +239,6 @@ class TestSingleClass:
         cell.remove_carn_migrated(herb)
         assert len(cell.present_carnivores) == 0
 
-
     def test_aging(self):
         lowland = Lowland()
         lowland.animals_allocate(
@@ -364,5 +360,3 @@ class TestWater:
 
         water.fodder_regrow()
         assert water.get_fodder() == 0
-
-# available fixtures: cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, doctest_namespace, mocker, module_mocker, monkeypatch, package_mocker, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, session_mocker, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
