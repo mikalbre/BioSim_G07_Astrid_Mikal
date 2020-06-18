@@ -4,7 +4,7 @@ Island
 The CreateIsland Class
 -------------------
 
-.. autoclass:: biosim.landscape.SingleCell
+.. automodule:: biosim.landscape.SingleCell
    :members:
 
 Functions outside classes

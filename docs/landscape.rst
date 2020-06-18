@@ -4,29 +4,27 @@ Landscape
 The SingleCell Class
 -------------------
 
-.. autoclass:: landscape.SingleCell
+.. automodule:: biosim.landscape.SingleCell
    :members:
 
 The Lowland Class
 -------------------
-.. autoclass:: landscape.Lowland
+.. automodule:: biosim.landscape.Lowland
    :members:
 
 The Highland Class
 -------------------
-.. autoclass:: landscape.Highland
+.. automodule:: biosim.landscape.Highland
    :members:
 
 
 The Desert Class
 -------------------
-.. autoclass:: landscape.Desert
+.. automodule:: biosim.landscape.Desert
    :members:
 
 
 The Water Class
 -------------------
-.. autoclass:: landscape.Water
+.. automodule:: biosim.landscape.Water
    :members:
-
-

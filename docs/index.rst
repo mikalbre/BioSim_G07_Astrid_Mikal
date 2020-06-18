@@ -35,7 +35,6 @@ The Environment:
    Animals
 
 
-
 Indices and tables
 ==================
 
