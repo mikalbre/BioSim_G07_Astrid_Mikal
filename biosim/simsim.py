@@ -1,0 +1,179 @@
+# -*- coding: utf-8 -*-
+from biosim.animals import Herbivore, Carnivore
+from biosim import landscape as Landscape
+from biosim.island import CreateIsland as island
+from biosim.landscape import Lowland, Highland, Desert, Water
+from biosim.vis import Visualization
+import textwrap
+import pandas as pd
+import os
+import subprocess
+import random
+
+_FFMPEG_BINARY = "ffmpeg"
+_CONVERT_BINARY = "magick"
+
+_DEFAULT_GRAPHICS_DIR = os.path.join("..", "data")
+_DEFAULT_GRAPHICS_NAME = "dv"
+
+_DEFAULT_MOVIE_FORMAT = "mp4"
+
+
+class BioSim:
+    def __init__(self,
+                 island_map,
+                 ini_pop,
+                 seed,
+                 ymax_animals=None,
+                 cmax_animals=None,
+                 hist_specs=None,
+                 img_name=_DEFAULT_GRAPHICS_NAME,
+                 img_fmt='png',
+                 img_dir=None
+                 ):
+        random.seed(seed)
+        self._year = 0
+        self.final_year = None
+        self.inserted_map = island_map
+        self.island = island(island_map, ini_pop)
+
+        self.hist_specs = hist_specs
+        self.herbivore_list = [self.island.num_animals_per_species['Herbivore']]
+        self.carnivore_list = [self.island.num_animals_per_species['Carnivore']]
+        self.ymax_animals = ymax_animals
+        self.cmax_animals = cmax_animals
+        self.hist_specs = hist_specs
+
+        if img_dir is not None:
+            self.img_base = os.path.join(img_dir, img_name)
+        else:
+            self.img_base = None
+
+        self.img_fmt = img_fmt
+        self._img_ctr = 0
+
+        self.visualization = Visualization()
+        self.visualization.graphics_setup()
+
+    def set_animal_parameters(self, species, params):
+        if species == 'Herbivore':
+            Herbivore.set_parameters(params)
+        elif species == 'Carnviore':
+            Carnivore.set_parameters(params)
+
+    def set_landscape_parameters(self, landscape, params):
+        if landscape == 'W':
+            Landscape.Water.cell_parameter(params)
+        elif landscape == 'D':
+            Landscape.Desert.cell_parameter(params)
+        if landscape == 'H':
+            Landscape.Highland.cell_parameter(params)
+        elif landscape == 'L':
+            Landscape.Lowland.cell_parameter(params)
+
+    def simulate(self, num_years, vis_years=1, img_years=None):
+        for year in range(num_years):
+            self._year += 1
+            self.island.simulate_one_year()
+            self.visualization.update_graphics(self.c)
+
+    def add_population(self, population):
+        self.island.add_population(population)
+
+    @property
+    def year(self):
+        return self.island.year
+
+    @property
+    def num_animals(self):
+        return self.island.num_animals
+
+    @property
+    def num_animals_per_species(self):
+        return self.island.num_animals_per_species
+
+    @property
+    def animal_distribution(self):
+        dict_for_df = {'Row': [], 'Col': [], 'Herbivore': [], 'Carnivore': []}
+        for pos, cell in self.island.map.items():
+            row, col = pos
+            dict_for_df['Row'].append(row)
+            dict_for_df['Col'].append(col)
+            dict_for_df['Herbivore'].append(cell.num_herbivores)
+            dict_for_df['Carnivore'].append(cell.num_carnivores)
+        df_sim = pd.DataFrame.from_dict(dict_for_df)
+        return df_sim
+
+    def length_of_map(self):
+        lines = self.inserted_map.strip()
+        lines = lines.split('\n')
+        lenx_map = len(lines[0])
+        leny_map = len(lines)
+        return lenx_map, leny_map
+
+    def plot_island_map(self, ):
+
+        island_string = self.island_map
+        string_map = textwrap.dedent(island_string)
+        string_map.replace('\n', ' ')
+
+        #                   R    G    B
+        rgb_value = {'W': (0.0, 0.0, 1.0),  # blue
+                     'L': (0.0, 0.6, 0.0),  # dark green
+                     'H': (0.5, 1.0, 0.5),  # light green
+                     'D': (1.0, 1.0, 0.5)}  # light yellow
+
+        kart_rgb = [[rgb_value[column] for column in row]
+                    for row in string_map.splitlines()]
+
+        self._map.imshow(kart_rgb)
+        self._map.set_xticks(np.arange(0, len(kart_rgb[0]), 2))  # sets the location
+        self._map.set_xticklabels(np.arange(1, 1 + len(kart_rgb[0]), 2))  # sets the displayed txt
+        self._map.set_yticks(np.arange(0, len(kart_rgb), 2))
+        self._map.set_yticklabels(np.arange(1, 1 + len(kart_rgb), 2))
+
+        axlg = self._fig.add_axes([0.03, 0.525, 0.05, 0.35])  # llx, lly, w, h
+        axlg.axis('off')
+        for ix, name in enumerate(('Water', 'Lowland',
+                                   'Highland', 'Desert')):
+            axlg.add_patch(plt.Rectangle((0., ix * 0.2), 0.3, 0.1,
+                                         edgecolor='none',
+                                         facecolor=rgb_value[name[0]]))
+            axlg.text(0.35, ix * 0.2, name, transform=axlg.transAxes)
+
+
+    def create_population_heatmap(self):
+        x_len, y_len = self.length_of_map()
+
+        df = self.animal_distribution
+        df.set_index(['Row', 'Col'], inplace=True)
+        herb_array = np.asarray(df['Herbivore']).reshape(y_len, x_len)
+        carn_array = np.asarray(df['Carnivore']).reshape(y_len, x_len)
+
+        return herb_array, carn_array
+
+    def make_movie(self, movie_fmt):
+        if movie_fmt == "mp4":
+            try:
+                subprocess.check_call([_FFMPEG_BINARY,
+                                       "-framerate", "5", "-i",
+                                       "{}_%05d.png".format(self.img_base),
+                                       "-y",
+                                       "-profile:v", "baseline",
+                                       "-level", "3.0",
+                                       "-pix_fmt", "yuv420p",
+                                       "{}.{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError("ERROR: ffmpeg failed with: {)". format(err))
+        elif movie_fmt == "gif":
+            try:
+                subprocess.check_call([_CONVERT_BINARY,
+                                       "-delay", "1",
+                                       "-loop", "0",
+                                       "{}.{]".format(self.img_base),
+                                       "{].{}".format(self.img_base, movie_fmt)])
+            except subprocess.CalledProcessError as err:
+                raise RuntimeError("ERROR: converted failed: " + movie_fmt)
+        else:
+            raise ValueError("Uknown movie format: " + movie_fmt)
+

@@ -400,7 +400,7 @@ class Water(SingleCell):
 
         self.available_fodder = self.params["f_max"]
 
-#
+
 if __name__ == "__main__":
     random.seed(1)
     c = Lowland()
