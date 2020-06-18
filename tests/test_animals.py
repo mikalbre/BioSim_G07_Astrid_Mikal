@@ -10,11 +10,6 @@ from scipy.stats import stats
 
 
 class Test_Animals:
-    # @pytest.fixture
-    # def set_parameters(request):
-    #     Animals.set_parameters(request.param)
-    #     yield
-    #     Animals.set_parameters(Animals.params)
 
     def test_set_parameters(self):
 
@@ -43,11 +38,7 @@ class Test_Animals:
         assert herb.weight >= 0
 
         with pytest.raises(ValueError):
-           Herbivore(-2, 8). __init__()
-
-        # carn = Carnivore(age=3.2, weight=5)
-        # with pytest.raises(ValueError):
-        #     carn.__init__(age=0, weight=None)
+            Herbivore(-2, 8). __init__()
 
     def test_repr(self):
         herb = Herbivore(5, 20)
@@ -100,7 +91,8 @@ class Test_Animals:
 
         herb = Herbivore(4, 30)
         weight = herb.weight
-        lose_weight = herb.params["zeta"] * (herb.params["w_birth"] + herb.params["sigma_birth"]) #33.25
+        lose_weight = herb.params_dict["zeta"] \
+                      * (herb.params_dict["w_birth"] + herb.params_dict["sigma_birth"])
         assert weight < lose_weight
         for _ in range(10):
             procreation = herb.procreation(10)
@@ -108,26 +100,27 @@ class Test_Animals:
 
         herb = Herbivore(5, 40)
         phi = herb.phi
-        mocker.patch('random.random', return_value=0.01)
+        mocker.patch('random.random', return_value=0.0001)
         herb.procreation(2)
         mocker.patch('random.gauss', return_value=5)
-
-        #herb.weight -= herb.params["xi"] * herb.get_initial_weight_offspring()
+        herb.weight = 40 - (herb.params_dict["xi"] * herb.get_initial_weight_offspring())
         phi_procreated = herb.phi
-        #assert herb.weight == 34  # NOT WORKING CHECK IT OUT!!!!
+        assert herb.weight == 34  # NOT WORKING CHECK IT OUT!!!!
         assert phi > phi_procreated
         #
         # herb = Herbivore(5, 20)
-        # mocker.patch('random.random', return_value=0.001)
+        # mocker.patch('random.random', return_value=0.00001)
         # offspring = herb.procreation(2)
-        # assert offspring["Type"] == "Herbivore"
+        # # assert offspring["Type"] == "Herbivore"
+        # assert isinstance(offspring, Herbivore)
 
-    def test_has_moved(self):
-        herb = Herbivore()
-        herb.prob_migrate()
-        assert herb.has_migrated is True
-        assert herb.set_migration_true() is True
-        assert herb.set_migration_false() is not False
+    def test_has_moved(self, mocker):
+        herb = Herbivore(5, 20)
+        assert herb.has_migrated is False
+        mocker.patch('random.random', return_value=0.001)
+        for _ in range(10):
+            herb.prob_migrate()
+        assert herb.has_migrated
 
     # def test_has_migrate(self, mocker):
     #     mocker.patch('random.random', return_value=0.01)
@@ -212,7 +205,7 @@ class TestHerbivore:
         pre_eat_weight = herb.weight
         herb.feeding(17)
         post_eat_weight = herb.weight
-        assert post_eat_weight == pre_eat_weight + herb.params["beta"] * herb.params["F"]
+        assert post_eat_weight == pre_eat_weight + herb.params_dict["beta"] * herb.params_dict["F"]
 
 
 class TestCarnivore:

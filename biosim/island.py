@@ -421,15 +421,18 @@ class CreateIsland:
 
         Returns
         -------
-
+        num_animals_per_species : dict
         """
-        self.new_year_reset()
+
+        # self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
         self.migration_animals()
         self.aging_animals()
         self.death_animals()
         self.year += 1
+
+        return self.num_animals_per_species
 
 
 if __name__ =='__main__':

@@ -98,7 +98,7 @@ class BioSim:
             self.carnivore_list.append(new_island_population['Carnivore'])
 
             if self._age_ax is not None:
-                self.up_hist(num_years)
+                self.upda(num_years)
 
             if num_years % vis_years == 0:
                 self.update_graphics()
@@ -320,7 +320,6 @@ class BioSim:
             plt.colorbar(self._carn_heat_axis, ax=self._carn_heat_ax)
         else:
             self._carn_heat_axis.set_data(carnivore_array)
-
 
 
     def update_graphics(self):

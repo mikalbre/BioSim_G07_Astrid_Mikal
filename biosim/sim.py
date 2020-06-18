@@ -4,7 +4,7 @@
 from biosim import island as island
 from biosim import landscape as Landscape
 from biosim.animals import Animals, Herbivore, Carnivore
-from biosim.visualization import Visualization
+# from biosim.visualization import Visualization
 
 import os
 import pandas as pd
@@ -123,9 +123,14 @@ class BioSim:
             # if self._age_axis or self._fit_axis or self._weight_axis is not None:
             #     self.up_hist(num_years)
 
-            # if self._age_ax is not None: #_ax for å PLOTTE
-            # self.up_hist(num_years)
+            if self._fit_axis is not None:
+                self.update_histogram_fitness(num_years)
 
+            if self._age_axis is not None: #_ax for å PLOTTE
+                self.update_histogram_age(num_years)
+
+            if self._weight_axis is not None: #_ax for å PLOTTE
+                self.update_histogram_weight(num_years)
 
 
             # while self.step < self.final_year:
@@ -141,6 +146,8 @@ class BioSim:
             # self.step += 1
 
             self.last_year_simulated += 1
+            self._fig.suptitle(f"Year:{num_years}")
+
         # if img_years is None:
         #     img_years = vis_years
         #
@@ -293,25 +300,25 @@ class BioSim:
             self.carnivore_line.set_data(np.hstack((x_data, xnew)),
                                          np.hstack((y_data, ynew)))
 
-        if self.herbivore_line is None:
-            herb_line = self._pop_ax.plot(np.arange(0, self.num_years),
-                                          np.full(self.num_years, np.nan))
-            self.herbivore_line = herb_line[0]
-        else:
-            x_data, y_data = self.herbivore_line.get_data()
-            xnew = np.arange(x_data[-1] + 1, self.num_years)
-            ynew = np.full(xnew.shape, np.nan)
-            self.herbivore_line.set_data(np.hstack((x_data, xnew)),
-                                         np.hstack((y_data, ynew)))
-
-        if self.herbivore_line is None:
-            herb_line = self._pop_ax.plot(np.arange(0, self.num_years), np.full(self.num_years, np.nan))
-            self.herbivore_line = herb_line[0]
-        else:
-            x_data, y_data = self.herbivore_line.get_data()
-            xnew = np.arange(x_data[-1] + 1, self.num_years)
-            ynew = np.full(xnew.shape, np.nan)
-            self.herbivore_line.set_data((np.hstack((x_data, xnew)), np.hstack((y_data, ynew))))
+        # if self.herbivore_line is None:
+        #     herb_line = self._pop_ax.plot(np.arange(0, self.num_years),
+        #                                   np.full(self.num_years, np.nan))
+        #     self.herbivore_line = herb_line[0]
+        # else:
+        #     x_data, y_data = self.herbivore_line.get_data()
+        #     xnew = np.arange(x_data[-1] + 1, self.num_years)
+        #     ynew = np.full(xnew.shape, np.nan)
+        #     self.herbivore_line.set_data(np.hstack((x_data, xnew)),
+        #                                  np.hstack((y_data, ynew)))
+        # #
+        # if self.herbivore_line is None:
+        #     herb_line = self._pop_ax.plot(np.arange(0, self.num_years), np.full(self.num_years, np.nan))
+        #     self.herbivore_line = herb_line[0]
+        # else:
+        #     x_data, y_data = self.herbivore_line.get_data()
+        #     xnew = np.arange(x_data[-1] + 1, self.num_years)
+        #     ynew = np.full(xnew.shape, np.nan)
+        #     self.herbivore_line.set_data((np.hstack((x_data, xnew)), np.hstack((y_data, ynew))))
 
         if self._pop_axis is None:
             self._pop_ax.plot([i for i in range(len(self.herbivore_list))],
@@ -464,6 +471,7 @@ class BioSim:
         self.plot_population_graph()
         self.update_heatmap()
         plt.pause(0.1)
+
         self._fig.suptitle("ÅR: {}".format(self.num_years))
 
     def save_graphics(self):

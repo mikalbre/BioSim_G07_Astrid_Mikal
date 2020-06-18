@@ -40,10 +40,13 @@ class TestSingleClass:
 
     def test_animal_allocates(self):
         lowland = Lowland()
+
         ini_animal = [{'species': 'Herbivore', 'age': 5, 'weight': 20} for _ in range(20)]
         lowland.animals_allocate(ini_animal)
+
         num_herb = len(lowland.present_herbivores)
         assert num_herb == 20
+
         add_new_herb = [{'species': 'Herbivore', 'age': 5, 'weight': 20}]
         lowland.animals_allocate(add_new_herb)
         assert len(lowland.present_herbivores) == 21
@@ -53,13 +56,13 @@ class TestSingleClass:
         num_carn = len(lowland.present_carnivores)
         assert num_carn == 20
 
-        ini_animal = [{'species': 'Dog', 'age': 5, 'weight': 20}]
+        ini_animal = {'species': 'Dog', 'age': 5, 'weight': 20}
         with pytest.raises(TypeError):
             SingleCell.animals_allocate(ini_animal)
 
         highland = Highland()
-        add_herbs_to_island = {'species': 'Herbivore', 'age': 3, 'weight': 10},
-                               {'species': 'Herbivore', 'age': 5, 'weight': 14},
+        add_herbs_to_island = [{'species': 'Herbivore', 'age': 3, 'weight': 10},
+                              {'species': 'Herbivore', 'age': 5, 'weight': 14},
                                {'species': 'Herbivore', 'age': 13, 'weight': 23}]
         highland.animals_allocate(add_herbs_to_island)
         herbivore_0 = highland.present_herbivores[0]
@@ -169,7 +172,7 @@ class TestSingleClass:
         assert num_herb < num_herb_after_procreation
 
 
-    def test_migration(self):
+    def test_migration(self, mocker):
         cell = SingleCell()
         neighbor_cells = [((10, 10), Water),
                           ((10, 10), Water), ((10, 10), Water),  ((10, 10), Water)]
@@ -185,6 +188,7 @@ class TestSingleClass:
         for _ in range(10):
             herb_migrate = cell.migrate(neighbor_cells)
         assert herb_migrate
+
         herb_migrate, carn_migrate = cell.migrate(neighbor_cells)
         assert len(herb_migrate + carn_migrate) > 0
         assert carn.has_migrated is True
@@ -193,6 +197,11 @@ class TestSingleClass:
         cell.animals_allocate(herb)
         herb.has_migrated = False
         assert herb.has_migrated is True
+
+
+        mocker.patch('random.choice', return_value=((5, 5), Lowland))
+
+
 
     def test_add_herb_migrated(self):
         cell = Lowland()
@@ -209,18 +218,22 @@ class TestSingleClass:
     def test_remove_herb_migrated(self):
         cell = Lowland()
         assert len(cell.present_herbivores) == 0
+
         herb = Herbivore()
         cell.add_herb_migrated(herb)
         assert len(cell.present_herbivores) == 1
+
         cell.remove_herb_migrated(herb)
         assert len(cell.present_herbivores) == 0
 
     def test_remove_carn_migrated(self):
         cell = Highland()
         assert len(cell.present_carnivores) == 0
+
         herb = Herbivore()
         cell.add_carn_migrated(herb)
         assert len(cell.present_carnivores) == 1
+
         cell.remove_carn_migrated(herb)
         assert len(cell.present_carnivores) == 0
 
@@ -290,8 +303,6 @@ class TestSingleClass:
         assert num_animals > 0
 
 
-
-
 class TestHighland:
     def test_init(self):
         highland = Highland()
@@ -317,6 +328,7 @@ class TestLowland:
         lowland = Lowland()
         lowland.available_fodder = 3
         assert lowland.get_fodder() == 3
+
         lowland.fodder_regrow()
         assert lowland.get_fodder() == 800
 
@@ -344,6 +356,7 @@ class TestWater:
     def test_grow(self):
         water = Water()
         assert water.get_fodder() == 0
+
         water.fodder_regrow()
         assert water.get_fodder() == 0
 

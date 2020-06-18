@@ -38,7 +38,7 @@ class Animals:
         """
         # cls.params_dict.update(params)
         for parameter in params:
-            cls.params_dict.update(params)
+            # cls.params_dict.update(params)
             if parameter in cls.params_dict:
                 if params[parameter] < 0:
                     raise ValueError(f"{parameter} cannot be negative.")
@@ -49,7 +49,7 @@ class Animals:
                 cls.params_dict.update(params)
             else:
                 raise ValueError("Parameter not defined for this animal")
-        cls.params_dict.update(params)
+
 
     def __init__(self, age=0, weight=None):
         """
@@ -220,7 +220,7 @@ class Animals:
         """
 
         self.age += 1
-        self.weight -= self.params_dict["eta"] * self.weight
+        self.weight = self.weight - (self.params_dict["eta"] * self.weight)
         self.fitness_calculation()
 
     def animal_dying(self):
