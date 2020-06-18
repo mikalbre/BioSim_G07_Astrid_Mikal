@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
 """Tests the animals.py file in the biosim folder."""
 
 from biosim.animals import Animals, Herbivore, Carnivore
@@ -9,7 +14,7 @@ import scipy.stats as stats
 from scipy.stats import stats
 
 
-class Test_Animals:
+class TestAnimals:
 
     def test_set_parameters(self):
 
@@ -28,8 +33,6 @@ class Test_Animals:
         params = {'Invalid parameter': 0}
         with pytest.raises(ValueError):
             Carnivore().set_parameters(params)
-
-
 
     def test_init(self):
         herb = Herbivore(5, 3)
@@ -62,10 +65,8 @@ class Test_Animals:
     #         ks_statistic, p-value = stats.kstest(weight, 'norm')
     #         assert p-value < 0.05
 
-
     def test_sigmoid(self):
         pass
-
 
     def test_fitness_calculation(self):
         herb = Herbivore(6, 0)
@@ -91,8 +92,8 @@ class Test_Animals:
 
         herb = Herbivore(4, 30)
         weight = herb.weight
-        lose_weight = herb.params_dict["zeta"] \
-                      * (herb.params_dict["w_birth"] + herb.params_dict["sigma_birth"])
+        lose_weight = (herb.params_dict["zeta"] * (herb.params_dict["w_birth"]
+                                                   + herb.params_dict["sigma_birth"]))
         assert weight < lose_weight
         for _ in range(10):
             procreation = herb.procreation(10)
@@ -186,6 +187,7 @@ class Test_Animals:
             list_of_initial_weights.append(s.weight)
             ka_statistics, p_value = stats.kstest(list_of_initial_weights, 'norm')
             assert p_value < 0.01
+
 
 class TestHerbivore:
     def test_feeding(self):

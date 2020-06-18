@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+__author__ = 'Astrid Sedal, Mikal Breiteig'
+__email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
+
 from biosim.animals import Herbivore, Carnivore
 from biosim.landscape import SingleCell, Lowland, Highland, Desert, Water
 import pytest
