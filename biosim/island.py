@@ -29,13 +29,6 @@ def check_length_of_string(map_list):
 
 
 class CreateIsland:
-    """
-    Initiates the CreateIsland class.
-    Class attribute map_params_dict holds information of which letter relates to which class in
-    landscape.py.
-
-    The CreateIsland takes a multilinestring and initial population on Rossumøya as input.
-    """
 
     map_params_dict = {"H": Highland,
                        "L": Lowland,
@@ -47,6 +40,11 @@ class CreateIsland:
                  initial_population
                  ):
         """
+        Initiates the CreateIsland class.
+        Class attribute map_params_dict holds information of which letter relates to which class in
+        landscape.py.
+
+        The CreateIsland takes a multilinestring and initial population on Rossumøya as input.
         Initializes instance of CreateIsland.
 
         Parameters

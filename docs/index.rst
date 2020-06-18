@@ -28,11 +28,11 @@ The Environment:
    :maxdepth: 2
    :caption: Contents:
 
-   Simulation
-   Visualization
-   Island
-   Landscape
-   Animals
+   simulation
+   visualization
+   island
+   landscape
+   animals
 
 
 Indices and tables

@@ -12,10 +12,6 @@ import random
 
 
 class SingleCell:
-    """
-    A superclass for the properties of a single cell on an island.
-    The different types of landscape inherits from this class.
-    """
 
     params_dict = None
 
@@ -48,6 +44,8 @@ class SingleCell:
 
     def __init__(self):
         """
+        A superclass for the properties of a single cell on an island.
+        The different types of landscape inherits from this class.
         Initializes the cell and creates empty lists for herbivores and carnivores.
 
         Attributes

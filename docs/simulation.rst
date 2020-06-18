@@ -3,6 +3,8 @@ Simulation
 
 The BioSim Class
 ---------------
-.. automodule:: biosim.simulation.BioSim
+.. automodule:: biosim.simulation
    :members:
-
+   :undoc-members:
+   :inherited-members:
+   :private-members:

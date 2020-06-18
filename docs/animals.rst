@@ -1,16 +1,13 @@
 Animals
 =======
 
-The Herbivore Class
+The Animals Class
 -------------------
 
-.. automodule:: biosim.animals.Herbivore
+.. automodule:: biosim.animals
    :members:
+   :undoc-members:
    :inherited-members:
+   :private-members:
 
-The Carnivore Class
--------------------
-.. automodule:: biosim.animals.Carnivore
-   :members:
-   :inherited-members:
 
