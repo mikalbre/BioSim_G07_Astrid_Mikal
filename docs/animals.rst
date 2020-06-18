@@ -4,13 +4,13 @@ Animals
 The Herbivore Class
 -------------------
 
-.. automodule:: animals.Herbivore
+.. automodule:: biosim.animals.Herbivore
    :members:
    :inherited-members:
 
 The Carnivore Class
 -------------------
-.. automodule:: animals.Carnivore
+.. automodule:: biosim.animals.Carnivore
    :members:
    :inherited-members:
 
