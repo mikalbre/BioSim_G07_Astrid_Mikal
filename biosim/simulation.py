@@ -34,6 +34,21 @@ class BioSim:
                  img_dir=None,
                  img_base=None
                  ):
+        """
+        Parameters
+        ----------
+        island_map: multilinestring specifying island geography
+        ini_pop : List of dictionaries specifying initial population
+        seed: Integer used as random number seed
+        ymax_animals: Number specifying y-axis limit for graph showing animal numbers.
+        cmax_animals: Dict specifying color- code limits for animal densities.
+        hist_specs: Dict specifying settings in histogram
+        img_name: Graphics name
+        img_fmt: String wih fle type for figure, e.g. 'png'
+        img_dir: path
+        img_base: where to store pictures and make movies from
+        """
+
         random.seed(seed)
         self._year = 0
         self.final_year = None
@@ -58,6 +73,17 @@ class BioSim:
         self.visualization.graphics_setup(kart_rgb=self.plot_island_map(island_map))
 
     def set_animal_parameters(self, species, params):
+        """
+        Sets parameter for animals
+        Parameters
+        ----------
+        species: object
+        params: dict
+
+        Returns
+        -------
+
+        """
         if species == 'Herbivore':
             Herbivore.set_parameters(params)
         elif species == 'Carnviore':
@@ -74,17 +100,18 @@ class BioSim:
             Landscape.Lowland.cell_parameter(params)
 
     def simulate(self, num_years, vis_years=1, img_years=None):
-        # if img_years is None:
-        #     img_years = vis_years
-        #
-        # if self._step % vis_steps == 0:
-        #     self.update_graphics()
-        #
-        # if self._step % img_steps == 0:
-        #     self._save_graphics()
+        """
+        Simulates number of years using the simulate_one_year method from island.py
+        Parameters
+        ----------
+        num_years: int
+        vis_years: int
+        img_years: int
 
-        # self._step += 1
+        Returns
+        -------
 
+        """
         for year in range(num_years):
             self._year += 1
             self.island.simulate_one_year()
@@ -103,6 +130,14 @@ class BioSim:
             self.save_graphics()
 
     def add_population(self, population):
+        """
+        Adds population to Rossumøya.
+
+        Parameters
+        ----------
+        population: dict
+        """
+
         self.island.add_population(population)
 
     @property
@@ -130,6 +165,14 @@ class BioSim:
         return df_sim
 
     def length_of_map(self):
+        """
+        Finds the length and width of the map
+        Returns
+        -------
+        lenx_map: int
+        leny_map: int
+        """
+
         lines = self.inserted_map.strip()
         lines = lines.split('\n')
         lenx_map = len(lines[0])
@@ -137,6 +180,16 @@ class BioSim:
         return lenx_map, leny_map
 
     def plot_island_map(self, island_map):
+        """
+        Plots the map of Rossumøya.
+        Parameters
+        ----------
+        island_map
+
+        Returns
+        -------
+        kart_rgb
+        """
         #
         # island_string = island_map
         # string_map = textwrap.dedent(island_string)

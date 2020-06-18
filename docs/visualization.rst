@@ -1,10 +1,10 @@
-Landscape
-==========
+Visualization
+==============
 
-The SingleCell Class
+The Visualization Class
 -------------------
 
-.. automodule:: biosim.landscape
+.. automodule:: biosim.visualization
    :members:
    :undoc-members:
    :inherited-members:

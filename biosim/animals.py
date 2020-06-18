@@ -12,11 +12,6 @@ import random
 
 
 class Animals:
-    """
-    Animal parent class, i.e. all animals in the simulation must be subclasses of this parent class.
-    It represents a single animal, and does not specify the type of animal.
-    It contains methods, variables and properties that are common for both carnivore and herbivore.
-    """
 
     params_dict = None
 
@@ -50,9 +45,14 @@ class Animals:
             else:
                 raise ValueError("Parameter not defined for this animal")
 
-
     def __init__(self, age=0, weight=None):
         """
+        Animal parent class, i.e. all animals in the simulation must be subclasses of
+        this parent class.
+        It represents a single animal, and does not specify the type of animal.
+        It contains methods, variables and properties that are common for both carnivore
+        and herbivore.
+
         Initialises instance. If weight not specified, weight is determine from the gaussian
         distribution.
 

@@ -23,6 +23,9 @@ class Visualization:
                        'Carnivores': 50}
 
     def __init__(self):
+        """
+
+        """
 
         self.steps = 0
         self.current_herbivore_data = []
