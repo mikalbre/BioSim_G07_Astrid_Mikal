@@ -339,7 +339,7 @@ class CreateIsland:
 
     @property
     def year(self):
-        return self._year
+        return self.year_num
 
     @year.setter
     def year(self, new_year_value):
