@@ -65,7 +65,7 @@ class BioSim:
 
         # self.num_years = None
         self.step = 0
-        self.final_year =None
+        self.final_year = None
 
         self.herbivore_line = None
         self.carnivore_line = None
@@ -244,9 +244,6 @@ class BioSim:
 
         if self._weight_axis is None:
             self._weight_ax = self._fig.add_subplot(4, 4, 16)
-
-
-
 
     def plot_island_map(self):
 
