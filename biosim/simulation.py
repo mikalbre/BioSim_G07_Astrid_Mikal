@@ -288,3 +288,5 @@ class BioSim:
                                                      num=self._img_ctr,
                                                      type=self.img_fmt))
         self._img_ctr += 1
+
+

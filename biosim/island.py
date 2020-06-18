@@ -305,11 +305,9 @@ class CreateIsland:
 
                 for new_loc, herb in migrated_herb:
                     self.add_migrated_herb_to_new_cell(new_loc, herb)
-                    cell.remove_herb_migrated(herb)
 
                 for new_loc, carn in migrated_carn:
                     self.add_migrated_carn_to_new_cell(new_loc, carn)
-                    cell.remove_carn_migrated(carn)
 
     def new_year_reset(self):
         """
