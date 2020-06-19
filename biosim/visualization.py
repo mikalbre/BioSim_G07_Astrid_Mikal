@@ -4,17 +4,8 @@ __author__ = 'Astrid Sedal, Mikal Breiteig'
 __email__ = 'astrised@nmbu.no, mibreite@nmbu.no'
 
 
-
-from biosim.island import CreateIsland as Island
-from biosim.landscape import Lowland, Highland, Desert, Water
-from biosim.animals import Herbivore, Carnivore
-from biosim import island as lol
 import matplotlib.pyplot as plt
 import numpy as np
-from biosim.animals import Herbivore, Carnivore
-from biosim import landscape as Landscape
-from biosim.island import CreateIsland as island
-from biosim.landscape import Lowland, Highland, Desert, Water
 
 
 class Visualization:
