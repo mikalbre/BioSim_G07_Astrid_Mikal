@@ -136,7 +136,6 @@ class SingleCell:
         self.present_herbivores = sorted(self.present_herbivores, key=lambda x: getattr(x, 'phi'))
         self.present_carnivores = sorted(self.present_carnivores, key=lambda x: getattr(x, 'phi'),
                                          reverse=True)
-
         for carn in self.present_carnivores:
             if len(self.present_herbivores) > 0:
                 dead_herbs = carn.hunt_herb(self.present_herbivores)
@@ -159,6 +158,7 @@ class SingleCell:
                 if not offspring:
                     continue
                 herb_newbord.append(offspring)
+
             self.present_herbivores.extend(herb_newbord)
 
         if len(self.present_carnivores) >= 2:
@@ -215,7 +215,7 @@ class SingleCell:
 
         self.present_carnivores = [carn for carn in self.present_carnivores
                                    if carn not in migrated_carn]
-
+        print(migrated_herb)
         return migrated_herb, migrated_carn
 
     def add_herb_migrated(self, herb):
@@ -387,7 +387,7 @@ class Water(SingleCell):
 
         self.available_fodder = self.params["f_max"]
 
-# 
+
 # if __name__ == "__main__":
 #     random.seed(1)
 #     c = Lowland()
@@ -422,4 +422,3 @@ class Water(SingleCell):
 #
 #         #print(c.present_herbivores)
 #         #print(c.present_carnivores)
-#

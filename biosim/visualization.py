@@ -23,12 +23,12 @@ class Visualization:
         self.current_carnivore_data = []
 
         self.step = 0
-        self.final_year =None
+        self.final_year = None
 
         self.herbivore_line = None
         self.carnivore_line = None
 
-        self.grid = None  # Trenger?
+        self.grid = None
         self._fig = None
         self._map = None
         self._map_axis = None
@@ -107,8 +107,7 @@ class Visualization:
             axlg = self._fig.add_axes(
                 [0.03, 0.662, 0.05, 0.35])  # llx, lly, w, h
             axlg.axis('off')
-            for ix, name in enumerate(('Water', 'Lowland',
-                                       'Highland', 'Desert')):
+            for ix, name in enumerate(('Water', 'Lowland', 'Highland', 'Desert')):
                 axlg.add_patch(plt.Rectangle((0., ix * 0.2), 0.3, 0.1,
                                              edgecolor='none',
                                              facecolor=rgb_value[name[0]]))
@@ -212,7 +211,8 @@ class Visualization:
                               histtype="step", color="r", range=(0, hist_specs["age"]["max"]))
             self._age_ax.title.set_text("Histogram of age")
 
-    def update_histogram_weight(self, weight_list_herb=None, weight_list_carn=None, hist_specs=None):
+    def update_histogram_weight(self, weight_list_herb=None,
+                                weight_list_carn=None, hist_specs=None):
         if hist_specs is None:
             self._weight_ax.clear()
             self._weight_ax.hist(weight_list_herb,
@@ -234,4 +234,3 @@ class Visualization:
     @property
     def map(self):
         return self._map
-

@@ -91,7 +91,7 @@ class BioSim:
         """
         if species == 'Herbivore':
             Herbivore.set_parameters(params)
-        elif species == 'Carnviore':
+        elif species == 'Carnivore':
             Carnivore.set_parameters(params)
 
     def set_landscape_parameters(self, landscape, params):
@@ -121,10 +121,8 @@ class BioSim:
 
         self._final_year = self._year + num_years
 
-        while self._year < self._final_year:
+        while self._year <= self._final_year:
             self.island.simulate_one_year()
-
-        # for year in range(num_years):
 
             if self._year % vis_years == 0:
                 self.visualization._changing_text.set_text('Year:' + str(self._year))
@@ -273,7 +271,7 @@ class BioSim:
             except subprocess.CalledProcessError as err:
                 raise RuntimeError("ERROR: converted failed with: {}".format(err))
         else:
-            raise ValueError("Uknown movie format: " + movie_fmt)
+            raise ValueError("Unknown movie format: " + movie_fmt)
 
     def save_graphics(self):
         """

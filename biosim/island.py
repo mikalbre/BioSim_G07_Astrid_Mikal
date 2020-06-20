@@ -420,7 +420,7 @@ class CreateIsland:
         num_animals_per_species : dict
         """
 
-        # self.new_year_reset()
+        self.new_year_reset()
         self.feed_animal()
         self.procreation_animals()
         self.migration_animals()

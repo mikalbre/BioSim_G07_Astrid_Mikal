@@ -61,7 +61,7 @@ class Animals:
         age : int
             The age of the animal
         weight : float
-            The weight of the animal
+            The weight of the animalo
 
         Attributes
         ----------
